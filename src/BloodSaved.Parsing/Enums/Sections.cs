@@ -1,0 +1,41 @@
+﻿namespace BloodSaved.Parsing.Enums
+{
+  public enum Sections
+  {
+    Info,
+    m_ValidSaveGameData,
+    AreaID,
+    RoomID,
+    RoomIdToState,
+    m_RoomInfo,
+    m_Traverse,
+    PCInfo,
+    PCStep,
+    m_bits,
+    m_treasureBits,
+    m_floats,
+    CompletedBoss,
+    LastBossId,
+    VisitedArea,
+    CompletedTutorials,
+    InventoryData,
+    BookAreachangeCount,
+    StatusData,
+    ShardPossession,
+    FirstMeal,
+    GameRecord,
+    EventListenerManager,
+    FarmerManager,
+    GraveManager,
+    QuestData,
+    SpeedRunModeData,
+    ScenarioFlags,
+    SavedValue,
+    IconTreasure,
+    IconUser,
+    MiniMapZoom,
+    MiniMapAlpha,
+    RandomizerData,
+    None
+  }
+}

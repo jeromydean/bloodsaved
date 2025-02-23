@@ -1,0 +1,65 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Saves\%28PC_NEW_GAME%29Story_Slot0.sav" />
+    <None Remove="Resources\Saves\%28PC_NEW_GAME%29System_Slot.sav" />
+    <None Remove="Resources\Saves\%28PS4_StorySlot0%29ue4savegame.ps4.sav" />
+    <None Remove="Resources\Saves\%28PS4_StorySlot1%29ue4savegame.ps4.sav" />
+    <None Remove="Resources\Saves\%28PS4_SystemSlot%29ue4savegame.ps4.sav" />
+    <None Remove="Resources\Saves\%28UNKNOWN%29Story_Slot0" />
+    <None Remove="Resources\Saves\%28UNKNOWN%29Story_Slot1" />
+    <None Remove="Resources\Saves\%28UNKNOWN%29System_Slot" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Saves\(PC_NEW_GAME)Story_Slot0.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(PC_NEW_GAME)System_Slot.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(PS4_StorySlot0)ue4savegame.ps4.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(PS4_StorySlot1)ue4savegame.ps4.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(PS4_SystemSlot)ue4savegame.ps4.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(UNKNOWN)Story_Slot0">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(UNKNOWN)Story_Slot1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(UNKNOWN)System_Slot">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.5.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BloodSaved.Parsing\BloodSaved.Parsing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>
