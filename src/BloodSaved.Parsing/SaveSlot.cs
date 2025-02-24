@@ -1,4 +1,6 @@
 ﻿using System.Security.Cryptography;
+using BloodSaved.Parsing.Enums;
+using BloodSaved.Parsing.Extensions;
 using BloodSaved.Parsing.Models;
 using BloodSaved.Parsing.Sections;
 
@@ -211,6 +213,114 @@ namespace BloodSaved.Parsing
       {
         writer.Write(savedata);
         writer.Write(checksum);
+      }
+    }
+
+    public void AddAll()
+    {
+      //add all items
+      AddOrUpdateInventory(Enum.GetValues<ItemIds>()
+        .Where(i => i.GetCategory() <= ItemCategories.Books)
+        .Select(itemId => new InventoryItem
+        {
+          ItemId = itemId,
+          Quantity = 999
+        }));
+
+      //add all shards
+      AddOrUpdateInventory(Enum.GetValues<ItemIds>()
+        .Where(i => i.GetCategory() >= ItemCategories.ConjureShards
+        && i.GetCategory() <= ItemCategories.FamiliarShards)
+        .Select(itemId => new Shard
+        {
+          ItemId = itemId,
+          Quantity = 999,
+          Rank = 999,
+          RankValue = 50f,
+          GradeValue = 50f
+        }));
+
+      //add all skills
+      AddOrUpdateInventory(Enum.GetValues<ItemIds>()
+        .Where(i => i.GetCategory() == ItemCategories.SkillShards)
+        .Select(itemId => new SkillShard
+        {
+          ItemId = itemId,
+          Quantity = 999,
+          Rank = 999,
+          RankValue = 50f,
+          GradeValue = 50f
+        }));
+    }
+
+    public void AddOrUpdateInventory(params IItem[] items)
+    {
+      AddOrUpdateInventory((IEnumerable<IItem>)items);
+    }
+
+    public void AddOrUpdateInventory(IEnumerable<IItem> items)
+    {
+      foreach (IItem item in items)
+      {
+        //new item
+        if (!Inventory.Items.Any(i => i.ItemId == item.ItemId))
+        {
+          Inventory.Items.Add((InventoryItem)item);
+
+          if (item is SkillShard skillShard)
+          {
+            Shards.Skills.Add(new SkillShard
+            {
+              ItemId = skillShard.ItemId,
+              IsOn = skillShard.IsOn,
+              //Equipped = skillShard.Equipped,
+              Quantity = skillShard.Quantity,
+              GradeValue = skillShard.GradeValue,
+              Rank = skillShard.Rank,
+              RankValue = skillShard.RankValue
+            });
+          }
+          else if (item is Shard shard)
+          {
+            Shards.Shards.Add(new Shard
+            {
+              ItemId = shard.ItemId,
+              //Equipped = shard.Equipped,
+              Quantity = shard.Quantity,
+              GradeValue = shard.GradeValue,
+              Rank = shard.Rank,
+              RankValue = shard.RankValue
+            });
+          }
+        }
+        else//update item
+        {
+          IItem existingItem = Inventory.Items.Single(i => i.ItemId == item.ItemId);
+          existingItem.Quantity = item.Quantity;
+          existingItem.GradeValue = item.GradeValue;
+          existingItem.Rank = item.Rank;
+          existingItem.RankValue = item.RankValue;
+
+          if (item is SkillShard skillShard)
+          {
+            SkillShard existingShard = Shards.Skills.Single(s => s.ItemId == item.ItemId);
+            existingShard.IsOn = skillShard.IsOn;
+            //existingShard.Equipped = skillShard.Equipped;
+            existingShard.Quantity = skillShard.Quantity;
+            existingShard.GradeValue = skillShard.GradeValue;
+            existingShard.Rank = skillShard.Rank;
+            existingShard.RankValue = skillShard.RankValue;
+          }
+          else if (item is Shard shard)
+          {
+            Shard existingShard = Shards.Shards.Single(s => s.ItemId == item.ItemId);
+            existingShard.Quantity = shard.Quantity;
+            existingShard.GradeValue = shard.GradeValue;
+            //existingShard.Equipped = shard.Equipped;
+            existingShard.Rank = shard.Rank;
+            existingShard.RankValue = shard.RankValue;
+          }
+        }
       }
     }
   }

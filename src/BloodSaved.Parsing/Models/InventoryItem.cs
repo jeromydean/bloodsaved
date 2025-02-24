@@ -2,7 +2,7 @@
 
 namespace BloodSaved.Parsing.Models
 {
-  public class InventoryItem
+  public class InventoryItem : IItem
   {
     public int Index { get; set; } = int.MaxValue;
     public ItemIds ItemId { get; set; }

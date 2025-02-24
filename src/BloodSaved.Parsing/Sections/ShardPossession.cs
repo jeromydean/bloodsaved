@@ -1,5 +1,4 @@
-﻿using System.Reflection.PortableExecutable;
-using BloodSaved.Parsing.Enums;
+﻿using BloodSaved.Parsing.Enums;
 using BloodSaved.Parsing.Extensions;
 using BloodSaved.Parsing.Models;
 
@@ -8,11 +7,13 @@ namespace BloodSaved.Parsing.Sections
   public class ShardPossession : ISerializableSection<ShardPossession>
   {
     public List<Shard> Shards { get; set; }
+    public List<SkillShard> Skills { get; set; }
     public List<ShardAttribute> ShardAttributes { get; set; }
 
     public ShardPossession()
     {
       Shards = new List<Shard>();
+      Skills = new List<SkillShard>();
       ShardAttributes = new List<ShardAttribute>();
     }
 
@@ -103,7 +104,7 @@ namespace BloodSaved.Parsing.Sections
 
               saveReader.ReadStructProperty(SaveConstants.PossessionData, out _, out _, out _);
 
-              shardPossession.Shards.Add(new Shard
+              shardPossession.Skills.Add(new SkillShard
               {
                 Index = i,
                 ItemId = itemId,
@@ -244,7 +245,7 @@ namespace BloodSaved.Parsing.Sections
         
         //skill shards
         {
-          List<Shard> skillShards = Shards.Where(s => s.ItemId.GetCategory() == ItemCategories.SkillShards)
+          List<SkillShard> skillShards = Skills.Where(s => s.ItemId.GetCategory() == ItemCategories.SkillShards)
             .OrderBy(s => s.Index).ThenBy(s => s.ItemId.ToString()).ToList();
 
           if (skillShards.Any())
@@ -254,7 +255,7 @@ namespace BloodSaved.Parsing.Sections
 
             for (int s = 0; s < skillShards.Count; s++)
             {
-              Shard skillShard = skillShards[s];
+              SkillShard skillShard = skillShards[s];
 
               saveWriter.WriteItemId(skillShard.ItemId);
               saveWriter.WriteBoolProperty(SaveConstants.IsOn, skillShard.IsOn);

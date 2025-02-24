@@ -1031,7 +1031,7 @@ namespace BloodSaved.Parsing.Enums
     Marbasfang,
     [Description("Lion Lord's Mane"), ItemCategory(ItemCategories.Materials)]
     Marbasmane,
-    [ItemCategory(ItemCategories.Materials)]
+    [Description("8-bit Nightmare"), ItemCategory(ItemCategories.Materials)]
     Medal022,
     [Description("Melting Bone"), ItemCategory(ItemCategories.Materials)]
     MeltedBone,
@@ -1087,7 +1087,7 @@ namespace BloodSaved.Parsing.Enums
     PizzaDough,
     [Description("Platinum"), ItemCategory(ItemCategories.Materials)]
     Platinum,
-    [ItemCategory(ItemCategories.Materials)]
+    [Description("Toad Eye"), ItemCategory(ItemCategories.Materials)]
     PoisonToadEye,
     [Description("Potato"), ItemCategory(ItemCategories.Materials)]
     Potato,
@@ -1123,7 +1123,7 @@ namespace BloodSaved.Parsing.Enums
     Silver,
     [Description("Demon Pelt"), ItemCategory(ItemCategories.Materials)]
     Silverwolffur,
-    [ItemCategory(ItemCategories.Materials), ItemId("16BitCoin")]
+    [Description("16-bit Coin"), ItemCategory(ItemCategories.Materials), ItemId("16BitCoin")]
     Sixteen16BitCoin,
     [Description("Soda Water"), ItemCategory(ItemCategories.Materials)]
     Soda,
@@ -1141,7 +1141,7 @@ namespace BloodSaved.Parsing.Enums
     Sulfate,
     [Description("Sulfur"), ItemCategory(ItemCategories.Materials)]
     Sulfur,
-    [ItemCategory(ItemCategories.Materials), ItemId("32BitCoin")]
+    [Description("32-bit Coin"), ItemCategory(ItemCategories.Materials), ItemId("32BitCoin")]
     ThirtyTwoBitCoin,
     [Description("Thunderbird Plume"), ItemCategory(ItemCategories.Materials)]
     ThunderbirdFeathers,
@@ -1247,9 +1247,9 @@ namespace BloodSaved.Parsing.Enums
     Keyofbacker3,
     [Description("Celeste's Key"), ItemCategory(ItemCategories.KeysRecips)]
     Keyofbacker4,
-    [ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Gebel Medal"), ItemCategory(ItemCategories.KeysRecips)]
     Medal009,
-    [ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Silver Bromide"), ItemCategory(ItemCategories.KeysRecips)]
     SilverBromide,
     [Description("Village Key"), ItemCategory(ItemCategories.KeysRecips)]
     VillageKey,
@@ -1321,7 +1321,7 @@ namespace BloodSaved.Parsing.Enums
     TheBookofMonster,
     [Description("Axe Strike"), ItemCategory(ItemCategories.ConjureShards)]
     AxStrike,
-    [ItemCategory(ItemCategories.ConjureShards)]
+    [Description("Blood Steal"), ItemCategory(ItemCategories.ConjureShards)]
     BloodSteel,
     [Description("Cerulean Splash"), ItemCategory(ItemCategories.ConjureShards)]
     Ceruleansplash,
@@ -1333,11 +1333,11 @@ namespace BloodSaved.Parsing.Enums
     DREAMSTEAL,
     [Description("Flytrap"), ItemCategory(ItemCategories.ConjureShards)]
     EntangleBind,
-    [ItemCategory(ItemCategories.ConjureShards)]
+    [Description("Summon 8-bit Ghost"), ItemCategory(ItemCategories.ConjureShards)]
     Ghost8Bit,
     [Description("Welcome Company"), ItemCategory(ItemCategories.ConjureShards)]
     GratefulAssist,
-    [ItemCategory(ItemCategories.ConjureShards)]
+    [Description("Head Flail"), ItemCategory(ItemCategories.ConjureShards)]
     HEADFAIL,
     [Description("Shuriken"), ItemCategory(ItemCategories.ConjureShards)]
     HiddenDart,
@@ -1345,13 +1345,13 @@ namespace BloodSaved.Parsing.Enums
     Jackpot,
     [Description("Riga Storæma"), ItemCategory(ItemCategories.ConjureShards)]
     LigaStreyma,
-    [ItemCategory(ItemCategories.ConjureShards)]
+    [Description("8-bit Flame"), ItemCategory(ItemCategories.ConjureShards)]
     Nightmare8Bit,
     [Description("Gale Crawler"), ItemCategory(ItemCategories.ConjureShards)]
     Raginggirl,
     [Description("Throw Spear"), ItemCategory(ItemCategories.ConjureShards)]
     RapidSpear,
-    [ItemCategory(ItemCategories.ConjureShards)]
+    [Description("Sakura Rain"), ItemCategory(ItemCategories.ConjureShards)]
     SakuraRain,
     [Description("Summon Water Leaper"), ItemCategory(ItemCategories.ConjureShards)]
     SamonSamHiggin,
@@ -1361,7 +1361,7 @@ namespace BloodSaved.Parsing.Enums
     SummonAme,
     [Description("Summon Simian"), ItemCategory(ItemCategories.ConjureShards)]
     SummonApe,
-    [ItemCategory(ItemCategories.ConjureShards)]
+    [Description("Summon BuChan"), ItemCategory(ItemCategories.ConjureShards)]
     SummonBuChan,
     [Description("Summon Buer"), ItemCategory(ItemCategories.ConjureShards)]
     SummonBuell,
@@ -1427,11 +1427,11 @@ namespace BloodSaved.Parsing.Enums
     CircleRipper,
     [Description("Lethargy"), ItemCategory(ItemCategories.DirectionalShards)]
     CurseDray,
-    [ItemCategory(ItemCategories.DirectionalShards)]
+    [Description("Dimension Shift"), ItemCategory(ItemCategories.DirectionalShards)]
     DimensionShift,
-    [ItemCategory(ItemCategories.DirectionalShards)]
+    [Description("8-bit Fire Ball"), ItemCategory(ItemCategories.DirectionalShards)]
     EightBitFire,
-    [ItemCategory(ItemCategories.DirectionalShards)]
+    [Description("Fireball"), ItemCategory(ItemCategories.DirectionalShards)]
     Fireball,
     [Description("Flame Cannon"), ItemCategory(ItemCategories.DirectionalShards)]
     FireCannon,
@@ -1479,7 +1479,7 @@ namespace BloodSaved.Parsing.Enums
     CONEnhance,
     [Description("Alchemic Bounty"), ItemCategory(ItemCategories.PassiveShards)]
     CraftMastery,
-    [ItemCategory(ItemCategories.PassiveShards)]
+    [Description("Detective's Eye"), ItemCategory(ItemCategories.PassiveShards)]
     DetectiveEye,
     [Description("Drain"), ItemCategory(ItemCategories.PassiveShards)]
     drain,
@@ -1505,7 +1505,7 @@ namespace BloodSaved.Parsing.Enums
     MNDEnhance,
     [Description("Money Is Power"), ItemCategory(ItemCategories.PassiveShards)]
     Moneyispower,
-    [ItemCategory(ItemCategories.PassiveShards)]
+    [Description("Optimizer"), ItemCategory(ItemCategories.PassiveShards)]
     Optimizer,
     [Description("Red Remembrance"), ItemCategory(ItemCategories.PassiveShards)]
     RedDowther,
@@ -1541,7 +1541,7 @@ namespace BloodSaved.Parsing.Enums
     Wisdomwords,
     [Description("Familiar: Bloodbringer"), ItemCategory(ItemCategories.FamiliarShards)]
     FamiliaBradBringer,
-    [ItemCategory(ItemCategories.FamiliarShards)]
+    [Description("Familiar: BuChan"), ItemCategory(ItemCategories.FamiliarShards)]
     FamiliaBuChan,
     [Description("Familiar: Buer"), ItemCategory(ItemCategories.FamiliarShards)]
     FamiliaBuell,
