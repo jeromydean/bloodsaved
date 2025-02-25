@@ -8,6 +8,6 @@ BloodSaved is currently in an early status but it already has the ability to inj
 I have tested the saves produced by the application on PS4 and PC (GOG) versions of Bloodstained.
 
 
-## Licence
+## License
 
 BloodSaved is licensed under the [MIT licence](licence.md).
