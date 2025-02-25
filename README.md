@@ -10,4 +10,4 @@ I have tested the saves produced by the application on PS4 and PC (GOG) versions
 
 ## License
 
-BloodSaved is licensed under the [MIT licence](licence.md).
+BloodSaved is licensed under the [MIT licence](license.md).
