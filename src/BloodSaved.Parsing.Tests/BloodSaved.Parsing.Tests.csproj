@@ -17,7 +17,12 @@
     <None Remove="Resources\Saves\%28PS4_SystemSlot%29ue4savegame.ps4.sav" />
     <None Remove="Resources\Saves\%28UNKNOWN%29Story_Slot0" />
     <None Remove="Resources\Saves\%28UNKNOWN%29Story_Slot1" />
+    <None Remove="Resources\Saves\%28UNKNOWN%29Story_Slot4.sav" />
     <None Remove="Resources\Saves\%28UNKNOWN%29System_Slot" />
+    <None Remove="Resources\Saves\%28UNKNOWN_2%29Story_Slot1" />
+    <None Remove="Resources\Saves\%28UNKNOWN_2%29System_Slot" />
+    <None Remove="Resources\Saves\%28UNKNOWN_3%29Story_Slot0.sav" />
+    <None Remove="Resources\Saves\%28UNKNOWN_3%29System_Slot.sav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,16 +47,37 @@
     <Content Include="Resources\Saves\(UNKNOWN)Story_Slot1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Saves\(UNKNOWN)Story_Slot4.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Saves\(UNKNOWN)System_Slot">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(UNKNOWN_2)Story_Slot1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(UNKNOWN_2)System_Slot">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(UNKNOWN_3)Story_Slot0.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(UNKNOWN_3)System_Slot.sav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="6.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageReference Include="xunit" Version="2.5.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

@@ -10,6 +10,9 @@ namespace BloodSaved.Parsing.Tests
     [InlineData(@".\Resources\Saves\(PC_NEW_GAME)Story_Slot0.sav")]
     [InlineData(@".\Resources\Saves\(UNKNOWN)Story_Slot0")]
     [InlineData(@".\Resources\Saves\(UNKNOWN)Story_Slot1")]
+    [InlineData(@".\Resources\Saves\(UNKNOWN)Story_Slot4.sav")]
+    [InlineData(@".\Resources\Saves\(UNKNOWN_2)Story_Slot1")]
+    [InlineData(@".\Resources\Saves\(UNKNOWN_3)Story_Slot0.sav")]
     public void UnmodifiedSaveSlotSerializesCorrectly(string saveSlotPath)
     {
       byte[] inputBytes = File.ReadAllBytes(saveSlotPath);
