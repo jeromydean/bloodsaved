@@ -33,6 +33,9 @@ namespace BloodSaved.ViewModels
     private string? _loadedSaveSlotPath;
     private SaveSlot? _saveSlot;
 
+    [ObservableProperty]
+    private string _loadErrorText;
+
     private SKSvg? _mapSvg;
 
     [ObservableProperty]
@@ -123,6 +126,8 @@ namespace BloodSaved.ViewModels
     {
       try
       {
+        IsSaveSlotLoaded = false;
+        LoadErrorText = null;
         _saveSlot = SaveSlot.Load(path);
 
         InventoryItems.Clear();
@@ -161,7 +166,7 @@ namespace BloodSaved.ViewModels
       }
       catch(Exception ex)
       {
-        //todo show user the error
+        LoadErrorText = $"There was an error loading the save.{Environment.NewLine}{ex}";
       }
     }
 

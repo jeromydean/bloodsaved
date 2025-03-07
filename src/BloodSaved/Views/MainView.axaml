@@ -5,6 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:viewModels="using:BloodSaved.ViewModels"
 	xmlns:models="using:BloodSaved.Models"
+	xmlns:converters="using:BloodSaved.Converters"
 	xmlns:skControls="using:Avalonia.Controls.Skia"
 	xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
 	xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
@@ -17,6 +18,9 @@
 	Icon="/Assets/icon.ico"
 	xmlns:svg="clr-namespace:Avalonia.Svg;assembly=Avalonia.Svg"
 	Title="BloodSaved">
+	<Window.Resources>
+		<converters:StringIsNotNullOrEmptyToBooleanConverter x:Key="StringIsNotNullOrEmptyToBooleanConverter" />
+	</Window.Resources>
 	<i:Interaction.Behaviors>
 		<ia:EventTriggerBehavior
 			EventName="Opened">
@@ -57,233 +61,248 @@
 				Header="_About"
 				Command="{Binding AboutCommand}" />-->
 		</Menu>
-		<TabControl
-			IsVisible="{Binding IsSaveSlotLoaded}"
-			Margin="5">
-			<!--<TabItem
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<TabControl
+				Grid.Row="0"
+				IsVisible="{Binding IsSaveSlotLoaded}"
+				Margin="5">
+				<!--<TabItem
 				Header="Stats" />-->
-			<TabItem
-				Header="Inventory">
-				<DataGrid
-					x:Name="ItemsDataGrid"
-					CanUserReorderColumns="True"
-					CanUserResizeColumns="True"
-					CanUserSortColumns="True"
-					GridLinesVisibility="All"
-					BorderThickness="1"
-					BorderBrush="Gray"
-					ItemsSource="{Binding InventoryItems}">
-					<i:Interaction.Behaviors>
-						<ia:EventTriggerBehavior
-							EventName="SelectionChanged">
-							<ia:InvokeCommandAction
-								Command="{Binding ItemSelectionChangedCommand}"
-								CommandParameter="{Binding ElementName=ItemsDataGrid, Path=SelectedItems }" />
-						</ia:EventTriggerBehavior>
-					</i:Interaction.Behaviors>
-					<DataGrid.ContextMenu>
-						<ContextMenu>
-							<MenuItem
-								Header="Set Quantity"
-								IsEnabled="{Binding ItemsSelected}">
+				<TabItem
+					Header="Inventory">
+					<DataGrid
+						x:Name="ItemsDataGrid"
+						CanUserReorderColumns="True"
+						CanUserResizeColumns="True"
+						CanUserSortColumns="True"
+						GridLinesVisibility="All"
+						BorderThickness="1"
+						BorderBrush="Gray"
+						ItemsSource="{Binding InventoryItems}">
+						<i:Interaction.Behaviors>
+							<ia:EventTriggerBehavior
+								EventName="SelectionChanged">
+								<ia:InvokeCommandAction
+									Command="{Binding ItemSelectionChangedCommand}"
+									CommandParameter="{Binding ElementName=ItemsDataGrid, Path=SelectedItems }" />
+							</ia:EventTriggerBehavior>
+						</i:Interaction.Behaviors>
+						<DataGrid.ContextMenu>
+							<ContextMenu>
 								<MenuItem
-									Header="9"
-									Command="{Binding SetSelectedItemQuantityCommand}">
-									<MenuItem.CommandParameter>
-										<s:Int32>9</s:Int32>
-									</MenuItem.CommandParameter>
+									Header="Set Quantity"
+									IsEnabled="{Binding ItemsSelected}">
+									<MenuItem
+										Header="9"
+										Command="{Binding SetSelectedItemQuantityCommand}">
+										<MenuItem.CommandParameter>
+											<s:Int32>9</s:Int32>
+										</MenuItem.CommandParameter>
+									</MenuItem>
+									<MenuItem
+										Header="999"
+										Command="{Binding SetSelectedItemQuantityCommand}">
+										<MenuItem.CommandParameter>
+											<s:Int32>999</s:Int32>
+										</MenuItem.CommandParameter>
+									</MenuItem>
+								</MenuItem>
+							</ContextMenu>
+						</DataGrid.ContextMenu>
+						<DataGrid.Columns>
+							<DataGridTextColumn
+								Header="Category"
+								Binding="{Binding Category}"
+								IsReadOnly="true"
+								Width="Auto" />
+							<DataGridTextColumn
+								Header="Name"
+								Binding="{Binding Name}"
+								IsReadOnly="true"
+								Width="*" />
+							<DataGridTemplateColumn
+								Header="Quantity"
+								Width="125">
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate
+										DataType="models:InventoryItemModel">
+										<TextBlock
+											Text="{Binding Quantity}"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Center" />
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+								<DataGridTemplateColumn.CellEditingTemplate>
+									<DataTemplate
+										DataType="models:InventoryItemModel">
+										<NumericUpDown
+											Value="{Binding Quantity}"
+											FormatString="N0"
+											Minimum="0"
+											Maximum="999"
+											HorizontalAlignment="Stretch"/>
+									</DataTemplate>
+								</DataGridTemplateColumn.CellEditingTemplate>
+							</DataGridTemplateColumn>
+						</DataGrid.Columns>
+					</DataGrid>
+				</TabItem>
+				<TabItem
+					Header="Shards">
+					<DataGrid
+						x:Name="ShardsDataGrid"
+						CanUserReorderColumns="True"
+						CanUserResizeColumns="True"
+						CanUserSortColumns="True"
+						GridLinesVisibility="All"
+						BorderThickness="1"
+						BorderBrush="Gray"
+						ItemsSource="{Binding Shards}">
+						<i:Interaction.Behaviors>
+							<ia:EventTriggerBehavior
+								EventName="SelectionChanged">
+								<ia:InvokeCommandAction
+									Command="{Binding ShardSelectionChangedCommand}"
+									CommandParameter="{Binding ElementName=ShardsDataGrid, Path=SelectedItems }" />
+							</ia:EventTriggerBehavior>
+						</i:Interaction.Behaviors>
+						<DataGrid.ContextMenu>
+							<ContextMenu>
+								<MenuItem
+									Header="Set Grade"
+									IsEnabled="{Binding ShardsSelected}">
+									<MenuItem
+										Header="9"
+										Command="{Binding SetSelectedShardGradeCommand}">
+										<MenuItem.CommandParameter>
+											<s:Int32>9</s:Int32>
+										</MenuItem.CommandParameter>
+									</MenuItem>
+									<MenuItem
+										Header="999"
+										Command="{Binding SetSelectedShardGradeCommand}">
+										<MenuItem.CommandParameter>
+											<s:Int32>999</s:Int32>
+										</MenuItem.CommandParameter>
+									</MenuItem>
 								</MenuItem>
 								<MenuItem
-									Header="999"
-									Command="{Binding SetSelectedItemQuantityCommand}">
-									<MenuItem.CommandParameter>
-										<s:Int32>999</s:Int32>
-									</MenuItem.CommandParameter>
+									Header="Set Rank"
+									IsEnabled="{Binding ShardsSelected}">
+									<MenuItem
+										Header="9"
+										Command="{Binding SetSelectedShardRankCommand}">
+										<MenuItem.CommandParameter>
+											<s:Int32>9</s:Int32>
+										</MenuItem.CommandParameter>
+									</MenuItem>
+									<MenuItem
+										Header="999"
+										Command="{Binding SetSelectedShardRankCommand}">
+										<MenuItem.CommandParameter>
+											<s:Int32>999</s:Int32>
+										</MenuItem.CommandParameter>
+									</MenuItem>
 								</MenuItem>
-							</MenuItem>
-						</ContextMenu>
-					</DataGrid.ContextMenu>
-					<DataGrid.Columns>
-						<DataGridTextColumn
-							Header="Category"
-							Binding="{Binding Category}"
-							IsReadOnly="true"
-							Width="Auto" />
-						<DataGridTextColumn
-							Header="Name"
-							Binding="{Binding Name}"
-							IsReadOnly="true"
-							Width="*" />
-						<DataGridTemplateColumn
-							Header="Quantity"
-							Width="125">
-							<DataGridTemplateColumn.CellTemplate>
-								<DataTemplate
-									DataType="models:InventoryItemModel">
-									<TextBlock
-										Text="{Binding Quantity}"
-										VerticalAlignment="Center"
-										HorizontalAlignment="Center" />
-								</DataTemplate>
-							</DataGridTemplateColumn.CellTemplate>
-							<DataGridTemplateColumn.CellEditingTemplate>
-								<DataTemplate
-									DataType="models:InventoryItemModel">
-									<NumericUpDown
-										Value="{Binding Quantity}"
-										FormatString="N0"
-										Minimum="0"
-										Maximum="999"
-										HorizontalAlignment="Stretch"/>
-								</DataTemplate>
-							</DataGridTemplateColumn.CellEditingTemplate>
-						</DataGridTemplateColumn>
-					</DataGrid.Columns>
-				</DataGrid>
-			</TabItem>
-			<TabItem
-				Header="Shards">
-				<DataGrid
-					x:Name="ShardsDataGrid"
-					CanUserReorderColumns="True"
-					CanUserResizeColumns="True"
-					CanUserSortColumns="True"
-					GridLinesVisibility="All"
-					BorderThickness="1"
-					BorderBrush="Gray"
-					ItemsSource="{Binding Shards}">
-					<i:Interaction.Behaviors>
-						<ia:EventTriggerBehavior
-							EventName="SelectionChanged">
-							<ia:InvokeCommandAction
-								Command="{Binding ShardSelectionChangedCommand}"
-								CommandParameter="{Binding ElementName=ShardsDataGrid, Path=SelectedItems }" />
-						</ia:EventTriggerBehavior>
-					</i:Interaction.Behaviors>
-					<DataGrid.ContextMenu>
-						<ContextMenu>
-							<MenuItem
-								Header="Set Grade"
-								IsEnabled="{Binding ShardsSelected}">
-								<MenuItem
-									Header="9"
-									Command="{Binding SetSelectedShardGradeCommand}">
-									<MenuItem.CommandParameter>
-										<s:Int32>9</s:Int32>
-									</MenuItem.CommandParameter>
-								</MenuItem>
-								<MenuItem
-									Header="999"
-									Command="{Binding SetSelectedShardGradeCommand}">
-									<MenuItem.CommandParameter>
-										<s:Int32>999</s:Int32>
-									</MenuItem.CommandParameter>
-								</MenuItem>
-							</MenuItem>
-							<MenuItem
-								Header="Set Rank"
-								IsEnabled="{Binding ShardsSelected}">
-								<MenuItem
-									Header="9"
-									Command="{Binding SetSelectedShardRankCommand}">
-									<MenuItem.CommandParameter>
-										<s:Int32>9</s:Int32>
-									</MenuItem.CommandParameter>
-								</MenuItem>
-								<MenuItem
-									Header="999"
-									Command="{Binding SetSelectedShardRankCommand}">
-									<MenuItem.CommandParameter>
-										<s:Int32>999</s:Int32>
-									</MenuItem.CommandParameter>
-								</MenuItem>
-							</MenuItem>
-						</ContextMenu>
-					</DataGrid.ContextMenu>
-					<DataGrid.Columns>
-						<DataGridTextColumn
-							Header="Category"
-							Binding="{Binding Category}"
-							IsReadOnly="true"
-							Width="Auto" />
-						<DataGridTextColumn
-							Header="Name"
-							Binding="{Binding Name}"
-							IsReadOnly="true"
-							Width="*" />
-						<DataGridTemplateColumn
-							Header="Grade"
-							Width="125">
-							<DataGridTemplateColumn.CellTemplate>
-								<DataTemplate
-									DataType="models:InventoryItemModel">
-									<TextBlock
-										Text="{Binding Quantity}"
-										VerticalAlignment="Center"
-										HorizontalAlignment="Center" />
-								</DataTemplate>
-							</DataGridTemplateColumn.CellTemplate>
-							<DataGridTemplateColumn.CellEditingTemplate>
-								<DataTemplate
-									DataType="models:InventoryItemModel">
-									<NumericUpDown
-										Value="{Binding Quantity}"
-										FormatString="N0"
-										Minimum="0"
-										Maximum="999"
-										HorizontalAlignment="Stretch"/>
-								</DataTemplate>
-							</DataGridTemplateColumn.CellEditingTemplate>
-						</DataGridTemplateColumn>
-						<DataGridTemplateColumn
-							Header="Rank"
-							Width="125">
-							<DataGridTemplateColumn.CellTemplate>
-								<DataTemplate
-									DataType="models:InventoryItemModel">
-									<TextBlock
-										Text="{Binding Rank}"
-										VerticalAlignment="Center"
-										HorizontalAlignment="Center" />
-								</DataTemplate>
-							</DataGridTemplateColumn.CellTemplate>
-							<DataGridTemplateColumn.CellEditingTemplate>
-								<DataTemplate DataType="models:InventoryItemModel">
-									<NumericUpDown
-										Value="{Binding Rank}"
-										FormatString="N0"
-										Minimum="0"
-										Maximum="999"
-										HorizontalAlignment="Stretch"/>
-								</DataTemplate>
-							</DataGridTemplateColumn.CellEditingTemplate>
-						</DataGridTemplateColumn>
-					</DataGrid.Columns>
-				</DataGrid>
-			</TabItem>
-			<TabItem
-				Header="Map">
-				<ScrollViewer
-					x:Name="mapScrollViewer"
-					HorizontalScrollBarVisibility="Auto"
-					VerticalScrollBarVisibility="Auto"
-					AllowAutoHide="True">
-					<LayoutTransformControl
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-            <LayoutTransformControl.LayoutTransform>
-              <ScaleTransform
-                ScaleX="{Binding MapScale}"
-                ScaleY="{Binding MapScale}" />
-            </LayoutTransformControl.LayoutTransform>
+							</ContextMenu>
+						</DataGrid.ContextMenu>
+						<DataGrid.Columns>
+							<DataGridTextColumn
+								Header="Category"
+								Binding="{Binding Category}"
+								IsReadOnly="true"
+								Width="Auto" />
+							<DataGridTextColumn
+								Header="Name"
+								Binding="{Binding Name}"
+								IsReadOnly="true"
+								Width="*" />
+							<DataGridTemplateColumn
+								Header="Grade"
+								Width="125">
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate
+										DataType="models:InventoryItemModel">
+										<TextBlock
+											Text="{Binding Quantity}"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Center" />
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+								<DataGridTemplateColumn.CellEditingTemplate>
+									<DataTemplate
+										DataType="models:InventoryItemModel">
+										<NumericUpDown
+											Value="{Binding Quantity}"
+											FormatString="N0"
+											Minimum="0"
+											Maximum="999"
+											HorizontalAlignment="Stretch"/>
+									</DataTemplate>
+								</DataGridTemplateColumn.CellEditingTemplate>
+							</DataGridTemplateColumn>
+							<DataGridTemplateColumn
+								Header="Rank"
+								Width="125">
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate
+										DataType="models:InventoryItemModel">
+										<TextBlock
+											Text="{Binding Rank}"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Center" />
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+								<DataGridTemplateColumn.CellEditingTemplate>
+									<DataTemplate DataType="models:InventoryItemModel">
+										<NumericUpDown
+											Value="{Binding Rank}"
+											FormatString="N0"
+											Minimum="0"
+											Maximum="999"
+											HorizontalAlignment="Stretch"/>
+									</DataTemplate>
+								</DataGridTemplateColumn.CellEditingTemplate>
+							</DataGridTemplateColumn>
+						</DataGrid.Columns>
+					</DataGrid>
+				</TabItem>
+				<TabItem
+					Header="Map">
+					<ScrollViewer
+						x:Name="mapScrollViewer"
+						HorizontalScrollBarVisibility="Auto"
+						VerticalScrollBarVisibility="Auto"
+						AllowAutoHide="True">
+						<LayoutTransformControl
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center">
+							<LayoutTransformControl.LayoutTransform>
+								<ScaleTransform
+									ScaleX="{Binding MapScale}"
+									ScaleY="{Binding MapScale}" />
+							</LayoutTransformControl.LayoutTransform>
 							<skControls:SKPictureControl
 								HorizontalAlignment="Center"
 								Picture="{Binding Map}"
 								Width="{Binding ElementName=mapScrollViewer, Path=Viewport.Width}"
 								PointerWheelChanged="MapPointerWheelChanged"/>
 						</LayoutTransformControl>
-				</ScrollViewer>
-			</TabItem>
-		</TabControl>
+					</ScrollViewer>
+				</TabItem>
+			</TabControl>
+			<TextBlock
+				Grid.Row="1"
+				Padding="0,0,0,25"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Text="{Binding LoadErrorText}"
+				FontSize="15"
+				IsVisible="{Binding LoadErrorText, Converter={StaticResource StringIsNotNullOrEmptyToBooleanConverter}}" />
+		</Grid>
 	</DockPanel>
 </Window>
