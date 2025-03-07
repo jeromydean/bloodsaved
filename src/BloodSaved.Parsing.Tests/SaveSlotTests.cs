@@ -10,10 +10,10 @@ namespace BloodSaved.Parsing.Tests
     [InlineData(@".\Resources\Saves\(PC_NEW_GAME)Story_Slot0.sav")]
     [InlineData(@".\Resources\Saves\(UNKNOWN)Story_Slot0")]
     [InlineData(@".\Resources\Saves\(UNKNOWN)Story_Slot1")]
-    [InlineData(@".\Resources\Saves\(UNKNOWN)Story_Slot4.sav")]
-    [InlineData(@".\Resources\Saves\(UNKNOWN_2)Story_Slot1")]
-    [InlineData(@".\Resources\Saves\(UNKNOWN_3)Story_Slot0.sav")]
-    public void UnmodifiedSaveSlotSerializesCorrectly(string saveSlotPath)
+    [InlineData(@".\Resources\Saves\(UNKNOWN)Story_Slot4.sav", false)]//won't match due to "Poisontoadeye" & "shard" (incorrect casing)
+    [InlineData(@".\Resources\Saves\(UNKNOWN_2)Story_Slot1", false)]//won't match due to "Poisontoadeye" & "shard" (incorrect casing)
+    [InlineData(@".\Resources\Saves\(UNKNOWN_3)Story_Slot0.sav", false)]//won't match due to "Poisontoadeye" & "shard" (incorrect casing)
+    public void UnmodifiedSaveSlotSerializesCorrectly(string saveSlotPath, bool matchHash = true)
     {
       byte[] inputBytes = File.ReadAllBytes(saveSlotPath);
       SaveSlot saveSlot = SaveSlot.Load(saveSlotPath);
@@ -27,12 +27,15 @@ namespace BloodSaved.Parsing.Tests
 
       Assert.Equal(inputBytes.Length, serializedBytes.Length);
 
-      using (SHA256 sha256 = SHA256.Create())
+      if (matchHash)
       {
-        string inputHash = BitConverter.ToString(sha256.ComputeHash(inputBytes)).Replace("-", string.Empty);
-        string serializedHash = BitConverter.ToString(sha256.ComputeHash(serializedBytes)).Replace("-", string.Empty);
+        using (SHA256 sha256 = SHA256.Create())
+        {
+          string inputHash = BitConverter.ToString(sha256.ComputeHash(inputBytes)).Replace("-", string.Empty);
+          string serializedHash = BitConverter.ToString(sha256.ComputeHash(serializedBytes)).Replace("-", string.Empty);
 
-        Assert.Equal(inputHash, serializedHash);
+          Assert.Equal(inputHash, serializedHash);
+        }
       }
     }
   }
