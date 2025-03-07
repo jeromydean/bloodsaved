@@ -295,13 +295,14 @@
 					</ScrollViewer>
 				</TabItem>
 			</TabControl>
-			<TextBlock
+			<SelectableTextBlock
 				Grid.Row="1"
 				Padding="0,0,0,25"
 				HorizontalAlignment="Center"
 				VerticalAlignment="Center"
 				Text="{Binding LoadErrorText}"
 				FontSize="15"
+				TextWrapping="Wrap"
 				IsVisible="{Binding LoadErrorText, Converter={StaticResource StringIsNotNullOrEmptyToBooleanConverter}}" />
 		</Grid>
 	</DockPanel>

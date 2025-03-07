@@ -166,7 +166,7 @@ namespace BloodSaved.ViewModels
       }
       catch(Exception ex)
       {
-        LoadErrorText = $"There was an error loading the save.{Environment.NewLine}{ex}";
+        LoadErrorText = $"There was an error loading the save.  Verify you are loading a normal story save and not the system slot or classic game variants.{Environment.NewLine}{ex}";
       }
     }
 
