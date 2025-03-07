@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloodSaved.Parsing", "Blood
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloodSaved.Parsing.Tests", "BloodSaved.Parsing.Tests\BloodSaved.Parsing.Tests.csproj", "{7688BE20-BE6A-4781-A14C-884C6DC27BB3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloodSaved", "BloodSaved\BloodSaved.csproj", "{978F4DFF-6E58-46CF-863D-291AA53A7DC1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{7688BE20-BE6A-4781-A14C-884C6DC27BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7688BE20-BE6A-4781-A14C-884C6DC27BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7688BE20-BE6A-4781-A14C-884C6DC27BB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{978F4DFF-6E58-46CF-863D-291AA53A7DC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{978F4DFF-6E58-46CF-863D-291AA53A7DC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{978F4DFF-6E58-46CF-863D-291AA53A7DC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{978F4DFF-6E58-46CF-863D-291AA53A7DC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

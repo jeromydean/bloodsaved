@@ -1,0 +1,206 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:viewModels="using:BloodSaved.ViewModels"
+	xmlns:models="using:BloodSaved.Models"
+	xmlns:skControls="using:Avalonia.Controls.Skia"
+	xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+	xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+	mc:Ignorable="d"
+	d:DesignWidth="800"
+	d:DesignHeight="450"
+	x:Class="BloodSaved.Views.MainView"
+	x:DataType="viewModels:MainViewModel"
+	Icon="/Assets/icon.ico"
+	xmlns:svg="clr-namespace:Avalonia.Svg;assembly=Avalonia.Svg"
+	Title="BloodSaved">
+	<i:Interaction.Behaviors>
+		<ia:EventTriggerBehavior
+			EventName="Opened">
+			<ia:InvokeCommandAction
+				Command="{Binding OpenedCommand, Mode=OneTime}"/>
+		</ia:EventTriggerBehavior>
+	</i:Interaction.Behaviors>
+	<Design.DataContext>
+		<viewModels:MainViewModel />
+	</Design.DataContext>
+	<DockPanel>
+		<DockPanel.Background>
+			<ImageBrush
+				Stretch="None"
+				Source="/Assets/background.png" />
+		</DockPanel.Background>
+		<Menu
+			DockPanel.Dock="Top">
+			<MenuItem
+				Header="_File">
+				<MenuItem
+					Header="_Open"
+					Command="{Binding OpenCommand}" />
+				<MenuItem
+					Header="_Close"
+					Command="{Binding CloseCommand}" />
+				<MenuItem
+					Header="_Save"/>
+				<Separator/>
+				<MenuItem
+					Header="_Exit"
+					Command="{Binding ExitCommand}" />
+			</MenuItem>
+			<MenuItem
+				Header="_About"
+				Command="{Binding AboutCommand}" />
+		</Menu>
+		<TabControl
+			IsVisible="{Binding IsSaveSlotLoaded}"
+			Margin="5">
+			<TabItem
+				Header="Stats" />
+			<TabItem
+				Header="Inventory">
+				<DataGrid
+					CanUserReorderColumns="True"
+					CanUserResizeColumns="True"
+					CanUserSortColumns="True"
+					GridLinesVisibility="All"
+					BorderThickness="1"
+					BorderBrush="Gray"
+					ItemsSource="{Binding InventoryItems}">
+					<DataGrid.Columns>
+						<DataGridTextColumn
+							Header="Category"
+							Binding="{Binding Category}"
+							IsReadOnly="true"
+							Width="Auto" />
+						<DataGridTextColumn
+							Header="Name"
+							Binding="{Binding Name}"
+							IsReadOnly="true"
+							Width="*" />
+						<DataGridTemplateColumn
+							Header="Quantity"
+							Width="125">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate
+									DataType="models:InventoryItemModel">
+									<TextBlock
+										Text="{Binding Quantity}"
+										VerticalAlignment="Center"
+										HorizontalAlignment="Center" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+							<DataGridTemplateColumn.CellEditingTemplate>
+								<DataTemplate
+									DataType="models:InventoryItemModel">
+									<NumericUpDown
+										Value="{Binding Quantity}"
+										FormatString="N0"
+										Minimum="0"
+										Maximum="999"
+										HorizontalAlignment="Stretch"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellEditingTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
+				</DataGrid>
+			</TabItem>
+			<TabItem
+				Header="Shards">
+				<DataGrid
+					CanUserReorderColumns="True"
+					CanUserResizeColumns="True"
+					CanUserSortColumns="True"
+					GridLinesVisibility="All"
+					BorderThickness="1"
+					BorderBrush="Gray"
+					ItemsSource="{Binding Shards}">
+					<DataGrid.Columns>
+						<DataGridTextColumn
+							Header="Category"
+							Binding="{Binding Category}"
+							IsReadOnly="true"
+							Width="Auto" />
+						<DataGridTextColumn
+							Header="Name"
+							Binding="{Binding Name}"
+							IsReadOnly="true"
+							Width="*" />
+						<DataGridTemplateColumn
+							Header="Grade"
+							Width="125">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate
+									DataType="models:InventoryItemModel">
+									<TextBlock
+										Text="{Binding Quantity}"
+										VerticalAlignment="Center"
+										HorizontalAlignment="Center" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+							<DataGridTemplateColumn.CellEditingTemplate>
+								<DataTemplate
+									DataType="models:InventoryItemModel">
+									<NumericUpDown
+										Value="{Binding Quantity}"
+										FormatString="N0"
+										Minimum="0"
+										Maximum="999"
+										HorizontalAlignment="Stretch"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellEditingTemplate>
+						</DataGridTemplateColumn>
+
+						<DataGridTemplateColumn
+							Header="Rank"
+							Width="125">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate
+									DataType="models:InventoryItemModel">
+									<TextBlock
+										Text="{Binding Rank}"
+										VerticalAlignment="Center"
+										HorizontalAlignment="Center" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+							<DataGridTemplateColumn.CellEditingTemplate>
+								<DataTemplate DataType="models:InventoryItemModel">
+									<NumericUpDown
+										Value="{Binding Rank}"
+										FormatString="N0"
+										Minimum="0"
+										Maximum="999"
+										HorizontalAlignment="Stretch"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellEditingTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
+				</DataGrid>
+			</TabItem>
+			<TabItem
+				Header="Map">
+				<ScrollViewer
+					x:Name="mapScrollViewer"
+					HorizontalScrollBarVisibility="Auto"
+					VerticalScrollBarVisibility="Auto"
+					AllowAutoHide="True">
+					<LayoutTransformControl
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <LayoutTransformControl.LayoutTransform>
+              <ScaleTransform
+                ScaleX="{Binding MapScale}"
+                ScaleY="{Binding MapScale}" />
+            </LayoutTransformControl.LayoutTransform>
+							<skControls:SKPictureControl
+								HorizontalAlignment="Center"
+								Picture="{Binding Map}"
+								Width="{Binding ElementName=mapScrollViewer, Path=Viewport.Width}"
+								PointerWheelChanged="MapPointerWheelChanged"/>
+						</LayoutTransformControl>
+				</ScrollViewer>
+			</TabItem>
+		</TabControl>
+	</DockPanel>
+</Window>
