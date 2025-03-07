@@ -11,6 +11,12 @@ namespace BloodSaved.Models
     private readonly string _category;
     private int? _quantity;
     private int? _rank;
+    private bool _isDirty;
+
+    public ItemIds ItemId
+    {
+      get => _itemId;
+    }
 
     public string Name
     {
@@ -25,13 +31,30 @@ namespace BloodSaved.Models
     public int? Quantity
     {
       get => _quantity;
-      set => SetProperty(ref _quantity, value);
+      set
+      {
+        if (SetProperty(ref _quantity, value))
+        {
+          _isDirty = true;
+        }
+      } 
     }
 
     public int? Rank
     {
       get => _rank;
-      set => SetProperty(ref _rank, value);
+      set
+      {
+        if (SetProperty(ref _rank, value))
+        {
+          _isDirty = true;
+        }
+      }
+    }
+
+    public bool IsDirty
+    {
+      get => _isDirty;
     }
 
     public InventoryItemModel(ItemIds itemId,
@@ -40,7 +63,7 @@ namespace BloodSaved.Models
     {
       _itemId = itemId;
       _name = itemId.GetDescription();
-      _category = itemId.GetCategory().ToString();
+      _category = itemId.GetCategory().GetDescription();
       _quantity = quantity;
       _rank = rank;
     }

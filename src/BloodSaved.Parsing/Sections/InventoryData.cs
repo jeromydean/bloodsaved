@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Reflection.PortableExecutable;
 using BloodSaved.Parsing.Enums;
 using BloodSaved.Parsing.Extensions;
 using BloodSaved.Parsing.Models;
@@ -21,10 +20,10 @@ namespace BloodSaved.Parsing.Sections
       Items = new List<InventoryItem>();
     }
 
-    public static InventoryData Deserialize(byte[] serialized)
+    public static InventoryData Deserialize(SaveSection saveSection)
     {
       InventoryData inventoryData = new InventoryData();
-      using (SaveReader saveReader = new SaveReader(serialized))
+      using (SaveReader saveReader = new SaveReader(saveSection.Data))
       {
         saveReader.ReadArrayProperty(SaveConstants.InventoryData, out string inventoryDataArrayType, out int inventoryDataLength, out int inventoryDataCount);
         long inventoryDataCountOffset = saveReader.CurrentPosition - 4;

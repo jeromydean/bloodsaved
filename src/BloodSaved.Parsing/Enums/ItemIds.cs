@@ -1179,103 +1179,103 @@ namespace BloodSaved.Parsing.Enums
     YorktonMeat,
     [Description("Beast Beef"), ItemCategory(ItemCategories.Materials)]
     ZaganMeat,
-    [Description("Steel Equipment/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Steel Equipment/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ArmsRecipe003,
-    [Description("Obsidian Equipment/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Obsidian Equipment/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ArmsRecipe004,
-    [Description("Damascus Equipment/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Damascus Equipment/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ArmsRecipe005,
-    [Description("Gold Equipment/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Gold Equipment/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ArmsRecipe007,
-    [Description("Crimsonite Equipment/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Crimsonite Equipment/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ArmsRecipe009,
-    [Description("Cashmere Equipment/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Cashmere Equipment/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ArmsRecipe012,
-    [Description("Fine Equipment/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Fine Equipment/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ArmsRecipe018,
-    [Description("Very Fine Equipment/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Very Fine Equipment/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ArmsRecipe019,
-    [Description("Legendary Equipment/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Legendary Equipment/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ArmsRecipe020,
-    [Description("Elemental Ammunition/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Elemental Ammunition/R"), ItemCategory(ItemCategories.KeysRecipes)]
     BalletRecipe001,
-    [Description("Special Ammunition/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Special Ammunition/R"), ItemCategory(ItemCategories.KeysRecipes)]
     BalletRecipe002,
-    [Description("Potent Ammunition/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Potent Ammunition/R"), ItemCategory(ItemCategories.KeysRecipes)]
     BalletRecipe003,
-    [Description("Ultimate Ammunition/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Ultimate Ammunition/R"), ItemCategory(ItemCategories.KeysRecipes)]
     BalletRecipe004,
-    [Description("Passplate"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Passplate"), ItemCategory(ItemCategories.KeysRecipes)]
     Certificationboard,
-    [Description("Discount Card"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Discount Card"), ItemCategory(ItemCategories.KeysRecipes)]
     DiscountCard,
-    [Description("Ramen/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Ramen/R"), ItemCategory(ItemCategories.KeysRecipes)]
     DishRecipe002,
-    [Description("Curry Dish/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Curry Dish/R"), ItemCategory(ItemCategories.KeysRecipes)]
     DishRecipe003,
-    [Description("Pasta Dish/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Pasta Dish/R"), ItemCategory(ItemCategories.KeysRecipes)]
     DishRecipe004,
-    [Description("Meat Dish/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Meat Dish/R"), ItemCategory(ItemCategories.KeysRecipes)]
     DishRecipe005,
-    [Description("Fish Dish/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Fish Dish/R"), ItemCategory(ItemCategories.KeysRecipes)]
     DishRecipe006,
-    [Description("Sweets/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Sweets/R"), ItemCategory(ItemCategories.KeysRecipes)]
     DishRecipe007,
-    [Description("Cookies/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Cookies/R"), ItemCategory(ItemCategories.KeysRecipes)]
     DishRecipe008,
-    [Description("Cake/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Cake/R"), ItemCategory(ItemCategories.KeysRecipes)]
     DishRecipe010,
-    [Description("Drink/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Drink/R"), ItemCategory(ItemCategories.KeysRecipes)]
     DishRecipe011,
-    [Description("Ultimate Dish/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Ultimate Dish/R"), ItemCategory(ItemCategories.KeysRecipes)]
     DishRecipe014,
-    [Description("Supreme Dish/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Supreme Dish/R"), ItemCategory(ItemCategories.KeysRecipes)]
     DishRecipe015,
-    [Description("Identification"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Identification"), ItemCategory(ItemCategories.KeysRecipes)]
     IDphoto,
-    [Description("Fine Healing Item/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Fine Healing Item/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ItemRecipe001,
-    [Description("Ultimate Healing Item/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Ultimate Healing Item/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ItemRecipe002,
-    [Description("Faerie Healing Item/R"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Faerie Healing Item/R"), ItemCategory(ItemCategories.KeysRecipes)]
     ItemRecipe003,
-    [Description("Carpenter's Key"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Carpenter's Key"), ItemCategory(ItemCategories.KeysRecipes)]
     Keyofbacker1,
-    [Description("Warhorse's Key"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Warhorse's Key"), ItemCategory(ItemCategories.KeysRecipes)]
     Keyofbacker2,
-    [Description("Millionaire's Key"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Millionaire's Key"), ItemCategory(ItemCategories.KeysRecipes)]
     Keyofbacker3,
-    [Description("Celeste's Key"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Celeste's Key"), ItemCategory(ItemCategories.KeysRecipes)]
     Keyofbacker4,
-    [Description("Gebel Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Gebel Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal009,
-    [Description("Silver Bromide"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Silver Bromide"), ItemCategory(ItemCategories.KeysRecipes)]
     SilverBromide,
-    [Description("Village Key"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Village Key"), ItemCategory(ItemCategories.KeysRecipes)]
     VillageKey,
-    [Description("Hair Apparent I"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent I"), ItemCategory(ItemCategories.KeysRecipes)]
     Worldfashionfirstissue,
-    [Description("Hair Apparent II"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent II"), ItemCategory(ItemCategories.KeysRecipes)]
     WorldfashionNo02,
-    [Description("Hair Apparent III"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent III"), ItemCategory(ItemCategories.KeysRecipes)]
     WorldfashionNo03,
-    [Description("Hair Apparent IV"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent IV"), ItemCategory(ItemCategories.KeysRecipes)]
     WorldfashionNo04,
-    [Description("Hair Apparent V"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent V"), ItemCategory(ItemCategories.KeysRecipes)]
     WorldfashionNo05,
-    [Description("Hair Apparent VI"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent VI"), ItemCategory(ItemCategories.KeysRecipes)]
     WorldfashionNo06,
-    [Description("Hair Apparent VII"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent VII"), ItemCategory(ItemCategories.KeysRecipes)]
     WorldfashionNo07,
-    [Description("Hair Apparent VIII"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent VIII"), ItemCategory(ItemCategories.KeysRecipes)]
     WorldfashionNo08,
-    [Description("Hair Apparent IX"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent IX"), ItemCategory(ItemCategories.KeysRecipes)]
     WorldfashionNo09,
-    [Description("Hair Apparent X"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent X"), ItemCategory(ItemCategories.KeysRecipes)]
     WorldfashionNo10,
-    [Description("Hair Apparent XI"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent XI"), ItemCategory(ItemCategories.KeysRecipes)]
     WorldfashionNo11,
-    [Description("Hair Apparent XII"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Hair Apparent XII"), ItemCategory(ItemCategories.KeysRecipes)]
     WorldfashionNo12,
     [Description("Tailwind Tome"), ItemCategory(ItemCategories.Books)]
     Abookofthegale,
@@ -1690,55 +1690,51 @@ namespace BloodSaved.Parsing.Enums
     BigMustache,
     [Description("The-Baz Mask"), ItemCategory(ItemCategories.Accessories), ItemId("The-BazMask")]
     TheBazMask,
-    [Description("Hey I'm Grump"), ItemCategory(ItemCategories.Accessories), ItemId("HeyI’mGrump")]
-    HeyImGrump,
-    [Description("I'm Not So Grump"), ItemCategory(ItemCategories.Accessories), ItemId("I’mNotSoGrump")]
-    ImNotSoGrump,
     [Description("A Kinda Funny Mask"), ItemCategory(ItemCategories.Accessories)]
     AKindaFunnyMask,
-    [Description("Galleon Map"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Galleon Map"), ItemCategory(ItemCategories.KeysRecipes)]
     ShipMap,
-    [Description("Vepar Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Vepar Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal001,
-    [Description("Zangetsu Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Zangetsu Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal002,
-    [Description("Craftwork Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Craftwork Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal003,
-    [Description("Andrealphus Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Andrealphus Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal004,
-    [Description("Glutton Train Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Glutton Train Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal005,
-    [Description("Valac Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Valac Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal006,
-    [Description("Bathin Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Bathin Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal007,
-    [Description("Abyssal Guardian Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Abyssal Guardian Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal008,
-    [Description("Bloodless Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Bloodless Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal010,
-    [Description("Alfred Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Alfred Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal011,
-    [Description("Orobas Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Orobas Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal012,
-    [Description("True Zangetsu Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("True Zangetsu Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal013,
-    [Description("Valefar Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Valefar Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal014,
-    [Description("Gremory Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Gremory Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal015,
-    [Description("Dominique Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Dominique Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal016,
-    [Description("Bael Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Bael Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal017,
-    [Description("O.D. Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("O.D. Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal018,
-    [Description("Unused"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Unused"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal019,
-    [Description("IGA Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("IGA Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal020,
-    [Description("8-bit Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("8-bit Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal021,
-    [Description("Doppelganger Medal"), ItemCategory(ItemCategories.KeysRecips)]
+    [Description("Doppelganger Medal"), ItemCategory(ItemCategories.KeysRecipes)]
     Medal023,
     [Description("Summon Insect"), ItemCategory(ItemCategories.ConjureShards)]
     SummonBugs,

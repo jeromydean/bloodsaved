@@ -8,6 +8,7 @@
 	xmlns:skControls="using:Avalonia.Controls.Skia"
 	xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
 	xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+	xmlns:s="clr-namespace:System;assembly=mscorlib"
 	mc:Ignorable="d"
 	d:DesignWidth="800"
 	d:DesignHeight="450"
@@ -41,26 +42,30 @@
 					Command="{Binding OpenCommand}" />
 				<MenuItem
 					Header="_Close"
+					IsEnabled="{Binding IsSaveSlotLoaded}"
 					Command="{Binding CloseCommand}" />
 				<MenuItem
-					Header="_Save"/>
+					Header="_Save"
+					IsEnabled="{Binding IsSaveSlotLoaded}"
+					Command="{Binding SaveCommand}" />
 				<Separator/>
 				<MenuItem
 					Header="_Exit"
 					Command="{Binding ExitCommand}" />
 			</MenuItem>
-			<MenuItem
+			<!--<MenuItem
 				Header="_About"
-				Command="{Binding AboutCommand}" />
+				Command="{Binding AboutCommand}" />-->
 		</Menu>
 		<TabControl
 			IsVisible="{Binding IsSaveSlotLoaded}"
 			Margin="5">
-			<TabItem
-				Header="Stats" />
+			<!--<TabItem
+				Header="Stats" />-->
 			<TabItem
 				Header="Inventory">
 				<DataGrid
+					x:Name="ItemsDataGrid"
 					CanUserReorderColumns="True"
 					CanUserResizeColumns="True"
 					CanUserSortColumns="True"
@@ -68,6 +73,36 @@
 					BorderThickness="1"
 					BorderBrush="Gray"
 					ItemsSource="{Binding InventoryItems}">
+					<i:Interaction.Behaviors>
+						<ia:EventTriggerBehavior
+							EventName="SelectionChanged">
+							<ia:InvokeCommandAction
+								Command="{Binding ItemSelectionChangedCommand}"
+								CommandParameter="{Binding ElementName=ItemsDataGrid, Path=SelectedItems }" />
+						</ia:EventTriggerBehavior>
+					</i:Interaction.Behaviors>
+					<DataGrid.ContextMenu>
+						<ContextMenu>
+							<MenuItem
+								Header="Set Quantity"
+								IsEnabled="{Binding ItemsSelected}">
+								<MenuItem
+									Header="9"
+									Command="{Binding SetSelectedItemQuantityCommand}">
+									<MenuItem.CommandParameter>
+										<s:Int32>9</s:Int32>
+									</MenuItem.CommandParameter>
+								</MenuItem>
+								<MenuItem
+									Header="999"
+									Command="{Binding SetSelectedItemQuantityCommand}">
+									<MenuItem.CommandParameter>
+										<s:Int32>999</s:Int32>
+									</MenuItem.CommandParameter>
+								</MenuItem>
+							</MenuItem>
+						</ContextMenu>
+					</DataGrid.ContextMenu>
 					<DataGrid.Columns>
 						<DataGridTextColumn
 							Header="Category"
@@ -109,6 +144,7 @@
 			<TabItem
 				Header="Shards">
 				<DataGrid
+					x:Name="ShardsDataGrid"
 					CanUserReorderColumns="True"
 					CanUserResizeColumns="True"
 					CanUserSortColumns="True"
@@ -116,6 +152,54 @@
 					BorderThickness="1"
 					BorderBrush="Gray"
 					ItemsSource="{Binding Shards}">
+					<i:Interaction.Behaviors>
+						<ia:EventTriggerBehavior
+							EventName="SelectionChanged">
+							<ia:InvokeCommandAction
+								Command="{Binding ShardSelectionChangedCommand}"
+								CommandParameter="{Binding ElementName=ShardsDataGrid, Path=SelectedItems }" />
+						</ia:EventTriggerBehavior>
+					</i:Interaction.Behaviors>
+					<DataGrid.ContextMenu>
+						<ContextMenu>
+							<MenuItem
+								Header="Set Grade"
+								IsEnabled="{Binding ShardsSelected}">
+								<MenuItem
+									Header="9"
+									Command="{Binding SetSelectedShardGradeCommand}">
+									<MenuItem.CommandParameter>
+										<s:Int32>9</s:Int32>
+									</MenuItem.CommandParameter>
+								</MenuItem>
+								<MenuItem
+									Header="999"
+									Command="{Binding SetSelectedShardGradeCommand}">
+									<MenuItem.CommandParameter>
+										<s:Int32>999</s:Int32>
+									</MenuItem.CommandParameter>
+								</MenuItem>
+							</MenuItem>
+							<MenuItem
+								Header="Set Rank"
+								IsEnabled="{Binding ShardsSelected}">
+								<MenuItem
+									Header="9"
+									Command="{Binding SetSelectedShardRankCommand}">
+									<MenuItem.CommandParameter>
+										<s:Int32>9</s:Int32>
+									</MenuItem.CommandParameter>
+								</MenuItem>
+								<MenuItem
+									Header="999"
+									Command="{Binding SetSelectedShardRankCommand}">
+									<MenuItem.CommandParameter>
+										<s:Int32>999</s:Int32>
+									</MenuItem.CommandParameter>
+								</MenuItem>
+							</MenuItem>
+						</ContextMenu>
+					</DataGrid.ContextMenu>
 					<DataGrid.Columns>
 						<DataGridTextColumn
 							Header="Category"
@@ -151,7 +235,6 @@
 								</DataTemplate>
 							</DataGridTemplateColumn.CellEditingTemplate>
 						</DataGridTemplateColumn>
-
 						<DataGridTemplateColumn
 							Header="Rank"
 							Width="125">

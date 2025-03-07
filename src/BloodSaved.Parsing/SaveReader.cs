@@ -134,6 +134,51 @@ namespace BloodSaved.Parsing
       VerifyNullPadBytes(1);
     }
 
+    public DateTime ReadDateTimeStructProperty(string propertyName)
+    {
+      ReadStructProperty(propertyName, out _, out _, out _);
+      int year = ReadIntProperty("Year");
+      int month = ReadIntProperty("Month");
+      int day = ReadIntProperty("Day");
+      int hour = ReadIntProperty("Hour");
+      int minute = ReadIntProperty("Minute");
+      int second = ReadIntProperty("Second");
+      VerifyAndReadLengthPrefixedString(SaveConstants.None);
+      return DateTime.SpecifyKind(new DateTime(year, month, day, hour, minute, second), DateTimeKind.Local);
+    }
+
+    public string ReadStrProperty(string propertyName)
+    {
+      string actualPropertyName = ReadLengthPrefixedString();
+      if (!string.Equals(propertyName, actualPropertyName))
+      {
+        throw new FormatException();
+      }
+
+      VerifyAndReadLengthPrefixedString("StrProperty");
+
+      int strPropertyLength = ReadInt32();
+      VerifyNullPadBytes(5);
+      int stringLength = ReadInt32();
+      return Encoding.UTF8.GetString(ReadBytes(stringLength)).TrimEnd('\0');
+    }
+
+    public void ReadEnumProperty(string propertyName, out string enumType, out string enumValue)
+    {
+      string actualPropertyName = ReadLengthPrefixedString();
+      if (!string.Equals(propertyName, actualPropertyName))
+      {
+        throw new FormatException();
+      }
+
+      VerifyAndReadLengthPrefixedString("EnumProperty");
+      int length = ReadInt32();
+      VerifyNullPadBytes(4);
+      enumType = ReadLengthPrefixedString();
+      VerifyNullPadBytes(1);
+      enumValue = ReadLengthPrefixedString();
+    }
+
     public int ReadIntProperty(string propertyName)
     {
       string actualPropertyName = ReadLengthPrefixedString();
@@ -196,6 +241,13 @@ namespace BloodSaved.Parsing
       arrayPropertyType = ReadLengthPrefixedString();
       VerifyNullPadBytes(1);
       count = ReadInt32();
+    }
+
+    public byte[] ReadByteProperty(string propertyName)
+    {
+      VerifyAndReadLengthPrefixedString(propertyName);
+      VerifyAndReadLengthPrefixedString("ByteProperty");
+      return ReadBytes(8);
     }
 
     public float ReadFloatProperty(string propertyName)

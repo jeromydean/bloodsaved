@@ -1,4 +1,6 @@
-﻿using System.Security.Cryptography;
+﻿using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 using BloodSaved.Parsing.Enums;
 using BloodSaved.Parsing.Extensions;
 using BloodSaved.Parsing.Models;
@@ -22,13 +24,37 @@ namespace BloodSaved.Parsing
       private set;
     }
 
+    public StatusData StatusData
+    {
+      get;
+      private set;
+    }
+
+    public Info Info
+    {
+      get;
+      private set;
+    }
+
     public InventoryData Inventory
     {
       get;
       private set;
     }
 
-    public ShardPossession Shards
+    public ShardPossession ShardPossession
+    {
+      get;
+      private set;
+    }
+
+    public m_RoomInfo m_RoomInfo
+    {
+      get;
+      private set;
+    }
+
+    public m_Traverse m_Traverse
     {
       get;
       private set;
@@ -37,6 +63,57 @@ namespace BloodSaved.Parsing
     private SaveSlot()
     {
       _saveSections = new List<SaveSection>();
+    }
+
+    public string GenerateSvgMap()
+    {
+      int dataWidth = 200;
+      int dataHeight = 100;
+      int roomHeight = 10;
+      int roomWidth = 20;
+
+      int minXRoom = 2;
+      int maxXRoom = 119;
+      int minYRoom = 22;
+      int maxYRoom = 70;
+
+      int mapWidth = minXRoom + maxXRoom + 1;
+
+      StringBuilder svgBuilder = new StringBuilder();
+      svgBuilder.AppendLine($@"<svg xmlns=""http://www.w3.org/2000/svg"" width=""{mapWidth * roomWidth}"" height=""{dataHeight * roomHeight}"" style=""background-color: #000000;"">");
+      svgBuilder.AppendLine(@"  <defs>
+        <linearGradient id=""completed"" x1=""0%"" x2=""0%"" y1=""0%"" y2=""100%"">
+          <stop offset=""0%"" stop-color=""green"" />
+          <stop offset=""100%"" stop-color=""white"" />
+        </linearGradient>
+        <linearGradient id=""missing"" x1=""0%"" x2=""0%"" y1=""0%"" y2=""100%"">
+          <stop offset=""0%"" stop-color=""red"" />
+          <stop offset=""100%"" stop-color=""white"" />
+        </linearGradient>
+      </defs>");
+
+      int traversedRoomCount = 0;
+      for (int i = 0; i < SaveConstants.CompleteMap.Length; i++)
+      {
+        int bottomLeftOriginY = i / dataWidth;
+        int topLeftOriginY = (dataHeight - bottomLeftOriginY) - 1;
+        int x = i % dataWidth;
+
+        if (SaveConstants.CompleteMap[i] != 0)
+        {
+          bool isTraversed = m_Traverse.TraverseData[i] != 0;
+          svgBuilder.AppendLine($@"<rect width=""{roomWidth}"" height=""{roomHeight}"" x=""{x * roomWidth}"" y=""{topLeftOriginY * roomHeight}"" fill=""url(#{(isTraversed ? "completed" : "missing")})"" style=""stroke-width:1;stroke:{(isTraversed ? "#ffffff" : "#ff0000")};"" />");
+
+          if (isTraversed)
+          {
+            traversedRoomCount++;
+          }
+        }
+      }
+      svgBuilder.AppendLine($@"<text x=""{roomWidth * 10}"" y=""{roomHeight * minYRoom}"" fill=""#ffffff"" font-size=""30"">{traversedRoomCount}/{SaveConstants.TotalRooms} - {(traversedRoomCount/(double)SaveConstants.TotalRooms).ToString("P2")}</text>");
+      svgBuilder.AppendLine(@"</svg>");
+      string mapSvgData = svgBuilder.ToString();
+      return mapSvgData;
     }
 
     public static byte[] Crypt(byte[] data)
@@ -129,6 +206,7 @@ namespace BloodSaved.Parsing
           saveSlot._saveSections.Add(new SaveSection
           {
             Name = name,
+            Type = type,
             StartOffset = saveReader.Checkpoint,
             EndOffset = saveReader.CurrentPosition,
             Data = saveReader.CloneFromCheckpoint()
@@ -144,16 +222,33 @@ namespace BloodSaved.Parsing
         }
       }
 
+      saveSlot.Info = Info.Deserialize(saveSlot._saveSections
+        .Single(s => s.Name == SaveConstants.Info));
+
       if (saveSlot._saveSections.Any(s => s.Name == SaveConstants.CompletedTutorials))
       {
         saveSlot.CompletedTutorials = CompletedTutorials.Deserialize(saveSlot._saveSections
-        .Single(s => s.Name == SaveConstants.CompletedTutorials).Data);
+        .Single(s => s.Name == SaveConstants.CompletedTutorials));
       }
-      
+
+      if (saveSlot._saveSections.Any(s => s.Name == "m_RoomInfo"))
+      {
+        saveSlot.m_RoomInfo = m_RoomInfo.Deserialize(saveSlot._saveSections
+        .Single(s => s.Name == "m_RoomInfo"));
+      }
+
+      //map data
+      saveSlot.m_Traverse = m_Traverse.Deserialize(saveSlot._saveSections
+        .Single(s => s.Name == "m_Traverse"));
+
+      //total experience, etc.
+      saveSlot.StatusData = StatusData.Deserialize(saveSlot._saveSections
+        .Single(s => s.Name == SaveConstants.StatusData));
+
       saveSlot.Inventory = InventoryData.Deserialize(saveSlot._saveSections
-        .Single(s => s.Name == SaveConstants.InventoryData).Data);
-      saveSlot.Shards= ShardPossession.Deserialize(saveSlot._saveSections
-        .Single(s => s.Name == SaveConstants.ShardPossession).Data);
+        .Single(s => s.Name == SaveConstants.InventoryData));
+      saveSlot.ShardPossession= ShardPossession.Deserialize(saveSlot._saveSections
+        .Single(s => s.Name == SaveConstants.ShardPossession));
 
       return saveSlot;
     }
@@ -184,7 +279,7 @@ namespace BloodSaved.Parsing
               writer.Write(Inventory.Serialize());
               break;
             case SaveConstants.ShardPossession:
-              writer.Write(Shards.Serialize());
+              writer.Write(ShardPossession.Serialize());
               break;
             default:
               writer.Write(section.Data);
@@ -269,7 +364,7 @@ namespace BloodSaved.Parsing
 
           if (item is SkillShard skillShard)
           {
-            Shards.Skills.Add(new SkillShard
+            ShardPossession.Skills.Add(new SkillShard
             {
               ItemId = skillShard.ItemId,
               IsOn = skillShard.IsOn,
@@ -282,7 +377,7 @@ namespace BloodSaved.Parsing
           }
           else if (item is Shard shard)
           {
-            Shards.Shards.Add(new Shard
+            ShardPossession.Shards.Add(new Shard
             {
               ItemId = shard.ItemId,
               //Equipped = shard.Equipped,
@@ -303,7 +398,7 @@ namespace BloodSaved.Parsing
 
           if (item is SkillShard skillShard)
           {
-            SkillShard existingShard = Shards.Skills.Single(s => s.ItemId == item.ItemId);
+            SkillShard existingShard = ShardPossession.Skills.Single(s => s.ItemId == item.ItemId);
             existingShard.IsOn = skillShard.IsOn;
             //existingShard.Equipped = skillShard.Equipped;
             existingShard.Quantity = skillShard.Quantity;
@@ -313,7 +408,7 @@ namespace BloodSaved.Parsing
           }
           else if (item is Shard shard)
           {
-            Shard existingShard = Shards.Shards.Single(s => s.ItemId == item.ItemId);
+            Shard existingShard = ShardPossession.Shards.Single(s => s.ItemId == item.ItemId);
             existingShard.Quantity = shard.Quantity;
             existingShard.GradeValue = shard.GradeValue;
             //existingShard.Equipped = shard.Equipped;

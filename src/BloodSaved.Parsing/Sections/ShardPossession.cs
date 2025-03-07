@@ -6,8 +6,12 @@ namespace BloodSaved.Parsing.Sections
 {
   public class ShardPossession : ISerializableSection<ShardPossession>
   {
+    private bool _shardIsUpperCase;
+
     public List<Shard> Shards { get; set; }
+
     public List<SkillShard> Skills { get; set; }
+
     public List<ShardAttribute> ShardAttributes { get; set; }
 
     public ShardPossession()
@@ -17,10 +21,10 @@ namespace BloodSaved.Parsing.Sections
       ShardAttributes = new List<ShardAttribute>();
     }
 
-    public static ShardPossession Deserialize(byte[] serialized)
+    public static ShardPossession Deserialize(SaveSection saveSection)
     {
       ShardPossession shardPossession = new ShardPossession();
-      using (SaveReader saveReader = new SaveReader(serialized))
+      using (SaveReader saveReader = new SaveReader(saveSection.Data))
       {
         saveReader.ReadArrayProperty(SaveConstants.ShardPossession, out string shardPossessionArrayType, out int shardPossessionLength, out int shardPossessionCount);
         long shardPossessionCountOffset = saveReader.CurrentPosition - 4;
@@ -100,7 +104,18 @@ namespace BloodSaved.Parsing.Sections
               }
 
               bool isOn = saveReader.ReadBoolProperty(SaveConstants.IsOn);
-              saveReader.ReadNameProperty(SaveConstants.shard);
+
+              //can be lowercase "shard" or "Shard"
+              string shardString = saveReader.PeekLengthPrefixedString();
+              if (string.Equals(shardString, SaveConstants.shard))
+              {
+                saveReader.ReadNameProperty(SaveConstants.shard);
+              }
+              else
+              {
+                saveReader.ReadNameProperty("Shard");
+                shardPossession._shardIsUpperCase = true;
+              }
 
               saveReader.ReadStructProperty(SaveConstants.PossessionData, out _, out _, out _);
 
@@ -242,7 +257,7 @@ namespace BloodSaved.Parsing.Sections
             saveWriter.Write(0);
           }
         }
-        
+
         //skill shards
         {
           List<SkillShard> skillShards = Skills.Where(s => s.ItemId.GetCategory() == ItemCategories.SkillShards)
@@ -259,7 +274,16 @@ namespace BloodSaved.Parsing.Sections
 
               saveWriter.WriteItemId(skillShard.ItemId);
               saveWriter.WriteBoolProperty(SaveConstants.IsOn, skillShard.IsOn);
-              saveWriter.WriteNameProperty(SaveConstants.shard, skillShard.ItemId);
+
+              if (!_shardIsUpperCase)
+              {
+                saveWriter.WriteNameProperty(SaveConstants.shard, skillShard.ItemId);
+              }
+              else
+              {
+                saveWriter.WriteNameProperty("Shard", skillShard.ItemId);
+              }
+
               saveWriter.WriteStructProperty(SaveConstants.PossessionData, SaveConstants.PBShardPossessionData,
                 Guid.Empty, out long possessionRawOffset);
 

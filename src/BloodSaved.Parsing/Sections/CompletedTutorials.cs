@@ -1,4 +1,6 @@
-﻿namespace BloodSaved.Parsing.Sections
+﻿using BloodSaved.Parsing.Models;
+
+namespace BloodSaved.Parsing.Sections
 {
   public class CompletedTutorials : ISerializableSection<CompletedTutorials>
   {
@@ -8,10 +10,10 @@
       Tutorials = new List<string>();
     }
 
-    public static CompletedTutorials Deserialize(byte[] serialized)
+    public static CompletedTutorials Deserialize(SaveSection saveSection)
     {
       CompletedTutorials completedTutorials = new CompletedTutorials();
-      using (SaveReader saveReader = new SaveReader(serialized))
+      using (SaveReader saveReader = new SaveReader(saveSection.Data))
       {
         saveReader.ReadArrayProperty(SaveConstants.CompletedTutorials, out _, out int completedTutorialsLength, out int completedTutorialsCount);
         long completedTutorialsCountOffset = saveReader.CurrentPosition - 4;
@@ -23,7 +25,7 @@
 
         if (!saveReader.EndOfStream)
         {
-          throw new InvalidDataException($"Expected end of CompletedTutorials section.");
+          throw new InvalidDataException($"Expected end of 'CompletedTutorials' section.");
         }
 
         int completedTutorialsActualLength = (int)(saveReader.CurrentPosition - completedTutorialsCountOffset);
