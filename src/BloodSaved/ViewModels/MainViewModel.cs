@@ -47,6 +47,16 @@ namespace BloodSaved.ViewModels
     [ObservableProperty]
     private bool _isSaveSlotLoaded;
 
+    [ObservableProperty]
+    private int _totalExperience;
+
+    [ObservableProperty]
+    private int _totalCoins;
+
+    [ObservableProperty]
+    private EPBGameLevel _ePBGameLevel;
+    
+
     private List<InventoryItemModel>? _selectedShards = null;
 
     [ObservableProperty]
@@ -71,6 +81,7 @@ namespace BloodSaved.ViewModels
 
     public ObservableCollection<InventoryItemModel> InventoryItems { get; private set; }
     public ObservableCollection<InventoryItemModel> Shards { get; private set; }
+    public ObservableCollection<EPBGameLevel> EPBGameLevels { get; private set; }
 
     public MainViewModel(IFilePickerService filePickerService,
       IWindowService windowService)
@@ -103,6 +114,7 @@ namespace BloodSaved.ViewModels
 
       InventoryItems = new ObservableCollection<InventoryItemModel>();
       Shards = new ObservableCollection<InventoryItemModel>();
+      EPBGameLevels = new ObservableCollection<EPBGameLevel>(Enum.GetValues<EPBGameLevel>());
     }
 
     private void SelectedItemsChanged(IList selectedItems)
@@ -129,6 +141,10 @@ namespace BloodSaved.ViewModels
         IsSaveSlotLoaded = false;
         LoadErrorText = null;
         _saveSlot = SaveSlot.Load(path);
+
+        TotalCoins = _saveSlot.Info.TotalCoins;
+        TotalExperience = _saveSlot.StatusData.TotalExperience;
+        EPBGameLevel = _saveSlot.Info.EPBGameLevel;
 
         InventoryItems.Clear();
         foreach (ItemIds itemId in Enum.GetValues<ItemIds>().Where(i => i.GetCategory() <= ItemCategories.Books))
@@ -185,6 +201,10 @@ namespace BloodSaved.ViewModels
 
     private void SaveSaveSlot()
     {
+      _saveSlot.Info.TotalCoins = TotalCoins;
+      _saveSlot.StatusData.TotalExperience = TotalExperience;
+      _saveSlot.Info.EPBGameLevel = EPBGameLevel;
+
       _saveSlot.AddOrUpdateInventory(InventoryItems.Where(i => i.IsDirty).Select(im => new InventoryItem
       {
         ItemId = im.ItemId,

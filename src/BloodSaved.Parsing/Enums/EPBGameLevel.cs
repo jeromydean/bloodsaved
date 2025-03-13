@@ -1,12 +1,14 @@
-﻿namespace BloodSaved.Parsing.Enums
+﻿using System.ComponentModel;
+
+namespace BloodSaved.Parsing.Enums
 {
   public enum EPBGameLevel
   {
-    //EPBGameLevel::Normal
+    [Description("EPBGameLevel::Normal")]
     Normal,
-    //EPBGameLevel::Hard
+    [Description("EPBGameLevel::Hard")]
     Hard,
-    //EPBGameLevel::Nightmare
+    [Description("EPBGameLevel::Nightmare")]
     Nightmare
   }
 }

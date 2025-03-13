@@ -247,6 +247,7 @@ namespace BloodSaved.Parsing
 
       saveSlot.Inventory = InventoryData.Deserialize(saveSlot._saveSections
         .Single(s => s.Name == SaveConstants.InventoryData));
+
       saveSlot.ShardPossession= ShardPossession.Deserialize(saveSlot._saveSections
         .Single(s => s.Name == SaveConstants.ShardPossession));
 
@@ -272,6 +273,12 @@ namespace BloodSaved.Parsing
         {
           switch (section.Name)
           {
+            case SaveConstants.Info:
+              writer.Write(Info.Serialize());
+              break;
+            case SaveConstants.StatusData:
+              writer.Write(StatusData.Serialize());
+              break;
             case SaveConstants.CompletedTutorials:
               writer.Write(CompletedTutorials.Serialize());
               break;

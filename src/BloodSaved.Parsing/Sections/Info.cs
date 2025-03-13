@@ -1,4 +1,5 @@
 ﻿using BloodSaved.Parsing.Enums;
+using BloodSaved.Parsing.Extensions;
 using BloodSaved.Parsing.Models;
 
 namespace BloodSaved.Parsing.Sections
@@ -15,11 +16,13 @@ namespace BloodSaved.Parsing.Sections
     //Info - name='Level', type='IntProperty'
     //Info - name='MapCompleteness', type='FloatProperty'
     //Info - name='GameLevel', type='ByteProperty'
-    //Info - name='EPBGameLevel', type='Info - name='TotalKills', type='IntProperty'
-    //Info - name='totalCoins', type='IntProperty'
+    //Info - name='EPBGameLevel', type='
+    //Info - name='TotalKills', type='IntProperty'
+    //Info - name='TotalCoins', type='IntProperty'
     //Info - name='TotalPlaySec', type='FloatProperty'
     //Info - name='GameModeType', type='ByteProperty'
-    //Info - name='EPBGameModeType', type='Info - name='TrueEndCount', type='IntProperty'
+    //Info - name='EPBGameModeType', type='
+    //Info -name='TrueEndCount', type='IntProperty'
     //Info - name='BadEndCount', type='IntProperty'
     //Info - name='CanInherite', type='BoolProperty'
     //Info - name='SavedToDisk', type='BoolProperty'
@@ -34,7 +37,7 @@ namespace BloodSaved.Parsing.Sections
     public int TotalCoins
     {
       get;
-      private set;
+      set;
     }
 
     public string SlotName
@@ -46,13 +49,13 @@ namespace BloodSaved.Parsing.Sections
     public EPBGameLevel EPBGameLevel
     {
       get;
-      private set;
+      set;
     }
 
     public EPBGameModeType EPBGameModeType
     {
       get;
-      private set;
+      set;
     }
 
     public Info()
@@ -89,56 +92,65 @@ namespace BloodSaved.Parsing.Sections
             saveReader.VerifyAndReadLengthPrefixedString("EPBGameLevel");
             saveReader.ReadByte();
             info.EPBGameLevel = Enum.Parse<EPBGameLevel>(saveReader.ReadLengthPrefixedString().Replace("EPBGameLevel::", string.Empty));
-            continue;
           }
           else if (string.Equals(name, "EPBGameModeType"))
           {
             saveReader.VerifyAndReadLengthPrefixedString("EPBGameModeType");
             saveReader.ReadByte();
             info.EPBGameModeType = Enum.Parse<EPBGameModeType>(saveReader.ReadLengthPrefixedString().Replace("EPBGameModeType::", string.Empty));
-            continue;
+          }
+          else
+          {
+            switch (type)
+            {
+              case "IntProperty" when string.Equals(name, "Version", StringComparison.OrdinalIgnoreCase):
+                info.Version = saveReader.ReadIntProperty(name);
+                break;
+              case "IntProperty" when string.Equals(name, "TotalCoins", StringComparison.OrdinalIgnoreCase):
+                info.TotalCoins = saveReader.ReadIntProperty(name);
+                break;
+              case "IntProperty":
+                saveReader.ReadIntProperty(name);
+                break;
+              case "StrProperty":
+                saveReader.ReadStrProperty(name);
+                break;
+              case "NameProperty":
+                saveReader.ReadNameProperty(name);
+                break;
+              case "FloatProperty":
+                saveReader.ReadFloatProperty(name);
+                break;
+              case "ByteProperty":
+                saveReader.ReadByteProperty(name);
+                break;
+              case "BoolProperty":
+                saveReader.ReadBoolProperty(name);
+                break;
+              case "EnumProperty":
+                saveReader.ReadEnumProperty(name, out string enumType, out string enumValue);
+                break;
+              case SaveConstants.ArrayProperty:
+                saveReader.ReadArrayProperty(name, out _, out int arrayPropertyLength, out _);
+                saveReader.Skip(arrayPropertyLength - 4);//the length includes 4 bytes for the count 
+                break;
+              case SaveConstants.StructProperty:
+                saveReader.ReadStructProperty(name, out _, out int structPropertyLength, out _);
+                saveReader.Skip(structPropertyLength);
+                break;
+              default:
+                throw new NotImplementedException();
+            }
           }
 
-          switch (type)
+          info._saveSections.Add(new SaveSection
           {
-            case "IntProperty" when string.Equals(name, "Version", StringComparison.OrdinalIgnoreCase):
-              info.Version = saveReader.ReadIntProperty(name);
-              break;
-            case "IntProperty" when string.Equals(name, "totalCoins", StringComparison.OrdinalIgnoreCase):
-              info.TotalCoins = saveReader.ReadIntProperty(name);
-              break;
-            case "IntProperty":
-              saveReader.ReadIntProperty(name);
-              break;
-            case "StrProperty":
-              saveReader.ReadStrProperty(name);
-              break;
-            case "NameProperty":
-              saveReader.ReadNameProperty(name);
-              break;
-            case "FloatProperty":
-              saveReader.ReadFloatProperty(name);
-              break;
-            case "ByteProperty":
-              saveReader.ReadByteProperty(name);
-              break;
-            case "BoolProperty":
-              saveReader.ReadBoolProperty(name);
-              break;
-            case "EnumProperty":
-              saveReader.ReadEnumProperty(name, out string enumType, out string enumValue);
-              break;
-            case SaveConstants.ArrayProperty:
-              saveReader.ReadArrayProperty(name, out _, out int arrayPropertyLength, out _);
-              saveReader.Skip(arrayPropertyLength - 4);//the length includes 4 bytes for the count 
-              break;
-            case SaveConstants.StructProperty:
-              saveReader.ReadStructProperty(name, out _, out int structPropertyLength, out _);
-              saveReader.Skip(structPropertyLength);
-              break;
-            default:
-              throw new NotImplementedException();
-          }
+            Name = name,
+            Type = type,
+            StartOffset = saveReader.Checkpoint,
+            EndOffset = saveReader.CurrentPosition,
+            Data = saveReader.CloneFromCheckpoint()
+          });
         }
 
         if (!saveReader.EndOfStream)
@@ -149,9 +161,52 @@ namespace BloodSaved.Parsing.Sections
 
       return info;
     }
+
     public byte[] Serialize()
     {
-      throw new NotImplementedException();
+      //new games won't have the property set so we need to add it
+      //let the writer write the data -- order doesn't seem to matter
+      if (TotalCoins != 0
+        && !_saveSections.Any(s => string.Equals(s.Name, "TotalCoins", StringComparison.OrdinalIgnoreCase)))
+      {
+        _saveSections.Add(new SaveSection
+        {
+          Name = "TotalCoins",
+          Type = SaveConstants.IntProperty
+        });
+      }
+
+      using (SaveWriter saveWriter = new SaveWriter())
+      {
+        saveWriter.WriteStructProperty("Info", "PBSaveGameDataInfo", Guid.Empty, out long infoLengthOffset);
+        saveWriter.SetCheckpoint();
+
+        foreach (SaveSection section in _saveSections)
+        {
+          if (string.Equals(section.Name, "TotalCoins"))
+          {
+            saveWriter.WriteIntProperty("TotalCoins", TotalCoins);
+          }
+          else if (string.Equals(section.Name, "EPBGameLevel"))
+          {
+            saveWriter.WriteLengthPrefixedString("EPBGameLevel");
+            saveWriter.Write((byte)0x00);
+            saveWriter.WriteLengthPrefixedString(EPBGameLevel.GetDescription());
+          }
+          else
+          {
+            saveWriter.Write(section.Data);
+          }
+        }
+
+        saveWriter.WriteLengthPrefixedString(SaveConstants.None);
+
+        int infoDataLength = (int)(saveWriter.CurrentPosition - saveWriter.Checkpoint);
+        saveWriter.SetPosition(infoLengthOffset);
+        saveWriter.Write(infoDataLength);
+
+        return saveWriter.ToArray();
+      }
     }
   }
 }

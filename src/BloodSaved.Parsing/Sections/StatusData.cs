@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text;
-using BloodSaved.Parsing.Models;
+﻿using BloodSaved.Parsing.Models;
 
 namespace BloodSaved.Parsing.Sections
 {
@@ -21,6 +19,12 @@ namespace BloodSaved.Parsing.Sections
     //StatusData - name='EquipSpecialAttributeBuff', type='ArrayProperty'
     //StatusData - name='EquipSpecialAttributeBuffMaxHP', type='FloatProperty'
     //StatusData - name='EquipSpecialAttributeBuffMaxMP', type='FloatProperty'
+
+    public int TotalExperience
+    {
+      get;
+      set;
+    }
 
     public StatusData()
     {
@@ -51,7 +55,11 @@ namespace BloodSaved.Parsing.Sections
           switch (type)
           {
             case "IntProperty":
-              saveReader.ReadIntProperty(name);
+              int intValue = saveReader.ReadIntProperty(name);
+              if (string.Equals(name, "TotalExperience", StringComparison.OrdinalIgnoreCase))
+              {
+                statusData.TotalExperience = intValue;
+              }
               break;
             case "StrProperty":
               saveReader.ReadStrProperty(name);
@@ -87,6 +95,7 @@ namespace BloodSaved.Parsing.Sections
           statusData._saveSections.Add(new SaveSection
           {
             Name = name,
+            Type = type,
             StartOffset = saveReader.Checkpoint,
             EndOffset = saveReader.CurrentPosition,
             Data = saveReader.CloneFromCheckpoint()
@@ -106,7 +115,33 @@ namespace BloodSaved.Parsing.Sections
 
     public byte[] Serialize()
     {
-      throw new NotImplementedException();
+      using (SaveWriter saveWriter = new SaveWriter())
+      {
+        saveWriter.WriteArrayProperty("StatusData", SaveConstants.ByteProperty, out long statusDataLengthOffset, out long statusDataCountOffset);
+
+        foreach(SaveSection section in _saveSections)
+        {
+          if (string.Equals(section.Name, "TotalExperience", StringComparison.OrdinalIgnoreCase))
+          {
+            saveWriter.WriteIntProperty("TotalExperience", TotalExperience);
+          }
+          else
+          {
+            saveWriter.Write(section.Data);
+          }
+        }
+
+        saveWriter.WriteLengthPrefixedString(SaveConstants.None);
+        saveWriter.Write(0);
+
+        int statusDataLength = (int)(saveWriter.CurrentPosition - statusDataCountOffset);
+        saveWriter.SetPosition(statusDataLengthOffset);
+        saveWriter.Write(statusDataLength);
+        saveWriter.SetPosition(statusDataCountOffset);
+        saveWriter.Write(statusDataLength - 4);
+
+        return saveWriter.ToArray();
+      }
     }
   }
 }

@@ -28,9 +28,9 @@
 				Command="{Binding OpenedCommand, Mode=OneTime}"/>
 		</ia:EventTriggerBehavior>
 	</i:Interaction.Behaviors>
-	<Design.DataContext>
+	<!--<Design.DataContext>
 		<viewModels:MainViewModel />
-	</Design.DataContext>
+	</Design.DataContext>-->
 	<DockPanel>
 		<DockPanel.Background>
 			<ImageBrush
@@ -70,8 +70,64 @@
 				Grid.Row="0"
 				IsVisible="{Binding IsSaveSlotLoaded}"
 				Margin="5">
-				<!--<TabItem
-				Header="Stats" />-->
+				<TabItem
+				Header="Stats">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="*" />
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						
+						<Label
+							Grid.Row="0"
+							Grid.Column="0"
+							VerticalContentAlignment="Center"
+							Content="Total Coins:" />
+						<NumericUpDown
+							Grid.Row="0"
+							Grid.Column="1"
+							Margin="5"
+							Value="{Binding TotalCoins}"
+							FormatString="N0"
+							Minimum="0"
+							Maximum="999999999"
+							HorizontalAlignment="Stretch"/>
+
+						<Label
+							Grid.Row="1"
+							Grid.Column="0"
+							VerticalContentAlignment="Center"
+							Content="Total Experience:" />
+						<NumericUpDown
+							Grid.Row="1"
+							Grid.Column="1"
+							Margin="5"
+							Value="{Binding TotalExperience}"
+							FormatString="N0"
+							Minimum="0"
+							Maximum="999999999"
+							HorizontalAlignment="Stretch"/>
+
+						<Label
+							Grid.Row="2"
+							Grid.Column="0"
+							VerticalContentAlignment="Center"
+							Content="Difficulty:" />
+						<ComboBox
+							Grid.Row="2"
+							Grid.Column="1"
+							Margin="5"
+							ItemsSource="{Binding EPBGameLevels}"
+							SelectedItem="{Binding EPBGameLevel}" />
+
+					</Grid>
+				</TabItem>
 				<TabItem
 					Header="Inventory">
 					<DataGrid
