@@ -1553,6 +1553,8 @@ namespace BloodSaved.Parsing.Enums
     FamiliaSilverKnight,
     [Description("Familiar: Dullahammer Head"), ItemCategory(ItemCategories.FamiliarShards)]
     SummonDurahanMaHead,
+    [Description("Familiar: Archer"), ItemCategory(ItemCategories.FamiliarShards)]
+    FamiliaArcher,
     [Description("Deep Sinker"), ItemCategory(ItemCategories.SkillShards)]
     Deepsinker,
     [Description("Double Jump"), ItemCategory(ItemCategories.SkillShards)]
