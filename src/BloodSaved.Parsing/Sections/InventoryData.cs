@@ -52,6 +52,7 @@ namespace BloodSaved.Parsing.Sections
           while (inventorySetIndex < 15)
           {
             ItemCategories setIndexCategory = (ItemCategories)inventorySetIndex;
+            Debug.WriteLine($"parsing inventory category '{setIndexCategory}'");
             ItemIds itemId = saveReader.ReadLengthPrefixedString().ToItemId();
             ItemCategories itemIdCategory = itemId.GetCategory();
 

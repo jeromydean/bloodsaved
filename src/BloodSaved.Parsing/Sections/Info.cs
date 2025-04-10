@@ -84,7 +84,6 @@ namespace BloodSaved.Parsing.Sections
 
           string type = saveReader.ReadLengthPrefixedString();
 
-
           saveReader.Reset();
 
           if (string.Equals(name, "EPBGameLevel"))
@@ -97,7 +96,8 @@ namespace BloodSaved.Parsing.Sections
           {
             saveReader.VerifyAndReadLengthPrefixedString("EPBGameModeType");
             saveReader.ReadByte();
-            info.EPBGameModeType = Enum.Parse<EPBGameModeType>(saveReader.ReadLengthPrefixedString().Replace("EPBGameModeType::", string.Empty));
+            string rawMode = saveReader.ReadLengthPrefixedString();
+            info.EPBGameModeType = Enum.Parse<EPBGameModeType>(rawMode.Replace("EPBGameModeType::", string.Empty));
           }
           else
           {

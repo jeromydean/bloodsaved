@@ -199,6 +199,11 @@ namespace BloodSaved.Parsing
               saveReader.ReadArrayProperty(name, out _, out int arrayPropertyLength, out _);
               saveReader.Skip(arrayPropertyLength - 4);//the length includes 4 bytes for the count 
               break;
+            case SaveConstants.UInt32Property:
+              saveReader.ReadLengthPrefixedString();//name
+              saveReader.ReadLengthPrefixedString();//type
+              saveReader.ReadBytes(13);
+              break;
             default:
               throw new InvalidDataException($"Unknown save section type of '{type}' at offset {saveReader.BaseStream.Position}.");
           }

@@ -12,6 +12,7 @@
     public const string IntProperty = "IntProperty";
     public const string FloatProperty = "FloatProperty";
     public const string ByteProperty = "ByteProperty";
+    public const string UInt32Property = "UInt32Property";
     public const string CompletedTutorials = "CompletedTutorials";
     public const string InventoryData = "InventoryData";
     public const string StatusData = "StatusData";

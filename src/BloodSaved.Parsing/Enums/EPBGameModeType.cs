@@ -2,6 +2,7 @@
 {
   public enum EPBGameModeType
   {
-    Normal
+    Normal,
+    RandomizerMode
   }
 }

@@ -625,6 +625,10 @@ namespace BloodSaved.Parsing.Enums
     Walkerking,
     [Description("Weighted Ring"), ItemCategory(ItemCategories.Accessories)]
     WeightedRing,
+    [Description("Hey I'm Grump"), ItemCategory(ItemCategories.Accessories), ItemId("HeyI’mGrump")]
+    HeyImGrump,
+    [Description("I'm Not So Grump"), ItemCategory(ItemCategories.Accessories), ItemId("I’mNotSoGrump")]
+    ImNotSoGrump,
     [Description("Bat Wings"), ItemCategory(ItemCategories.Scarves)]
     Batwing,
     [Description("Faerie Scarf"), ItemCategory(ItemCategories.Scarves)]
