@@ -5,13 +5,38 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:viewModels="using:BloodSaved.ViewModels"
   mc:Ignorable="d"
-	d:DesignWidth="600"
-	d:DesignHeight="450"
+	Width="500"
+	Height="500"
   x:Class="BloodSaved.AboutView"
 	x:DataType="viewModels:AboutViewModel"
-  Title="AboutView"
-	WindowStartupLocation="CenterScreen">
-	<!--<Design.DataContext>
-		<viewModels:AboutViewModel />
-	</Design.DataContext>-->
+  Title="About BloodSaved"
+	CanResize="False"
+	WindowStartupLocation="CenterScreen"
+	Icon="/Assets/icon.ico">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<Grid.Background>
+			<ImageBrush
+				Stretch="Fill"
+				Source="/Assets/about.png" />
+		</Grid.Background>
+		<SelectableTextBlock
+			Grid.Row="0"
+			Margin="5"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Top"
+			TextAlignment="Center">
+			https://github.com/jeromydean/bloodsaved/releases
+		</SelectableTextBlock>
+		<TextBlock
+			Grid.Row="1"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Bottom"
+			TextAlignment="Center">
+			© 2025
+		</TextBlock>
+	</Grid>
 </Window>

@@ -10,7 +10,22 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
-  <ItemGroup>
+	<PropertyGroup>
+		<PackageId>BloodSaved</PackageId>
+		<FileVersion>0.0.10</FileVersion>
+		<Version>0.0.10</Version>
+		<Authors>$(AssemblyName)</Authors>
+		<Company>$(AssemblyName)</Company>
+		<Title>$(AssemblyName)</Title>
+		<Product>$(AssemblyName)</Product>
+		<Copyright>2025</Copyright>
+		<PackageProjectUrl>https://github.com/jeromydean/bloodsaved</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/jeromydean/bloodsaved.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<Description>A save game editor for Bloodstained: Ritual of the Night.</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 

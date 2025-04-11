@@ -244,7 +244,7 @@ namespace BloodSaved.ViewModels
 
     public void ShowAbout()
     {
-      _windowService.ShowWindow<AboutView>();
+      _windowService.ShowDialog<AboutView>();
     }
 
     public void CloseApplication()

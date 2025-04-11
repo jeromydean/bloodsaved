@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Avalonia.Controls;
 using BloodSaved.ViewModels;
 
@@ -22,6 +23,7 @@ public partial class MainView : Window
   {
     DataContext = dataContext;
     InitializeComponent();
+    Title = $"BloodSaved (v{Assembly.GetExecutingAssembly().GetName().Version})";
   }
 
   private void MapPointerWheelChanged(object? sender, Avalonia.Input.PointerWheelEventArgs e)

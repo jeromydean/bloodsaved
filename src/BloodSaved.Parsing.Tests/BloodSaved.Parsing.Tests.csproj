@@ -12,6 +12,7 @@
   <ItemGroup>
     <None Remove="Resources\Saves\%28PC_NEW_GAME%29Story_Slot0.sav" />
     <None Remove="Resources\Saves\%28PC_NEW_GAME%29System_Slot.sav" />
+    <None Remove="Resources\Saves\%28PC_NEW_GAME_RANDOMIZER%29Story_Slot1.sav" />
     <None Remove="Resources\Saves\%28PS4_StorySlot0%29ue4savegame.ps4.sav" />
     <None Remove="Resources\Saves\%28PS4_StorySlot1%29ue4savegame.ps4.sav" />
     <None Remove="Resources\Saves\%28PS4_SystemSlot%29ue4savegame.ps4.sav" />
@@ -30,6 +31,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Saves\(PC_NEW_GAME)System_Slot.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Saves\(PC_NEW_GAME_RANDOMIZER)Story_Slot1.sav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Saves\(PS4_StorySlot0)ue4savegame.ps4.sav">

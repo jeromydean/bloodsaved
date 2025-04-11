@@ -13,6 +13,7 @@ namespace BloodSaved.Parsing.Tests
     [InlineData(@".\Resources\Saves\(UNKNOWN)Story_Slot4.sav", false)]//won't match due to "Poisontoadeye" & "shard" (incorrect casing)
     [InlineData(@".\Resources\Saves\(UNKNOWN_2)Story_Slot1", false)]//won't match due to "Poisontoadeye" & "shard" (incorrect casing)
     [InlineData(@".\Resources\Saves\(UNKNOWN_3)Story_Slot0.sav", false)]//won't match due to "Poisontoadeye" & "shard" (incorrect casing)
+    [InlineData(@".\Resources\Saves\(PC_NEW_GAME_RANDOMIZER)Story_Slot1.sav")]
     public void UnmodifiedSaveSlotSerializesCorrectly(string saveSlotPath, bool matchHash = true)
     {
       byte[] inputBytes = File.ReadAllBytes(saveSlotPath);
