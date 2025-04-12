@@ -8,6 +8,16 @@ namespace BloodSaved.Parsing.Extensions
   {
     public static ItemIds ToItemId(this string value)
     {
+      //fixing my previous mistakes on not serializing these as unicode
+      if (string.Equals(value, "HeyI???mGrump"))
+      {
+        value = "HeyI’mGrump";
+      }
+      else if (string.Equals(value, "I???mNotSoGrump"))
+      {
+        value = "I’mNotSoGrump";
+      }
+
       if (Enum.TryParse<ItemIds>(value, out ItemIds id))
       {
         return id;

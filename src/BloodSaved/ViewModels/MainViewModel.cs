@@ -147,23 +147,29 @@ namespace BloodSaved.ViewModels
         EPBGameLevel = _saveSlot.Info.EPBGameLevel;
 
         InventoryItems.Clear();
-        foreach (ItemIds itemId in Enum.GetValues<ItemIds>().Where(i => i.GetCategory() <= ItemCategories.Books))
+        foreach (IGrouping<ItemCategories, ItemIds> groupedItems in Enum.GetValues<ItemIds>().Where(i => i.GetCategory() <= ItemCategories.Books).GroupBy(i => i.GetCategory()).OrderBy(g => g.Key))
         {
-          InventoryItem? inventoryItem = _saveSlot.Inventory.Items.SingleOrDefault(i => i.ItemId == itemId);
-          InventoryItems.Add(new InventoryItemModel(itemId,
-            quantity: inventoryItem?.Quantity));
+          foreach(ItemIds item in groupedItems.OrderBy(i => i.GetDescription()))
+          {
+            InventoryItem? inventoryItem = _saveSlot.Inventory.Items.SingleOrDefault(i => i.ItemId == item);
+            InventoryItems.Add(new InventoryItemModel(item,
+              quantity: inventoryItem?.Quantity));
+          }
         }
 
         Shards.Clear();
-        foreach (ItemIds itemId in Enum.GetValues<ItemIds>().Where(i => i.GetCategory() >= ItemCategories.ConjureShards))
+        foreach (IGrouping<ItemCategories, ItemIds> groupedItems in Enum.GetValues<ItemIds>().Where(i => i.GetCategory() >= ItemCategories.ConjureShards).GroupBy(i => i.GetCategory()).OrderBy(g => g.Key))
         {
-          InventoryItem? inventoryItem = itemId.GetCategory() == ItemCategories.SkillShards
-            ? _saveSlot.ShardPossession.Skills.SingleOrDefault(i => i.ItemId == itemId)
-            : _saveSlot.ShardPossession.Shards.SingleOrDefault(i => i.ItemId == itemId);
+          foreach (ItemIds item in groupedItems.OrderBy(i => i.GetDescription()))
+          {
+            InventoryItem? inventoryItem = item.GetCategory() == ItemCategories.SkillShards
+              ? _saveSlot.ShardPossession.Skills.SingleOrDefault(i => i.ItemId == item)
+              : _saveSlot.ShardPossession.Shards.SingleOrDefault(i => i.ItemId == item);
 
-          Shards.Add(new InventoryItemModel(itemId,
-            quantity: inventoryItem?.Quantity,
-            rank: inventoryItem?.Rank));
+            Shards.Add(new InventoryItemModel(item,
+              quantity: inventoryItem?.Quantity,
+              rank: inventoryItem?.Rank));
+          }
         }
 
         Map?.Dispose();

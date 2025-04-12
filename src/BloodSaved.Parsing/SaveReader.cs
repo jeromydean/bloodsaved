@@ -110,9 +110,12 @@ namespace BloodSaved.Parsing
       int stringLength = ReadInt32();
       bool isUnicode = stringLength < 0;
       stringLength = isUnicode ? (-1 * stringLength) * 2 : stringLength;
-      return isUnicode
+
+      string value = isUnicode
         ? Encoding.Unicode.GetString(ReadBytes(stringLength)).TrimEnd('\0')
         : Encoding.UTF8.GetString(ReadBytes(stringLength)).TrimEnd('\0');
+
+      return value;
     }
 
     public Guid ReadGuid()

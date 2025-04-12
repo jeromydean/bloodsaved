@@ -221,16 +221,32 @@ namespace BloodSaved.Parsing.Enums
     Partizan,
     [Description("Pelekus"), ItemCategory(ItemCategories.Weapons)]
     Perex,
-    [Description("Silent Calamity"), ItemCategory(ItemCategories.Weapons)]
+    [Description("Silent Calamity #1"), ItemCategory(ItemCategories.Weapons)]
     PetrifactionSword,
-    [Description("Silent Calamity"), ItemCategory(ItemCategories.Weapons)]
+    [Description("Silent Calamity #2"), ItemCategory(ItemCategories.Weapons)]
     PetrifactionSword2,
-    [Description("Silent Calamity"), ItemCategory(ItemCategories.Weapons)]
+    [Description("Silent Calamity #3"), ItemCategory(ItemCategories.Weapons)]
     PetrifactionSword3,
-    [ItemCategory(ItemCategories.Weapons)]
+    [Description("Risky Pistol #1"), ItemCategory(ItemCategories.Weapons)]
     PirateGun1,
-    [ItemCategory(ItemCategories.Weapons)]
+    [Description("Risky Pistol #2"), ItemCategory(ItemCategories.Weapons)]
+    PirateGun2,
+    [Description("Risky Pistol #3"), ItemCategory(ItemCategories.Weapons)]
+    PirateGun3,
+    [Description("Risky Pistol #4"), ItemCategory(ItemCategories.Weapons)]
+    PirateGun4,
+    [Description("Risky Pistol #5"), ItemCategory(ItemCategories.Weapons)]
+    PirateGun5,
+    [Description("Risky Blade #1"), ItemCategory(ItemCategories.Weapons)]
     PirateSword1,
+    [Description("Risky Blade #2"), ItemCategory(ItemCategories.Weapons)]
+    PirateSword2,
+    [Description("Risky Blade #3"), ItemCategory(ItemCategories.Weapons)]
+    PirateSword3,
+    [Description("Risky Blade #4"), ItemCategory(ItemCategories.Weapons)]
+    PirateSword4,
+    [Description("Risky Blade #5"), ItemCategory(ItemCategories.Weapons)]
+    PirateSword5,
     [Description("Poison Kukri"), ItemCategory(ItemCategories.Weapons)]
     PoisonKukri,
     [Description("Oleanders"), ItemCategory(ItemCategories.Weapons)]
@@ -625,9 +641,9 @@ namespace BloodSaved.Parsing.Enums
     Walkerking,
     [Description("Weighted Ring"), ItemCategory(ItemCategories.Accessories)]
     WeightedRing,
-    [Description("Hey I'm Grump"), ItemCategory(ItemCategories.Accessories), ItemId("HeyI’mGrump")]
+    [Description("Hey I’m Grump"), ItemCategory(ItemCategories.Accessories), ItemId("HeyI’mGrump"), SerializedAsUnicode]
     HeyImGrump,
-    [Description("I'm Not So Grump"), ItemCategory(ItemCategories.Accessories), ItemId("I’mNotSoGrump")]
+    [Description("I’m Not So Grump"), ItemCategory(ItemCategories.Accessories), ItemId("I’mNotSoGrump"), SerializedAsUnicode]
     ImNotSoGrump,
     [Description("Bat Wings"), ItemCategory(ItemCategories.Scarves)]
     Batwing,
