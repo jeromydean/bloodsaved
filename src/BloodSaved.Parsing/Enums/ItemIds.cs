@@ -341,8 +341,16 @@ namespace BloodSaved.Parsing.Enums
     ValkyrieSword,
     [Description("Rhava Velar"), ItemCategory(ItemCategories.Weapons)]
     ValralAltar,
-    [ItemCategory(ItemCategories.Weapons)]
+    [Description("Japanesque Umbrella"), ItemCategory(ItemCategories.Weapons)]
     Wagasa,
+    [Description("Japanesque Umbrella #1"), ItemCategory(ItemCategories.Weapons)]
+    Wagasa1,
+    [Description("Japanesque Umbrella #2"), ItemCategory(ItemCategories.Weapons)]
+    Wagasa2,
+    [Description("Japanesque Umbrella #3"), ItemCategory(ItemCategories.Weapons)]
+    Wagasa3,
+    [Description("Japanesque Umbrella #4"), ItemCategory(ItemCategories.Weapons)]
+    Wagasa4,
     [Description("Rhava Búral"), ItemCategory(ItemCategories.Weapons)]
     WalalSoulimo,
     [Description("Ambivalence"), ItemCategory(ItemCategories.Weapons)]
