@@ -82,6 +82,7 @@ namespace BloodSaved.ViewModels
     public ObservableCollection<InventoryItemModel> InventoryItems { get; private set; }
     public ObservableCollection<InventoryItemModel> Shards { get; private set; }
     public ObservableCollection<EPBGameLevel> EPBGameLevels { get; private set; }
+    public ObservableCollection<FamiliarExperienceModel> FamiliarExperience { get; private set; }
 
     public MainViewModel(IFilePickerService filePickerService,
       IWindowService windowService)
@@ -115,6 +116,7 @@ namespace BloodSaved.ViewModels
       InventoryItems = new ObservableCollection<InventoryItemModel>();
       Shards = new ObservableCollection<InventoryItemModel>();
       EPBGameLevels = new ObservableCollection<EPBGameLevel>(Enum.GetValues<EPBGameLevel>());
+      FamiliarExperience = new ObservableCollection<FamiliarExperienceModel>();
     }
 
     private void SelectedItemsChanged(IList selectedItems)
@@ -170,6 +172,13 @@ namespace BloodSaved.ViewModels
               quantity: inventoryItem?.Quantity,
               rank: inventoryItem?.Rank));
           }
+        }
+
+        FamiliarExperience.Clear();
+        foreach(ItemIds familiarItem in Enum.GetValues<ItemIds>().Where(i => i.GetCategory() == ItemCategories.FamiliarShards).OrderBy(i => i.GetDescription()))
+        {
+          KeyValuePair<ItemIds, int> kvp = _saveSlot.StatusData.FamiliarTotalExperience.SingleOrDefault(de => de.Key == familiarItem);
+          FamiliarExperience.Add(new FamiliarExperienceModel(familiarItem, kvp.Value));
         }
 
         Map?.Dispose();
@@ -232,6 +241,12 @@ namespace BloodSaved.ViewModels
         Quantity = sm.Quantity ?? 0,
         Rank = sm.Rank ?? 0
       }));
+
+      //familiar experience
+      foreach(FamiliarExperienceModel fem in FamiliarExperience.Where(fe => fe.IsDirty))
+      {
+        _saveSlot.StatusData.FamiliarTotalExperience[fem.ItemId] = fem.Experience ?? 0;
+      }
 
       _saveSlot.Save(_loadedSaveSlotPath);
     }

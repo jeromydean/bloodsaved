@@ -187,8 +187,16 @@ namespace BloodSaved.Parsing.Enums
     LoveOfFairyDragon3,
     [Description("Mace"), ItemCategory(ItemCategories.Weapons)]
     Mace,
-    [ItemCategory(ItemCategories.Weapons)]
+    [Description("Miri Scepter"), ItemCategory(ItemCategories.Weapons)]
     MagicalScepter,
+    [Description("Miri Scepter #2"), ItemCategory(ItemCategories.Weapons)]
+    MagicalScepter1,
+    [Description("Miri Scepter #3"), ItemCategory(ItemCategories.Weapons)]
+    MagicalScepter2,
+    [Description("Miri Scepter #4"), ItemCategory(ItemCategories.Weapons)]
+    MagicalScepter3,
+    [Description("Miri Scepter #5"), ItemCategory(ItemCategories.Weapons)]
+    MagicalScepter4,
     [Description("Mandau Pasir"), ItemCategory(ItemCategories.Weapons)]
     Mandaupasar,
     [Description("Main Gauche"), ItemCategory(ItemCategories.Weapons)]
@@ -273,6 +281,14 @@ namespace BloodSaved.Parsing.Enums
     SacredSword3,
     [ItemCategory(ItemCategories.Weapons)]
     Scythe,
+    [Description("Scythe #2"), ItemCategory(ItemCategories.Weapons)]
+    Scythe1,
+    [Description("Scythe #3"), ItemCategory(ItemCategories.Weapons)]
+    Scythe2,
+    [Description("Scythe #4"), ItemCategory(ItemCategories.Weapons)]
+    Scythe3,
+    [Description("Scythe #5"), ItemCategory(ItemCategories.Weapons)]
+    Scythe4,
     [Description("Schedar"), ItemCategory(ItemCategories.Weapons)]
     Sherdar,
     [Description("Shield Weapon"), ItemCategory(ItemCategories.Weapons)]
@@ -437,8 +453,18 @@ namespace BloodSaved.Parsing.Enums
     DuelBrest,
     [Description("Feather Robe"), ItemCategory(ItemCategories.BodyArmor)]
     Featherrobe,
-    [ItemCategory(ItemCategories.BodyArmor)]
+    [Description("Japanesque Robe"), ItemCategory(ItemCategories.BodyArmor)]
     FestivalKimono,
+    [Description("Japanesque Robe #1"), ItemCategory(ItemCategories.BodyArmor)]
+    FestivalKimono1,
+    [Description("Japanesque Robe #2"), ItemCategory(ItemCategories.BodyArmor)]
+    FestivalKimono2,
+    [Description("Japanesque Robe #3"), ItemCategory(ItemCategories.BodyArmor)]
+    FestivalKimono3,
+    [Description("Japanesque Robe #4"), ItemCategory(ItemCategories.BodyArmor)]
+    FestivalKimono4,
+    [Description("Japanesque Robe #5"), ItemCategory(ItemCategories.BodyArmor)]
+    FestivalKimono5,
     [Description("Majestic Plate"), ItemCategory(ItemCategories.BodyArmor)]
     GloriousBreast,
     [Description("Gold Breastplate"), ItemCategory(ItemCategories.BodyArmor)]
@@ -453,16 +479,36 @@ namespace BloodSaved.Parsing.Enums
     KungFuBest,
     [Description("Lamellar Armor"), ItemCategory(ItemCategories.BodyArmor)]
     LamellarArmor,
-    [ItemCategory(ItemCategories.BodyArmor)]
+    [Description("Miri Dress"), ItemCategory(ItemCategories.BodyArmor)]
     MagicalGirlBody,
+    [Description("Miri Dress #1"), ItemCategory(ItemCategories.BodyArmor)]
+    MagicalGirlBody1,
+    [Description("Miri Dress #2"), ItemCategory(ItemCategories.BodyArmor)]
+    MagicalGirlBody2,
+    [Description("Miri Dress #3"), ItemCategory(ItemCategories.BodyArmor)]
+    MagicalGirlBody3,
+    [Description("Miri Dress #4"), ItemCategory(ItemCategories.BodyArmor)]
+    MagicalGirlBody4,
+    [Description("Miri Dress #5"), ItemCategory(ItemCategories.BodyArmor)]
+    MagicalGirlBody5,
     [Description("Mantua"), ItemCategory(ItemCategories.BodyArmor)]
     Maturedress,
     [Description("Riding Habit"), ItemCategory(ItemCategories.BodyArmor)]
     RidingHabit,
     [Description("Scale Armor"), ItemCategory(ItemCategories.BodyArmor)]
     Scalearmor,
-    [ItemCategory(ItemCategories.BodyArmor)]
+    [Description("Half-Genie Outfit #1"), ItemCategory(ItemCategories.BodyArmor)]
     ShantaeOutfit1,
+    [Description("Half-Genie Outfit #2"), ItemCategory(ItemCategories.BodyArmor)]
+    ShantaeOutfit2,
+    [Description("Half-Genie Outfit #3"), ItemCategory(ItemCategories.BodyArmor)]
+    ShantaeOutfit3,
+    [Description("Half-Genie Outfit #4"), ItemCategory(ItemCategories.BodyArmor)]
+    ShantaeOutfit4,
+    [Description("Half-Genie Outfit #5"), ItemCategory(ItemCategories.BodyArmor)]
+    ShantaeOutfit5,
+    [Description("Half-Genie Outfit #6"), ItemCategory(ItemCategories.BodyArmor)]
+    ShantaeOutfit6,
     [Description("Tatenashi"), ItemCategory(ItemCategories.BodyArmor)]
     Shieldless,
     [Description("Flame Mail"), ItemCategory(ItemCategories.BodyArmor)]
@@ -487,6 +533,16 @@ namespace BloodSaved.Parsing.Enums
     Valkyriedress,
     [ItemCategory(ItemCategories.BodyArmor)]
     VampiricSkinsuit,
+    [Description("Vampiric Skinsuit #1"), ItemCategory(ItemCategories.BodyArmor)]
+    VampiricSkinsuit1,
+    [Description("Vampiric Skinsuit #2"), ItemCategory(ItemCategories.BodyArmor)]
+    VampiricSkinsuit2,
+    [Description("Vampiric Skinsuit #3"), ItemCategory(ItemCategories.BodyArmor)]
+    VampiricSkinsuit3,
+    [Description("Vampiric Skinsuit #4"), ItemCategory(ItemCategories.BodyArmor)]
+    VampiricSkinsuit4,
+    [Description("Vampiric Skinsuit #5"), ItemCategory(ItemCategories.BodyArmor)]
+    VampiricSkinsuit5,
     [Description("Polonaise"), ItemCategory(ItemCategories.BodyArmor)]
     VoronezDress,
     [ItemCategory(ItemCategories.HeadArmor)]
@@ -1567,21 +1623,21 @@ namespace BloodSaved.Parsing.Enums
     WhipMastery,
     [Description("Words of Wisdom"), ItemCategory(ItemCategories.PassiveShards)]
     Wisdomwords,
-    [Description("Familiar: Bloodbringer"), ItemCategory(ItemCategories.FamiliarShards)]
+    [Description("Bloodbringer"), ItemCategory(ItemCategories.FamiliarShards)]
     FamiliaBradBringer,
-    [Description("Familiar: BuChan"), ItemCategory(ItemCategories.FamiliarShards)]
+    [Description("BuChan"), ItemCategory(ItemCategories.FamiliarShards)]
     FamiliaBuChan,
-    [Description("Familiar: Buer"), ItemCategory(ItemCategories.FamiliarShards)]
+    [Description("Buer"), ItemCategory(ItemCategories.FamiliarShards)]
     FamiliaBuell,
-    [Description("Familiar: Carabosse"), ItemCategory(ItemCategories.FamiliarShards)]
+    [Description("Carabosse"), ItemCategory(ItemCategories.FamiliarShards)]
     FamiliaCarabos,
-    [Description("Familiar: Dantalion"), ItemCategory(ItemCategories.FamiliarShards)]
+    [Description("Dantalion"), ItemCategory(ItemCategories.FamiliarShards)]
     FamiliaDantalion,
-    [Description("Familiar: Silver Knight"), ItemCategory(ItemCategories.FamiliarShards)]
+    [Description("Silver Knight"), ItemCategory(ItemCategories.FamiliarShards)]
     FamiliaSilverKnight,
-    [Description("Familiar: Dullahammer Head"), ItemCategory(ItemCategories.FamiliarShards)]
+    [Description("Dullahammer Head"), ItemCategory(ItemCategories.FamiliarShards)]
     SummonDurahanMaHead,
-    [Description("Familiar: Archer"), ItemCategory(ItemCategories.FamiliarShards)]
+    [Description("Archer"), ItemCategory(ItemCategories.FamiliarShards)]
     FamiliaArcher,
     [Description("Deep Sinker"), ItemCategory(ItemCategories.SkillShards)]
     Deepsinker,

@@ -1,4 +1,8 @@
-﻿using BloodSaved.Parsing.Models;
+﻿using System.Xml.Linq;
+using BloodSaved.Parsing.Attributes;
+using BloodSaved.Parsing.Enums;
+using BloodSaved.Parsing.Extensions;
+using BloodSaved.Parsing.Models;
 
 namespace BloodSaved.Parsing.Sections
 {
@@ -26,9 +30,12 @@ namespace BloodSaved.Parsing.Sections
       set;
     }
 
+    public Dictionary<ItemIds, int> FamiliarTotalExperience { get; set; }
+
     public StatusData()
     {
       _saveSections = new List<SaveSection>();
+      FamiliarTotalExperience = new Dictionary<ItemIds, int>();
     }
 
     public static StatusData Deserialize(SaveSection saveSection)
@@ -76,6 +83,17 @@ namespace BloodSaved.Parsing.Sections
             case "BoolProperty":
               saveReader.ReadBoolProperty(name);
               break;
+            case SaveConstants.MapProperty when string.Equals(name, "FamiliarTotalExperience"):
+              saveReader.ReadMapProperty(name, out _, out _, out int familiarTotalExperienceLength, out int familiarTotalExperienceCount);
+
+              for (int i = 0; i < familiarTotalExperienceCount; i++)
+              {
+                ItemIds familiarItemId = saveReader.ReadLengthPrefixedString().ToItemId();
+                int experience = saveReader.ReadInt32();
+
+                statusData.FamiliarTotalExperience.Add(familiarItemId, experience);
+              }
+              break;
             case SaveConstants.MapProperty:
               saveReader.ReadMapProperty(name, out _, out _, out int mapPropertyLength, out _);
               saveReader.Skip(mapPropertyLength - 8);//the length includes 4 null pad bytes and 4 bytes for the count 
@@ -119,11 +137,38 @@ namespace BloodSaved.Parsing.Sections
       {
         saveWriter.WriteArrayProperty("StatusData", SaveConstants.ByteProperty, out long statusDataLengthOffset, out long statusDataCountOffset);
 
-        foreach(SaveSection section in _saveSections)
+        if (FamiliarTotalExperience.Any()
+          && !_saveSections.Any(s => string.Equals(s.Name, "FamiliarTotalExperience", StringComparison.OrdinalIgnoreCase)))
+        {
+          _saveSections.Add(new SaveSection
+          {
+            Name = "FamiliarTotalExperience",
+            Type = SaveConstants.MapProperty
+          });
+        }
+
+        foreach (SaveSection section in _saveSections)
         {
           if (string.Equals(section.Name, "TotalExperience", StringComparison.OrdinalIgnoreCase))
           {
             saveWriter.WriteIntProperty("TotalExperience", TotalExperience);
+          }
+          else if (string.Equals(section.Name, "FamiliarTotalExperience", StringComparison.OrdinalIgnoreCase))
+          {
+            saveWriter.WriteMapProperty("FamiliarTotalExperience", SaveConstants.NameProperty,
+              SaveConstants.IntProperty, out long familiarTotalExperienceLengthOffset, out long familiarTotalExperienceCountOffset, count: FamiliarTotalExperience.Count);
+
+            foreach(KeyValuePair<ItemIds, int> familiarExperience in FamiliarTotalExperience)
+            {
+              saveWriter.WriteItemId(familiarExperience.Key);
+              saveWriter.Write(familiarExperience.Value);
+            }
+
+            int m_familiarTotalExperienceLength = (int)(saveWriter.CurrentPosition - (familiarTotalExperienceCountOffset - 4));
+            saveWriter.SetCheckpoint();
+            saveWriter.SetPosition(familiarTotalExperienceLengthOffset);
+            saveWriter.Write(m_familiarTotalExperienceLength);
+            saveWriter.Reset();
           }
           else
           {

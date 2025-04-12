@@ -125,6 +125,46 @@
 							ItemsSource="{Binding EPBGameLevels}"
 							SelectedItem="{Binding EPBGameLevel}" />
 
+						<DataGrid
+							x:Name="FamiliarExperienceGrid"
+							Grid.Row="3"
+							Grid.Column="0"
+							Grid.ColumnSpan="2"
+							Margin="5,25,5,5"
+							ItemsSource="{Binding FamiliarExperience}">
+							<DataGrid.Columns>
+								<DataGridTextColumn
+									Header="Familiar Name"
+									Binding="{Binding Name}"
+									IsReadOnly="true"
+									Width="*" />
+								<DataGridTemplateColumn
+									Header="Experience"
+									Width="125">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate
+											DataType="models:FamiliarExperienceModel">
+											<TextBlock
+												Text="{Binding Experience}"
+												VerticalAlignment="Center"
+												HorizontalAlignment="Center" />
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+									<DataGridTemplateColumn.CellEditingTemplate>
+										<DataTemplate
+											DataType="models:FamiliarExperienceModel">
+											<NumericUpDown
+												Value="{Binding Experience}"
+												FormatString="N0"
+												Minimum="0"
+												Maximum="999999999"
+												HorizontalAlignment="Stretch"/>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellEditingTemplate>
+								</DataGridTemplateColumn>
+							</DataGrid.Columns>
+						</DataGrid>
+
 					</Grid>
 				</TabItem>
 				<TabItem
@@ -197,6 +237,13 @@
 												<s:Int32>999</s:Int32>
 											</MenuItem.CommandParameter>
 										</MenuItem>
+										<MenuItem
+											Header="9999"
+											Command="{Binding SetSelectedItemQuantityCommand}">
+											<MenuItem.CommandParameter>
+												<s:Int32>9999</s:Int32>
+											</MenuItem.CommandParameter>
+										</MenuItem>
 									</MenuItem>
 								</ContextMenu>
 							</DataGrid.ContextMenu>
@@ -230,7 +277,7 @@
 												Value="{Binding Quantity}"
 												FormatString="N0"
 												Minimum="0"
-												Maximum="999"
+												Maximum="9999"
 												HorizontalAlignment="Stretch"/>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellEditingTemplate>
@@ -309,6 +356,13 @@
 												<s:Int32>999</s:Int32>
 											</MenuItem.CommandParameter>
 										</MenuItem>
+										<MenuItem
+											Header="9999"
+											Command="{Binding SetSelectedShardGradeCommand}">
+											<MenuItem.CommandParameter>
+												<s:Int32>9999</s:Int32>
+											</MenuItem.CommandParameter>
+										</MenuItem>
 									</MenuItem>
 									<MenuItem
 										Header="Set Rank"
@@ -325,6 +379,13 @@
 											Command="{Binding SetSelectedShardRankCommand}">
 											<MenuItem.CommandParameter>
 												<s:Int32>999</s:Int32>
+											</MenuItem.CommandParameter>
+										</MenuItem>
+										<MenuItem
+											Header="9999"
+											Command="{Binding SetSelectedShardRankCommand}">
+											<MenuItem.CommandParameter>
+												<s:Int32>9999</s:Int32>
 											</MenuItem.CommandParameter>
 										</MenuItem>
 									</MenuItem>
@@ -360,7 +421,7 @@
 												Value="{Binding Quantity}"
 												FormatString="N0"
 												Minimum="0"
-												Maximum="999"
+												Maximum="9999"
 												HorizontalAlignment="Stretch"/>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellEditingTemplate>
@@ -383,7 +444,7 @@
 												Value="{Binding Rank}"
 												FormatString="N0"
 												Minimum="0"
-												Maximum="999"
+												Maximum="9999"
 												HorizontalAlignment="Stretch"/>
 										</DataTemplate>
 									</DataGridTemplateColumn.CellEditingTemplate>
