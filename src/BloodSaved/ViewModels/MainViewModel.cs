@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using BloodSaved.Models;
 using BloodSaved.Parsing;
@@ -149,9 +148,9 @@ namespace BloodSaved.ViewModels
         EPBGameLevel = _saveSlot.Info.EPBGameLevel;
 
         InventoryItems.Clear();
-        foreach (IGrouping<ItemCategories, ItemIds> groupedItems in Enum.GetValues<ItemIds>().Where(i => i.GetCategory() <= ItemCategories.Books).GroupBy(i => i.GetCategory()).OrderBy(g => g.Key))
+        foreach (IGrouping<ItemCategory, ItemId> groupedItems in Enum.GetValues<ItemId>().Where(i => i.GetCategory() <= ItemCategory.Book).GroupBy(i => i.GetCategory()).OrderBy(g => g.Key))
         {
-          foreach(ItemIds item in groupedItems.OrderBy(i => i.GetDescription()))
+          foreach(ItemId item in groupedItems.OrderBy(i => i.GetName()))
           {
             InventoryItem? inventoryItem = _saveSlot.Inventory.Items.SingleOrDefault(i => i.ItemId == item);
             InventoryItems.Add(new InventoryItemModel(item,
@@ -160,11 +159,11 @@ namespace BloodSaved.ViewModels
         }
 
         Shards.Clear();
-        foreach (IGrouping<ItemCategories, ItemIds> groupedItems in Enum.GetValues<ItemIds>().Where(i => i.GetCategory() >= ItemCategories.ConjureShards).GroupBy(i => i.GetCategory()).OrderBy(g => g.Key))
+        foreach (IGrouping<ItemCategory, ItemId> groupedItems in Enum.GetValues<ItemId>().Where(i => i.GetCategory() >= ItemCategory.ConjureShards).GroupBy(i => i.GetCategory()).OrderBy(g => g.Key))
         {
-          foreach (ItemIds item in groupedItems.OrderBy(i => i.GetDescription()))
+          foreach (ItemId item in groupedItems.OrderBy(i => i.GetName()))
           {
-            InventoryItem? inventoryItem = item.GetCategory() == ItemCategories.SkillShards
+            InventoryItem? inventoryItem = item.GetCategory() == ItemCategory.SkillShards
               ? _saveSlot.ShardPossession.Skills.SingleOrDefault(i => i.ItemId == item)
               : _saveSlot.ShardPossession.Shards.SingleOrDefault(i => i.ItemId == item);
 
@@ -175,9 +174,9 @@ namespace BloodSaved.ViewModels
         }
 
         FamiliarExperience.Clear();
-        foreach(ItemIds familiarItem in Enum.GetValues<ItemIds>().Where(i => i.GetCategory() == ItemCategories.FamiliarShards).OrderBy(i => i.GetDescription()))
+        foreach(ItemId familiarItem in Enum.GetValues<ItemId>().Where(i => i.GetCategory() == ItemCategory.FamiliarShards).OrderBy(i => i.GetName()))
         {
-          KeyValuePair<ItemIds, int> kvp = _saveSlot.StatusData.FamiliarTotalExperience.SingleOrDefault(de => de.Key == familiarItem);
+          KeyValuePair<ItemId, int> kvp = _saveSlot.StatusData.FamiliarTotalExperience.SingleOrDefault(de => de.Key == familiarItem);
           FamiliarExperience.Add(new FamiliarExperienceModel(familiarItem, kvp.Value));
         }
 
@@ -227,7 +226,7 @@ namespace BloodSaved.ViewModels
       }));
 
       //normal shards
-      _saveSlot.AddOrUpdateInventory(Shards.Where(s => s.IsDirty && s.ItemId.GetCategory() != ItemCategories.SkillShards).Select(sm => new Shard
+      _saveSlot.AddOrUpdateInventory(Shards.Where(s => s.IsDirty && s.ItemId.GetCategory() != ItemCategory.SkillShards).Select(sm => new Shard
       {
         ItemId = sm.ItemId,
         Quantity = sm.Quantity ?? 0,
@@ -235,7 +234,7 @@ namespace BloodSaved.ViewModels
       }));
 
       //skill shards
-      _saveSlot.AddOrUpdateInventory(Shards.Where(s => s.IsDirty && s.ItemId.GetCategory() == ItemCategories.SkillShards).Select(sm => new SkillShard
+      _saveSlot.AddOrUpdateInventory(Shards.Where(s => s.IsDirty && s.ItemId.GetCategory() == ItemCategory.SkillShards).Select(sm => new SkillShard
       {
         ItemId = sm.ItemId,
         Quantity = sm.Quantity ?? 0,

@@ -4,8 +4,8 @@ namespace BloodSaved.Parsing.Attributes
 {
   public class ItemCategoryAttribute : Attribute
   {
-    public ItemCategories Category { get; set; }
-    public ItemCategoryAttribute(ItemCategories category)
+    public ItemCategory Category { get; set; }
+    public ItemCategoryAttribute(ItemCategory category)
     {
       Category = category;
     }

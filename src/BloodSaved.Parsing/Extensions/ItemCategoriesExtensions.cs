@@ -6,9 +6,9 @@ namespace BloodSaved.Parsing.Extensions
 {
   public static class ItemCategoriesExtensions
   {
-    public static string GetDescription(this ItemCategories itemCategory)
+    public static string GetDescription(this ItemCategory itemCategory)
     {
-      FieldInfo? itemCategoryFieldInfo = typeof(ItemCategories).GetField(Enum.GetName(itemCategory));
+      FieldInfo? itemCategoryFieldInfo = typeof(ItemCategory).GetField(Enum.GetName(itemCategory));
       DescriptionAttribute? descriptionAttribute = itemCategoryFieldInfo.GetCustomAttribute<DescriptionAttribute>();
 
       return descriptionAttribute?.Description ?? itemCategory.ToString();

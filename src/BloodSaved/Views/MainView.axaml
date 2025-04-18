@@ -137,6 +137,11 @@
 									Header="Familiar Name"
 									Binding="{Binding Name}"
 									IsReadOnly="true"
+									Width="Auto" />
+								<DataGridTextColumn
+									Header="Description"
+									Binding="{Binding Description}"
+									IsReadOnly="true"
 									Width="*" />
 								<DataGridTemplateColumn
 									Header="Experience"
@@ -256,6 +261,11 @@
 								<DataGridTextColumn
 									Header="Name"
 									Binding="{Binding Name}"
+									IsReadOnly="true"
+									Width="Auto" />
+								<DataGridTextColumn
+									Header="Description"
+									Binding="{Binding Description}"
 									IsReadOnly="true"
 									Width="*" />
 								<DataGridTemplateColumn
@@ -400,6 +410,11 @@
 								<DataGridTextColumn
 									Header="Name"
 									Binding="{Binding Name}"
+									IsReadOnly="true"
+									Width="Auto" />
+								<DataGridTextColumn
+									Header="Description"
+									Binding="{Binding Description}"
 									IsReadOnly="true"
 									Width="*" />
 								<DataGridTemplateColumn

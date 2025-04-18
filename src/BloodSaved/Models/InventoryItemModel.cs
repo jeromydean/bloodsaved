@@ -6,14 +6,15 @@ namespace BloodSaved.Models
 {
   public class InventoryItemModel : ObservableObject
   {
-    private readonly ItemIds _itemId;
+    private readonly ItemId _itemId;
     private readonly string _name;
+    private readonly string _description;
     private readonly string _category;
     private int? _quantity;
     private int? _rank;
     private bool _isDirty;
 
-    public ItemIds ItemId
+    public ItemId ItemId
     {
       get => _itemId;
     }
@@ -21,6 +22,11 @@ namespace BloodSaved.Models
     public string Name
     {
       get => _name;
+    }
+
+    public string Description
+    {
+      get => _description;
     }
 
     public string Category
@@ -57,12 +63,13 @@ namespace BloodSaved.Models
       get => _isDirty;
     }
 
-    public InventoryItemModel(ItemIds itemId,
+    public InventoryItemModel(ItemId itemId,
       int? quantity = 0,
       int? rank = 0)
     {
       _itemId = itemId;
-      _name = itemId.GetDescription();
+      _name = itemId.GetName();
+      _description = itemId.GetDescription();
       _category = itemId.GetCategory().GetDescription();
       _quantity = quantity;
       _rank = rank;

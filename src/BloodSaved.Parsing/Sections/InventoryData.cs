@@ -51,15 +51,27 @@ namespace BloodSaved.Parsing.Sections
 
           while (inventorySetIndex < 15)
           {
-            ItemCategories setIndexCategory = (ItemCategories)inventorySetIndex;
-            Debug.WriteLine($"parsing inventory category '{setIndexCategory}'");
-            ItemIds itemId = saveReader.ReadLengthPrefixedString().ToItemId();
-            ItemCategories itemIdCategory = itemId.GetCategory();
+            HashSet<ItemCategory> setIndexCategories = new HashSet<ItemCategory>(new[] { (ItemCategory)inventorySetIndex });
+            if (inventorySetIndex == 6)
+            {
+              setIndexCategories = new HashSet<ItemCategory>(new[] { ItemCategory.Potion, ItemCategory.Food });
+            }
+            else if (inventorySetIndex == 7)
+            {
+              setIndexCategories = new HashSet<ItemCategory>(new[] { ItemCategory.Materials, ItemCategory.Ingredients, ItemCategory.Seed });
+            }
+            else if (inventorySetIndex >= 8)
+            {
+              setIndexCategories = new HashSet<ItemCategory>(new[] { (ItemCategory)(inventorySetIndex + 3) });
+            }
+
+            ItemId itemId = saveReader.ReadLengthPrefixedString().ToItemId();
+            ItemCategory itemIdCategory = itemId.GetCategory();
 
             //verify the setIndexCategory and item category match
-            if (setIndexCategory != itemIdCategory)
+            if (!setIndexCategories.Contains(itemIdCategory))
             {
-              throw new InvalidDataException($"Item category ('{itemIdCategory}') does not match the inventory set category ('{setIndexCategory}').");
+              throw new InvalidDataException($"Item category ('{itemIdCategory}') does not match the inventory set category.");
             }
 
             inventoryData.Items.Add(new InventoryItem
@@ -103,13 +115,13 @@ namespace BloodSaved.Parsing.Sections
           int skillShardCount = saveReader.ReadInt32();
           for (int s = 0; s < skillShardCount; s++)
           {
-            ItemIds itemId = saveReader.ReadLengthPrefixedString().ToItemId();
-            ItemCategories itemIdCategory = itemId.GetCategory();
+            ItemId itemId = saveReader.ReadLengthPrefixedString().ToItemId();
+            ItemCategory itemIdCategory = itemId.GetCategory();
 
             //verify the setIndexCategory and item category match
-            if (ItemCategories.SkillShards != itemIdCategory)
+            if (ItemCategory.SkillShards != itemIdCategory)
             {
-              throw new InvalidDataException($"Item category ('{itemIdCategory}') does not match the inventory set category ('{ItemCategories.SkillShards}').");
+              throw new InvalidDataException($"Item category ('{itemIdCategory}') does not match the inventory set category ('{ItemCategory.SkillShards}').");
             }
 
             inventoryData.Items.Add(new InventoryItem
@@ -158,11 +170,20 @@ namespace BloodSaved.Parsing.Sections
           saveWriter.WriteLengthPrefixedString(equippedItem);
         }
 
-        for (int category = 0; category <= (int)ItemCategories.FamiliarShards; category++)
+        for (int category = 0; category <= (int)ItemCategory.FamiliarShards; category++)
         {
-          ItemCategories currentCategory = (ItemCategories)category;
+          HashSet<ItemCategory> currentCategories = new HashSet<ItemCategory>(new[] { (ItemCategory)category });
+          switch (category)
+          {
+            case 6:
+              currentCategories = new HashSet<ItemCategory>(new[] { ItemCategory.Potion, ItemCategory.Food });
+              break;
+            case 8:
+              currentCategories = new HashSet<ItemCategory>(new[] { ItemCategory.Materials, ItemCategory.Ingredients, ItemCategory.Seed });
+              break;
+          }
 
-          List<InventoryItem> categoryItems = Items.Where(item => item.ItemId.GetCategory() == currentCategory)
+          List<InventoryItem> categoryItems = Items.Where(item => currentCategories.Contains(item.ItemId.GetCategory()))
             .OrderBy(item => item.Index).ThenBy(item => item.ItemId.ToString()).ToList();
 
           saveWriter.Write(categoryItems.Count());
@@ -182,13 +203,22 @@ namespace BloodSaved.Parsing.Sections
               currentItemIndex++;
             }
           }
+
+          if (category == 6)
+          {
+            category++;
+          }
+          else if (category == 8)
+          {
+            category += 2;
+          }
         }
 
         saveWriter.Write(_magicByte1);
 
         //skill shards
         {
-          List<InventoryItem> skillShards = Items.Where(item => item.ItemId.GetCategory() == ItemCategories.SkillShards)
+          List<InventoryItem> skillShards = Items.Where(item => item.ItemId.GetCategory() == ItemCategory.SkillShards)
             .OrderBy(item => item.Index).ThenBy(item => item.ItemId.ToString()).ToList();
           saveWriter.Write(skillShards.Count);
           for (int s = 0; s < skillShards.Count; s++)

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using BloodSaved.Parsing.Enums;
 using BloodSaved.Parsing.Extensions;
@@ -326,8 +325,8 @@ namespace BloodSaved.Parsing
     public void AddAll()
     {
       //add all items
-      AddOrUpdateInventory(Enum.GetValues<ItemIds>()
-        .Where(i => i.GetCategory() <= ItemCategories.Books)
+      AddOrUpdateInventory(Enum.GetValues<ItemId>()
+        .Where(i => i.GetCategory() <= ItemCategory.Book)
         .Select(itemId => new InventoryItem
         {
           ItemId = itemId,
@@ -335,9 +334,9 @@ namespace BloodSaved.Parsing
         }));
 
       //add all shards
-      AddOrUpdateInventory(Enum.GetValues<ItemIds>()
-        .Where(i => i.GetCategory() >= ItemCategories.ConjureShards
-        && i.GetCategory() <= ItemCategories.FamiliarShards)
+      AddOrUpdateInventory(Enum.GetValues<ItemId>()
+        .Where(i => i.GetCategory() >= ItemCategory.ConjureShards
+        && i.GetCategory() <= ItemCategory.FamiliarShards)
         .Select(itemId => new Shard
         {
           ItemId = itemId,
@@ -348,8 +347,8 @@ namespace BloodSaved.Parsing
         }));
 
       //add all skills
-      AddOrUpdateInventory(Enum.GetValues<ItemIds>()
-        .Where(i => i.GetCategory() == ItemCategories.SkillShards)
+      AddOrUpdateInventory(Enum.GetValues<ItemId>()
+        .Where(i => i.GetCategory() == ItemCategory.SkillShards)
         .Select(itemId => new SkillShard
         {
           ItemId = itemId,

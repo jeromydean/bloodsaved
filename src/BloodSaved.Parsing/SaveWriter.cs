@@ -45,7 +45,7 @@ namespace BloodSaved.Parsing
       BaseStream.Position = offset;
     }
 
-    public void WriteItemId(ItemIds itemId)
+    public void WriteItemId(ItemId itemId)
     {
       WriteLengthPrefixedString(itemId.GetIdString(), itemId.GetEncoding());
     }
@@ -148,7 +148,7 @@ namespace BloodSaved.Parsing
     }
 
     public void WriteNameProperty(string propertyName,
-      ItemIds itemId)
+      ItemId itemId)
     {
       string itemIdString = itemId.GetIdString();
       Encoding encoding = itemId.GetEncoding();

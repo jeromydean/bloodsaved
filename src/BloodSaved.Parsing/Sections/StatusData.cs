@@ -30,12 +30,12 @@ namespace BloodSaved.Parsing.Sections
       set;
     }
 
-    public Dictionary<ItemIds, int> FamiliarTotalExperience { get; set; }
+    public Dictionary<ItemId, int> FamiliarTotalExperience { get; set; }
 
     public StatusData()
     {
       _saveSections = new List<SaveSection>();
-      FamiliarTotalExperience = new Dictionary<ItemIds, int>();
+      FamiliarTotalExperience = new Dictionary<ItemId, int>();
     }
 
     public static StatusData Deserialize(SaveSection saveSection)
@@ -88,7 +88,7 @@ namespace BloodSaved.Parsing.Sections
 
               for (int i = 0; i < familiarTotalExperienceCount; i++)
               {
-                ItemIds familiarItemId = saveReader.ReadLengthPrefixedString().ToItemId();
+                ItemId familiarItemId = saveReader.ReadLengthPrefixedString().ToItemId();
                 int experience = saveReader.ReadInt32();
 
                 statusData.FamiliarTotalExperience.Add(familiarItemId, experience);
@@ -158,7 +158,7 @@ namespace BloodSaved.Parsing.Sections
             saveWriter.WriteMapProperty("FamiliarTotalExperience", SaveConstants.NameProperty,
               SaveConstants.IntProperty, out long familiarTotalExperienceLengthOffset, out long familiarTotalExperienceCountOffset, count: FamiliarTotalExperience.Count);
 
-            foreach(KeyValuePair<ItemIds, int> familiarExperience in FamiliarTotalExperience)
+            foreach(KeyValuePair<ItemId, int> familiarExperience in FamiliarTotalExperience)
             {
               saveWriter.WriteItemId(familiarExperience.Key);
               saveWriter.Write(familiarExperience.Value);

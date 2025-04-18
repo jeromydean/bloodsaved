@@ -6,7 +6,7 @@ namespace BloodSaved.Parsing.Extensions
 {
   public static class StringExtensions
   {
-    public static ItemIds ToItemId(this string value)
+    public static ItemId ToItemId(this string value)
     {
       //fixing my previous mistakes on not serializing these as unicode
       if (string.Equals(value, "HeyI???mGrump"))
@@ -18,14 +18,14 @@ namespace BloodSaved.Parsing.Extensions
         value = "I’mNotSoGrump";
       }
 
-      if (Enum.TryParse<ItemIds>(value, out ItemIds id))
+      if (Enum.TryParse<ItemId>(value, out ItemId id))
       {
         return id;
       }
 
-      foreach (ItemIds itemId in Enum.GetValues<ItemIds>())
+      foreach (ItemId itemId in Enum.GetValues<ItemId>())
       {
-        FieldInfo? itemIdFieldInfo = typeof(ItemIds).GetField(itemId.ToString());
+        FieldInfo? itemIdFieldInfo = typeof(ItemId).GetField(itemId.ToString());
         ItemIdAttribute? itemIdAttribute = itemIdFieldInfo.GetCustomAttribute<ItemIdAttribute>();
 
         if (string.Equals(value, itemId.ToString(), StringComparison.OrdinalIgnoreCase)

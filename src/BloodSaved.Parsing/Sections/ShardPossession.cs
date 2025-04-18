@@ -44,24 +44,24 @@ namespace BloodSaved.Parsing.Sections
             saveReader.ReadMapProperty(SaveConstants.m_Possession, out _, out _, out _, out int m_PossessionCount);
             for (int s = 0; s < m_PossessionCount; s++)
             {
-              ItemIds itemId = saveReader.ReadLengthPrefixedString().ToItemId();
-              ItemCategories itemIdCategory = itemId.GetCategory();
+              ItemId itemId = saveReader.ReadLengthPrefixedString().ToItemId();
+              ItemCategory itemIdCategory = itemId.GetCategory();
 
               //verify the shard is in the proper category
-              ItemCategories expectedCategory = default(ItemCategories);
+              ItemCategory expectedCategory = default(ItemCategory);
               switch (x)
               {
                 case 0:
-                  expectedCategory = ItemCategories.ConjureShards;
+                  expectedCategory = ItemCategory.ConjureShards;
                   break;
                 case 1:
-                  expectedCategory = ItemCategories.DirectionalShards;
+                  expectedCategory = ItemCategory.DirectionalShards;
                   break;
                 case 2:
-                  expectedCategory = ItemCategories.FamiliarShards;
+                  expectedCategory = ItemCategory.FamiliarShards;
                   break;
                 case 3:
-                  expectedCategory = ItemCategories.ManipulativeShards;
+                  expectedCategory = ItemCategory.ManipulativeShards;
                   break;
               }
 
@@ -96,11 +96,11 @@ namespace BloodSaved.Parsing.Sections
             saveReader.ReadMapProperty(SaveConstants.m_Skill, out _, out _, out _, out int m_SkillCount);
             for (int i = 0; i < m_SkillCount; i++)
             {
-              ItemIds itemId = saveReader.ReadLengthPrefixedString().ToItemId();
-              ItemCategories itemIdCategory = itemId.GetCategory();
-              if (itemIdCategory != ItemCategories.SkillShards)
+              ItemId itemId = saveReader.ReadLengthPrefixedString().ToItemId();
+              ItemCategory itemIdCategory = itemId.GetCategory();
+              if (itemIdCategory != ItemCategory.SkillShards)
               {
-                throw new InvalidDataException($"Item category ('{itemIdCategory}') does not match the inventory set category ('{ItemCategories.SkillShards}').");
+                throw new InvalidDataException($"Item category ('{itemIdCategory}') does not match the inventory set category ('{ItemCategory.SkillShards}').");
               }
 
               bool isOn = saveReader.ReadBoolProperty(SaveConstants.IsOn);
@@ -152,11 +152,11 @@ namespace BloodSaved.Parsing.Sections
           saveReader.ReadMapProperty(SaveConstants.m_Possession, out _, out _, out _, out int m_PossessionCount);
           for (int i = 0; i < m_PossessionCount; i++)
           {
-            ItemIds itemId = saveReader.ReadLengthPrefixedString().ToItemId();
-            ItemCategories itemIdCategory = itemId.GetCategory();
-            if (itemIdCategory != ItemCategories.PassiveShards)
+            ItemId itemId = saveReader.ReadLengthPrefixedString().ToItemId();
+            ItemCategory itemIdCategory = itemId.GetCategory();
+            if (itemIdCategory != ItemCategory.PassiveShards)
             {
-              throw new InvalidDataException($"Item category ('{itemIdCategory}') does not match the inventory set category ('{ItemCategories.PassiveShards}').");
+              throw new InvalidDataException($"Item category ('{itemIdCategory}') does not match the inventory set category ('{ItemCategory.PassiveShards}').");
             }
 
             shardPossession.Shards.Add(new Shard
@@ -209,20 +209,20 @@ namespace BloodSaved.Parsing.Sections
         {
           for (int x = 0; x < 4; x++)
           {
-            ItemCategories currentCategory = default;
+            ItemCategory currentCategory = default;
             switch (x)
             {
               case 0:
-                currentCategory = ItemCategories.ConjureShards;
+                currentCategory = ItemCategory.ConjureShards;
                 break;
               case 1:
-                currentCategory = ItemCategories.DirectionalShards;
+                currentCategory = ItemCategory.DirectionalShards;
                 break;
               case 2:
-                currentCategory = ItemCategories.FamiliarShards;
+                currentCategory = ItemCategory.FamiliarShards;
                 break;
               case 3:
-                currentCategory = ItemCategories.ManipulativeShards;
+                currentCategory = ItemCategory.ManipulativeShards;
                 break;
             }
 
@@ -260,7 +260,7 @@ namespace BloodSaved.Parsing.Sections
 
         //skill shards
         {
-          List<SkillShard> skillShards = Skills.Where(s => s.ItemId.GetCategory() == ItemCategories.SkillShards)
+          List<SkillShard> skillShards = Skills.Where(s => s.ItemId.GetCategory() == ItemCategory.SkillShards)
             .OrderBy(s => s.Index).ThenBy(s => s.ItemId.ToString()).ToList();
 
           if (skillShards.Any())
@@ -334,7 +334,7 @@ namespace BloodSaved.Parsing.Sections
 
         //passive shards
         {
-          List<Shard> passiveShards = Shards.Where(s => s.ItemId.GetCategory() == ItemCategories.PassiveShards)
+          List<Shard> passiveShards = Shards.Where(s => s.ItemId.GetCategory() == ItemCategory.PassiveShards)
             .OrderBy(s => s.Index).ThenBy(s => s.ItemId.ToString()).ToList();
 
           if (passiveShards.Any())
