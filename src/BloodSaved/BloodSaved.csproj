@@ -8,12 +8,13 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>embedded</DebugType>
+    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
   </PropertyGroup>
 
 	<PropertyGroup>
 		<PackageId>BloodSaved</PackageId>
-		<FileVersion>0.0.14</FileVersion>
-		<Version>0.0.14</Version>
+		<FileVersion>0.0.15</FileVersion>
+		<Version>0.0.15</Version>
 		<Authors>$(AssemblyName)</Authors>
 		<Company>$(AssemblyName)</Company>
 		<Title>$(AssemblyName)</Title>

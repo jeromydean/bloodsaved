@@ -209,7 +209,7 @@ namespace BloodSaved.ViewModels
 
       if (storageFile != null)
       {
-        LoadSaveGame(storageFile.Path.AbsolutePath);
+        LoadSaveGame(storageFile.Path.LocalPath);
       }
     }
 

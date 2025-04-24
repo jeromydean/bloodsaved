@@ -70,9 +70,18 @@
 				Grid.Row="0"
 				IsVisible="{Binding IsSaveSlotLoaded}"
 				Margin="5">
+				<TabControl.Styles>
+					<Style
+						Selector="Grid.TabPage">
+						<Setter Property="Background">
+							<SolidColorBrush Color="Black" Opacity=".75"/>
+						</Setter>
+					</Style>
+				</TabControl.Styles>
 				<TabItem
-				Header="Stats">
-					<Grid>
+					Header="Stats">
+					<Grid
+						Classes="TabPage">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="Auto" />
@@ -175,7 +184,8 @@
 				</TabItem>
 				<TabItem
 					Header="Inventory">
-					<Grid>
+					<Grid
+						Classes="TabPage">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="*" />
@@ -300,7 +310,8 @@
 				</TabItem>
 				<TabItem
 					Header="Shards">
-					<Grid>
+					<Grid
+						Classes="TabPage">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="*" />
@@ -474,7 +485,8 @@
 				</TabItem>
 				<TabItem
 					Header="Map">
-					<Grid>
+					<Grid
+						Classes="TabPage">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="*" />
