@@ -17,4 +17,4 @@ I have tested the saves produced by the game on PS4 and PC (GOG) versions of Blo
 
 ## License
 
-BloodSaved is licensed under the [MIT licence](license.md).
+BloodSaved is licensed under the [MIT License](license.md).
