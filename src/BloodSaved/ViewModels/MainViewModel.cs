@@ -70,6 +70,7 @@ namespace BloodSaved.ViewModels
     public ICommand OpenCommand { get; private set; }
     public ICommand CloseCommand { get; private set; }
     public ICommand SaveCommand { get; private set; }
+    public ICommand SaveAsCommand { get; private set; }
     public ICommand ExitCommand { get; private set; }
     public ICommand AboutCommand { get; private set; }
     public ICommand ShardSelectionChangedCommand { get; private set; }
@@ -93,6 +94,7 @@ namespace BloodSaved.ViewModels
       OpenCommand = new AsyncRelayCommand(OpenFilePicker);
       CloseCommand = new RelayCommand(CloseSaveSlot);
       SaveCommand = new RelayCommand(SaveSaveSlot);
+      SaveAsCommand = new AsyncRelayCommand<bool>(SaveAs);
       ExitCommand = new RelayCommand(CloseApplication);
       AboutCommand = new RelayCommand(ShowAbout);
 
@@ -202,7 +204,7 @@ namespace BloodSaved.ViewModels
 
     public async Task OpenFilePicker()
     {
-      IStorageFile? storageFile = (await _filePickerService.Show("Open Save File",
+      IStorageFile? storageFile = (await _filePickerService.OpenFilePickerAsync("Open Save File",
         allowMultiple: false,
         suggestedStartLocation: Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"BloodstainedRotN/Saved/SaveGames".Replace('/', Path.DirectorySeparatorChar)),
         filters: new[] { new("Save Slot") { Patterns = new[] { "*.sav" }, MimeTypes = new[] { "/*" } }, FilePickerFileTypes.All })).SingleOrDefault();
@@ -213,7 +215,7 @@ namespace BloodSaved.ViewModels
       }
     }
 
-    private void SaveSaveSlot()
+    private void WriteChanges()
     {
       _saveSlot.Info.TotalCoins = TotalCoins;
       _saveSlot.StatusData.TotalExperience = TotalExperience;
@@ -242,12 +244,26 @@ namespace BloodSaved.ViewModels
       }));
 
       //familiar experience
-      foreach(FamiliarExperienceModel fem in FamiliarExperience.Where(fe => fe.IsDirty))
+      foreach (FamiliarExperienceModel fem in FamiliarExperience.Where(fe => fe.IsDirty))
       {
         _saveSlot.StatusData.FamiliarTotalExperience[fem.ItemId] = fem.Experience ?? 0;
       }
+    }
 
+    private void SaveSaveSlot()
+    {
+      WriteChanges();
       _saveSlot.Save(_loadedSaveSlotPath);
+    }
+
+    private async Task SaveAs(bool forceEncryption)
+    {
+      IStorageFile? saveAsStorageFile = await _filePickerService.SaveFilePickerAsync($"Save {(forceEncryption ? "Encrypted" : "Decrypted")} As");
+      if (saveAsStorageFile != null)
+      {
+        WriteChanges();
+        _saveSlot.Save(saveAsStorageFile.Path.LocalPath, forceEncryption);
+      }
     }
 
     private void CloseSaveSlot()

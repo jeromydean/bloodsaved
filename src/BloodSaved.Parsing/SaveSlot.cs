@@ -16,6 +16,10 @@ namespace BloodSaved.Parsing
     private Header _header;
     private string _saveClassName;
     private List<SaveSection> _saveSections;
+    private bool _isEncrypted = false;
+    private byte[] _checksum;
+    private bool _validChecksum = false;
+
 
     public CompletedTutorials CompletedTutorials
     {
@@ -109,7 +113,7 @@ namespace BloodSaved.Parsing
           }
         }
       }
-      svgBuilder.AppendLine($@"<text x=""{roomWidth * 10}"" y=""{roomHeight * minYRoom}"" fill=""#ffffff"" font-size=""30"">{traversedRoomCount}/{SaveConstants.TotalRooms} - {(traversedRoomCount/(double)SaveConstants.TotalRooms).ToString("P2")}</text>");
+      svgBuilder.AppendLine($@"<text x=""{roomWidth * 10}"" y=""{roomHeight * minYRoom}"" fill=""#ffffff"" font-size=""30"">{traversedRoomCount}/{SaveConstants.TotalRooms} - {(traversedRoomCount / (double)SaveConstants.TotalRooms).ToString("P2")}</text>");
       svgBuilder.AppendLine(@"</svg>");
       string mapSvgData = svgBuilder.ToString();
       return mapSvgData;
@@ -117,12 +121,15 @@ namespace BloodSaved.Parsing
 
     public static byte[] Crypt(byte[] data)
     {
-      for (int i = 0; i < data.Length; i++)
+      byte[] crypted = new byte[data.Length];
+      data.CopyTo(crypted, 0);
+
+      for (int i = 0; i < crypted.Length; i++)
       {
         int keyIndex = i % s_cipherKey.Count;
-        data[i] ^= s_cipherKey[keyIndex];
+        crypted[i] ^= s_cipherKey[keyIndex];
       }
-      return data;
+      return crypted;
     }
 
     public static SaveSlot Load(string filename)
@@ -130,6 +137,17 @@ namespace BloodSaved.Parsing
       SaveSlot saveSlot = new SaveSlot();
 
       byte[] saveData = File.ReadAllBytes(filename);
+
+      //validate checksum
+      using (MD5 md5 = MD5.Create())
+      {
+        saveSlot._isEncrypted = Enumerable.SequenceEqual(s_cipheredPreamble, saveData.Take(4));
+        saveSlot._checksum = saveData.Skip(saveData.Length - 16).ToArray();
+
+        byte[] validChecksum = md5.ComputeHash(saveData.Take(saveData.Length - 16).ToArray());
+
+        saveSlot._validChecksum = Enumerable.SequenceEqual(validChecksum, saveSlot._checksum);
+      }
 
       //decrypt the data if needed
       if (Enumerable.SequenceEqual(s_cipheredPreamble, saveData.Take(4)))
@@ -218,7 +236,7 @@ namespace BloodSaved.Parsing
         }
 
         saveReader.VerifyNullPadBytes(4);
-        saveReader.Skip(16);//md5 checksum
+        saveReader.ReadBytes(16);
 
         if (!saveReader.EndOfStream)
         {
@@ -252,23 +270,23 @@ namespace BloodSaved.Parsing
       saveSlot.Inventory = InventoryData.Deserialize(saveSlot._saveSections
         .Single(s => s.Name == SaveConstants.InventoryData));
 
-      saveSlot.ShardPossession= ShardPossession.Deserialize(saveSlot._saveSections
+      saveSlot.ShardPossession = ShardPossession.Deserialize(saveSlot._saveSections
         .Single(s => s.Name == SaveConstants.ShardPossession));
 
       return saveSlot;
     }
 
     public void Save(string filename,
-      bool crypt = true)
+      bool? forceEncryption = null)
     {
       using (FileStream stream = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite))
       {
-        Save(stream, crypt);
+        Save(stream, forceEncryption);
       }
     }
 
     public void Save(Stream stream,
-      bool crypt = true)
+      bool? forceEncryption = null)
     {
       byte[] savedata = null;
       using (SaveWriter writer = new SaveWriter())
@@ -304,21 +322,22 @@ namespace BloodSaved.Parsing
         savedata = writer.ToArray();
       }
 
-      byte[] checksum = new byte[16];
-      if (crypt)
-      {
-        savedata = Crypt(savedata);
+      bool encrypt = forceEncryption.HasValue ? forceEncryption.Value : _isEncrypted;
 
-        using (MD5 md5 = MD5.Create())
-        {
-          checksum = md5.ComputeHash(savedata);
-        }
+      byte[] encryptedSaveData = Crypt(savedata);
+      byte[] checksum = new byte[16];
+      byte[] encryptedChecksum = new byte[16];
+      using (MD5 md5 = MD5.Create())
+      {
+        encryptedChecksum = md5.ComputeHash(encryptedSaveData);
+        checksum = md5.ComputeHash(savedata);
+        //checksum = Crypt(savedata.Concat(encryptedChecksum).ToArray()).Skip(savedata.Length - 16).ToArray();
       }
 
       using (BinaryWriter writer = new BinaryWriter(stream))
       {
-        writer.Write(savedata);
-        writer.Write(checksum);
+        writer.Write(encrypt ? encryptedSaveData : savedata);
+        writer.Write(encrypt ? encryptedChecksum : checksum);
       }
     }
 
