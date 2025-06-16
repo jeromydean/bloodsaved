@@ -3,9 +3,11 @@ BloodSaved (Bloodstained Save Editor) - A save game editor for Bloodstained: Rit
 
 ## 📖 About 
 
-BloodSaved is currently in an early status but it already has the ability to inject 100% of the items (books, keys, weapons, etc), shards (including skill shards), modify familiar experience and view map progression.  BloodSaved is using Avalonia UI for the user interface implementation.
+BloodSaved is currently in an early status but it already has the ability to inject 100% of the items (books, keys, weapons, etc), shards (including skill shards), modify familiar experience and view map progression.  You can even inject Aurora's familiars and shards into Miriam's game.  The editor allows you to set a shard's grade and rank to 9999 if you really want to (makes the game kind of pointless because you will destroy everything).
 
-I have tested the saves produced by the game on PS4 and PC (GOG) versions of Bloodstained.
+BloodSaved is using Avalonia UI for the user interface implementation.
+
+I have tested the saves produced by the game on PS4 and PC (GOG) versions of Bloodstained.  PS4 game saves tested were exported with Apollo or Save wizard.
 
 ## Screenshots
 
