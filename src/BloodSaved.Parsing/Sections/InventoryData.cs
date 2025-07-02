@@ -196,10 +196,7 @@ namespace BloodSaved.Parsing.Sections
               saveWriter.WriteItemId(currentItem.ItemId);
               saveWriter.Write(currentItem.Quantity);
               saveWriter.Write(currentItemIndex);
-              saveWriter.Write(currentItem.Rank);
-              saveWriter.Write(currentItem.GradeValue);
-              saveWriter.Write(currentItem.RankValue);
-              saveWriter.Write(currentItem.Unknown);
+              saveWriter.Write(new byte[16]);
               currentItemIndex++;
             }
           }
