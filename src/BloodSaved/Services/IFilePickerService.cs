@@ -12,6 +12,7 @@ namespace BloodSaved.Services
       IEnumerable<FilePickerFileType>? filters = null);
 
     Task<IStorageFile?> SaveFilePickerAsync(string title,
+      string? defaultExtension = null,
       bool showOverwritePrompt = true,
       string? suggestedStartLocation = null,
       IEnumerable<FilePickerFileType>? filters = null);

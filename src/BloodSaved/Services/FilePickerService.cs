@@ -43,6 +43,7 @@ namespace BloodSaved.Services
     }
 
     public async Task<IStorageFile?> SaveFilePickerAsync(string title,
+      string? defaultExtension = null,
       bool showOverwritePrompt = true,
       string? suggestedStartLocation = null,
       IEnumerable<FilePickerFileType>? filters = null)
@@ -61,7 +62,7 @@ namespace BloodSaved.Services
 
         return await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-          DefaultExtension = "sav",
+          DefaultExtension = defaultExtension,
           Title = title,
           ShowOverwritePrompt = showOverwritePrompt,
           SuggestedStartLocation = startLocation

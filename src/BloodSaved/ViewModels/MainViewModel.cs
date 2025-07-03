@@ -78,6 +78,7 @@ namespace BloodSaved.ViewModels
     public ICommand SetSelectedShardRankCommand { get; private set; }
     public ICommand ItemSelectionChangedCommand { get; private set; }
     public ICommand SetSelectedItemQuantityCommand { get; private set; }
+    public ICommand SaveMapAsCommand { get; private set; }
 
     public ObservableCollection<InventoryItemModel> InventoryItems { get; private set; }
     public ObservableCollection<InventoryItemModel> Shards { get; private set; }
@@ -97,6 +98,8 @@ namespace BloodSaved.ViewModels
       SaveAsCommand = new AsyncRelayCommand<bool>(SaveAs);
       ExitCommand = new RelayCommand(CloseApplication);
       AboutCommand = new RelayCommand(ShowAbout);
+
+      SaveMapAsCommand = new AsyncRelayCommand<SKPicture>(SaveMapAs);
 
       ShardSelectionChangedCommand = new RelayCommand<IList>(SelectedShardsChanged);
       SetSelectedShardGradeCommand = new RelayCommand<int>((g) =>
@@ -258,11 +261,26 @@ namespace BloodSaved.ViewModels
 
     private async Task SaveAs(bool forceEncryption)
     {
-      IStorageFile? saveAsStorageFile = await _filePickerService.SaveFilePickerAsync($"Save {(forceEncryption ? "Encrypted" : "Decrypted")} As");
+      IStorageFile? saveAsStorageFile = await _filePickerService.SaveFilePickerAsync($"Save {(forceEncryption ? "Encrypted" : "Decrypted")} As", "sav");
       if (saveAsStorageFile != null)
       {
         WriteChanges();
         _saveSlot.Save(saveAsStorageFile.Path.LocalPath, forceEncryption);
+      }
+    }
+
+    private async Task SaveMapAs(SKPicture map)
+    {
+      IStorageFile? saveAsStorageFile = await _filePickerService.SaveFilePickerAsync($"Save Map SVG As", "svg");
+      if (saveAsStorageFile != null)
+      {
+        using(FileStream mapStream = new FileStream(saveAsStorageFile.Path.LocalPath, FileMode.Create))
+        {
+          using (StreamWriter mapWriter = new StreamWriter(mapStream))
+          {
+            mapWriter.Write(_saveSlot.GenerateSvgMap());
+          }
+        }
       }
     }
 
