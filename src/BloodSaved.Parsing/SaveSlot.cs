@@ -244,8 +244,11 @@ namespace BloodSaved.Parsing
         }
       }
 
-      saveSlot.Info = Info.Deserialize(saveSlot._saveSections
-        .Single(s => s.Name == SaveConstants.Info));
+      if (saveSlot._saveSections.Any(s => s.Name == SaveConstants.Info))
+      {
+        saveSlot.Info = Info.Deserialize(saveSlot._saveSections
+          .Single(s => s.Name == SaveConstants.Info));
+      }
 
       if (saveSlot._saveSections.Any(s => s.Name == SaveConstants.CompletedTutorials))
       {
@@ -267,8 +270,11 @@ namespace BloodSaved.Parsing
       saveSlot.StatusData = StatusData.Deserialize(saveSlot._saveSections
         .Single(s => s.Name == SaveConstants.StatusData));
 
-      saveSlot.Inventory = InventoryData.Deserialize(saveSlot._saveSections
-        .Single(s => s.Name == SaveConstants.InventoryData));
+      if (saveSlot._saveSections.Any(s => s.Name == SaveConstants.InventoryData))
+      {
+        saveSlot.Inventory = InventoryData.Deserialize(saveSlot._saveSections
+          .Single(s => s.Name == SaveConstants.InventoryData));
+      }
 
       saveSlot.ShardPossession = ShardPossession.Deserialize(saveSlot._saveSections
         .Single(s => s.Name == SaveConstants.ShardPossession));

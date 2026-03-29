@@ -13,5 +13,12 @@ namespace BloodSaved.Parsing.Extensions
 
       return descriptionAttribute?.Description ?? level.ToString();
     }
+    public static string GetDescription(this EPBGameModePlayer player)
+    {
+      FieldInfo? fieldInfo = typeof(EPBGameModePlayer).GetField(Enum.GetName(player));
+      DescriptionAttribute? descriptionAttribute = fieldInfo.GetCustomAttribute<DescriptionAttribute>();
+
+      return descriptionAttribute?.Description ?? player.ToString();
+    }
   }
 }

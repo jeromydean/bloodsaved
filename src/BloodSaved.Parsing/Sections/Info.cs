@@ -57,6 +57,11 @@ namespace BloodSaved.Parsing.Sections
       get;
       set;
     }
+    public EPBGameModePlayer EPBGameModePlayer
+    {
+      get;
+      set;
+    }
 
     public Info()
     {
@@ -98,6 +103,13 @@ namespace BloodSaved.Parsing.Sections
             saveReader.ReadByte();
             string rawMode = saveReader.ReadLengthPrefixedString();
             info.EPBGameModeType = Enum.Parse<EPBGameModeType>(rawMode.Replace("EPBGameModeType::", string.Empty));
+          }
+          else if (string.Equals(name, "EPBGameModePlayer"))
+          {
+            saveReader.VerifyAndReadLengthPrefixedString("EPBGameModePlayer");
+            saveReader.ReadByte();
+            string gameModePlayer = saveReader.ReadLengthPrefixedString();
+            info.EPBGameModePlayer = Enum.Parse<EPBGameModePlayer>(gameModePlayer.Replace("EPBGameModePlayer::", string.Empty));
           }
           else
           {
@@ -192,6 +204,12 @@ namespace BloodSaved.Parsing.Sections
             saveWriter.WriteLengthPrefixedString("EPBGameLevel");
             saveWriter.Write((byte)0x00);
             saveWriter.WriteLengthPrefixedString(EPBGameLevel.GetDescription());
+          }
+          else if (string.Equals(section.Name, "EPBGameModePlayer"))
+          {
+            saveWriter.WriteLengthPrefixedString("EPBGameModePlayer");
+            saveWriter.Write((byte)0x00);
+            saveWriter.WriteLengthPrefixedString(EPBGameModePlayer.GetDescription());
           }
           else
           {

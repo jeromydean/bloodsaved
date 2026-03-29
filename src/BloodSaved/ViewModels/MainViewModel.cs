@@ -148,9 +148,9 @@ namespace BloodSaved.ViewModels
         LoadErrorText = null;
         _saveSlot = SaveSlot.Load(path);
 
-        TotalCoins = _saveSlot.Info.TotalCoins;
+        TotalCoins = _saveSlot.Info?.TotalCoins ?? 0;
         TotalExperience = _saveSlot.StatusData.TotalExperience;
-        EPBGameLevel = _saveSlot.Info.EPBGameLevel;
+        EPBGameLevel = _saveSlot.Info?.EPBGameLevel ?? EPBGameLevel.Normal;
 
         InventoryItems.Clear();
         foreach (IGrouping<ItemCategory, ItemId> groupedItems in Enum.GetValues<ItemId>().Where(i => i.GetCategory() <= ItemCategory.Book).GroupBy(i => i.GetCategory()).OrderBy(g => g.Key))
@@ -220,9 +220,13 @@ namespace BloodSaved.ViewModels
 
     private void WriteChanges()
     {
-      _saveSlot.Info.TotalCoins = TotalCoins;
+      if (_saveSlot.Info != null)
+      {
+        _saveSlot.Info.TotalCoins = TotalCoins;
+        _saveSlot.Info.EPBGameLevel = EPBGameLevel;
+      }
+
       _saveSlot.StatusData.TotalExperience = TotalExperience;
-      _saveSlot.Info.EPBGameLevel = EPBGameLevel;
 
       _saveSlot.AddOrUpdateInventory(InventoryItems.Where(i => i.IsDirty).Select(im => new InventoryItem
       {
