@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -99,7 +99,7 @@ namespace BloodSaved.ViewModels
       ExitCommand = new RelayCommand(CloseApplication);
       AboutCommand = new RelayCommand(ShowAbout);
 
-      SaveMapAsCommand = new AsyncRelayCommand<SKPicture>(SaveMapAs);
+      SaveMapAsCommand = new AsyncRelayCommand<SKPicture?>(SaveMapAs);
 
       ShardSelectionChangedCommand = new RelayCommand<IList>(SelectedShardsChanged);
       SetSelectedShardGradeCommand = new RelayCommand<int>((g) =>
@@ -269,7 +269,7 @@ namespace BloodSaved.ViewModels
       }
     }
 
-    private async Task SaveMapAs(SKPicture map)
+    private async Task SaveMapAs(SKPicture? _)
     {
       IStorageFile? saveAsStorageFile = await _filePickerService.SaveFilePickerAsync($"Save Map SVG As", "svg");
       if (saveAsStorageFile != null)
@@ -291,7 +291,9 @@ namespace BloodSaved.ViewModels
       InventoryItems.Clear();
       Shards.Clear();
       Map?.Dispose();
+      Map = null;
       _mapSvg?.Dispose();
+      _mapSvg = null;
       MapScale = DefaultMapScale;
       _loadedSaveSlotPath = null;
     }

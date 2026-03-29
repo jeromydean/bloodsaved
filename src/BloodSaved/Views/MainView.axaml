@@ -16,7 +16,6 @@
   x:Class="BloodSaved.Views.MainView"
   x:DataType="viewModels:MainViewModel"
   Icon="/Assets/icon.ico"
-  xmlns:svg="clr-namespace:Avalonia.Svg;assembly=Avalonia.Svg"
   Title="BloodSaved">
   <Window.Resources>
     <converters:StringIsNotNullOrEmptyToBooleanConverter
@@ -526,6 +525,11 @@
                 Text="    •"
                 FontWeight="Bold" />
               <Run
+                Text="Click and drag to pan the map" />
+              <Run
+                Text="    •"
+                FontWeight="Bold" />
+              <Run
                 Text="Right click to save the map as an SVG file" />
               <LineBreak />
             </TextBlock>
@@ -536,6 +540,7 @@
               VerticalScrollBarVisibility="Auto"
               AllowAutoHide="True">
               <LayoutTransformControl
+                x:Name="mapLayoutRoot"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
                 <LayoutTransformControl.LayoutTransform>
@@ -546,9 +551,14 @@
                 <skControls:SKPictureControl
                   x:Name="mapControl"
                   HorizontalAlignment="Center"
+                  Cursor="Hand"
                   Picture="{Binding Map}"
                   Width="{Binding ElementName=mapScrollViewer, Path=Viewport.Width}"
-                  PointerWheelChanged="MapPointerWheelChanged">
+                  PointerWheelChanged="MapPointerWheelChanged"
+                  PointerPressed="MapPointerPressed"
+                  PointerMoved="MapPointerMoved"
+                  PointerReleased="MapPointerReleased"
+                  PointerCaptureLost="MapPointerCaptureLost">
                   <skControls:SKPictureControl.ContextMenu>
                     <ContextMenu>
                       <MenuItem
