@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 using BloodSaved.Parsing.Enums;
 using BloodSaved.Parsing.Extensions;
@@ -422,9 +422,15 @@ namespace BloodSaved.Parsing
         {
           IItem existingItem = Inventory.Items.Single(i => i.ItemId == item.ItemId);
           existingItem.Quantity = item.Quantity;
-          existingItem.GradeValue = item.GradeValue;
-          existingItem.Rank = item.Rank;
-          existingItem.RankValue = item.RankValue;
+
+          //don't reset these properties unless this is a SkillShard or Shard
+          //to prevent wiping out the food consumption bonus
+          if (item is SkillShard or Shard)
+          {
+            existingItem.GradeValue = item.GradeValue;
+            existingItem.Rank = item.Rank;
+            existingItem.RankValue = item.RankValue;
+          }
 
           if (item is SkillShard skillShard)
           {
