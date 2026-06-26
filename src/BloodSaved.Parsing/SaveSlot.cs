@@ -349,7 +349,8 @@ namespace BloodSaved.Parsing
         .Select(itemId => new InventoryItem
         {
           ItemId = itemId,
-          Quantity = 999
+          Quantity = 999,
+          FlagBytes = InventoryFlagBytes.DefaultForAddAll(itemId)
         }));
 
       //add all shards
@@ -387,72 +388,109 @@ namespace BloodSaved.Parsing
     {
       foreach (IItem item in items)
       {
-        //new item
-        if (!Inventory.Items.Any(i => i.ItemId == item.ItemId))
+        if (item is not InventoryItem inventoryItem)
         {
-          Inventory.Items.Add((InventoryItem)item);
-
-          if (item is SkillShard skillShard)
-          {
-            ShardPossession.Skills.Add(new SkillShard
-            {
-              ItemId = skillShard.ItemId,
-              IsOn = skillShard.IsOn,
-              //Equipped = skillShard.Equipped,
-              Quantity = skillShard.Quantity,
-              GradeValue = skillShard.GradeValue,
-              Rank = skillShard.Rank,
-              RankValue = skillShard.RankValue
-            });
-          }
-          else if (item is Shard shard)
-          {
-            ShardPossession.Shards.Add(new Shard
-            {
-              ItemId = shard.ItemId,
-              //Equipped = shard.Equipped,
-              Quantity = shard.Quantity,
-              GradeValue = shard.GradeValue,
-              Rank = shard.Rank,
-              RankValue = shard.RankValue
-            });
-          }
+          throw new ArgumentException($"Inventory updates require {nameof(InventoryItem)} instances.", nameof(items));
         }
-        else//update item
+
+        if (item is SkillShard)
         {
-          IItem existingItem = Inventory.Items.Single(i => i.ItemId == item.ItemId);
-          existingItem.Quantity = item.Quantity;
-
-          //don't reset these properties unless this is a SkillShard or Shard
-          //to prevent wiping out the food consumption bonus
-          if (item is SkillShard or Shard)
-          {
-            existingItem.GradeValue = item.GradeValue;
-            existingItem.Rank = item.Rank;
-            existingItem.RankValue = item.RankValue;
-          }
-
-          if (item is SkillShard skillShard)
-          {
-            SkillShard existingShard = ShardPossession.Skills.Single(s => s.ItemId == item.ItemId);
-            existingShard.IsOn = skillShard.IsOn;
-            //existingShard.Equipped = skillShard.Equipped;
-            existingShard.Quantity = skillShard.Quantity;
-            existingShard.GradeValue = skillShard.GradeValue;
-            existingShard.Rank = skillShard.Rank;
-            existingShard.RankValue = skillShard.RankValue;
-          }
-          else if (item is Shard shard)
-          {
-            Shard existingShard = ShardPossession.Shards.Single(s => s.ItemId == item.ItemId);
-            existingShard.Quantity = shard.Quantity;
-            existingShard.GradeValue = shard.GradeValue;
-            //existingShard.Equipped = shard.Equipped;
-            existingShard.Rank = shard.Rank;
-            existingShard.RankValue = shard.RankValue;
-          }
+          ApplyInventoryItemUpdate(inventoryItem);
+          ApplySkillShardUpdate((SkillShard)item);
+          continue;
         }
+
+        if (item is Shard shard)
+        {
+          ApplyInventoryItemUpdate(inventoryItem);
+          ApplyShardUpdate(shard);
+          continue;
+        }
+
+        ApplyInventoryItemUpdate(inventoryItem);
       }
+    }
+
+    private void ApplyInventoryItemUpdate(InventoryItem item)
+    {
+      InventoryItem? existingItem = Inventory.Items.SingleOrDefault(i => i.ItemId == item.ItemId);
+      if (existingItem == null)
+      {
+        if (item.ItemId.GetCategory() != ItemCategory.SkillShards)
+        {
+          item.FlagBytes = InventoryFlagBytes.ResolveForInventoryItem(item.ItemId, item.FlagBytes);
+        }
+
+        if (item is SkillShard newSkillShard)
+        {
+          item.Rank = newSkillShard.Rank;
+          item.GradeValue = newSkillShard.GradeValue;
+          item.RankValue = newSkillShard.RankValue;
+        }
+
+        Inventory.Items.Add(item);
+        return;
+      }
+
+      existingItem.Quantity = item.Quantity;
+
+      if (item is SkillShard skillShard)
+      {
+        existingItem.Rank = skillShard.Rank;
+        existingItem.GradeValue = skillShard.GradeValue;
+        existingItem.RankValue = skillShard.RankValue;
+      }
+
+      if (!InventoryFlagBytes.IsEmpty(item.FlagBytes))
+      {
+        existingItem.FlagBytes = InventoryFlagBytes.Copy(item.FlagBytes);
+      }
+    }
+
+    private void ApplyShardUpdate(Shard shard)
+    {
+      Shard? existingShard = ShardPossession.Shards.SingleOrDefault(s => s.ItemId == shard.ItemId);
+      if (existingShard == null)
+      {
+        ShardPossession.Shards.Add(new Shard
+        {
+          ItemId = shard.ItemId,
+          Quantity = shard.Quantity,
+          GradeValue = shard.GradeValue,
+          Rank = shard.Rank,
+          RankValue = shard.RankValue
+        });
+        return;
+      }
+
+      existingShard.Quantity = shard.Quantity;
+      existingShard.GradeValue = shard.GradeValue;
+      existingShard.Rank = shard.Rank;
+      existingShard.RankValue = shard.RankValue;
+    }
+
+    private void ApplySkillShardUpdate(SkillShard skillShard)
+    {
+      SkillShard? existingSkillShard = ShardPossession.Skills.SingleOrDefault(s => s.ItemId == skillShard.ItemId);
+      if (existingSkillShard == null)
+      {
+        ShardPossession.Skills.Add(new SkillShard
+        {
+          ItemId = skillShard.ItemId,
+          IsOn = skillShard.IsOn,
+          Quantity = skillShard.Quantity,
+          GradeValue = skillShard.GradeValue,
+          Rank = skillShard.Rank,
+          RankValue = skillShard.RankValue
+        });
+        return;
+      }
+
+      existingSkillShard.IsOn = skillShard.IsOn;
+      existingSkillShard.Quantity = skillShard.Quantity;
+      existingSkillShard.GradeValue = skillShard.GradeValue;
+      existingSkillShard.Rank = skillShard.Rank;
+      existingSkillShard.RankValue = skillShard.RankValue;
     }
   }
 }

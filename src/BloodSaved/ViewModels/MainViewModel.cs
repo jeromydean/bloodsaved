@@ -159,7 +159,8 @@ namespace BloodSaved.ViewModels
           {
             InventoryItem? inventoryItem = _saveSlot.Inventory.Items.SingleOrDefault(i => i.ItemId == item);
             InventoryItems.Add(new InventoryItemModel(item,
-              quantity: inventoryItem?.Quantity));
+              quantity: inventoryItem?.Quantity,
+              flagBytes: inventoryItem?.FlagBytes));
           }
         }
 
@@ -171,10 +172,12 @@ namespace BloodSaved.ViewModels
             InventoryItem? inventoryItem = item.GetCategory() == ItemCategory.SkillShards
               ? _saveSlot.ShardPossession.Skills.SingleOrDefault(i => i.ItemId == item)
               : _saveSlot.ShardPossession.Shards.SingleOrDefault(i => i.ItemId == item);
+            InventoryItem? inventoryFlags = _saveSlot.Inventory.Items.SingleOrDefault(i => i.ItemId == item);
 
             Shards.Add(new InventoryItemModel(item,
               quantity: inventoryItem?.Quantity,
-              rank: inventoryItem?.Rank));
+              rank: inventoryItem?.Rank,
+              flagBytes: inventoryFlags?.FlagBytes));
           }
         }
 
@@ -227,7 +230,8 @@ namespace BloodSaved.ViewModels
       _saveSlot.AddOrUpdateInventory(InventoryItems.Where(i => i.IsDirty).Select(im => new InventoryItem
       {
         ItemId = im.ItemId,
-        Quantity = im.Quantity ?? 0
+        Quantity = im.Quantity ?? 0,
+        FlagBytes = InventoryFlagBytes.Copy(im.FlagBytes)
       }));
 
       //normal shards
@@ -235,7 +239,8 @@ namespace BloodSaved.ViewModels
       {
         ItemId = sm.ItemId,
         Quantity = sm.Quantity ?? 0,
-        Rank = sm.Rank ?? 0
+        Rank = sm.Rank ?? 0,
+        FlagBytes = InventoryFlagBytes.Copy(sm.FlagBytes)
       }));
 
       //skill shards

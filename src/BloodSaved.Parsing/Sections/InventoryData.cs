@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using BloodSaved.Parsing.Enums;
 using BloodSaved.Parsing.Extensions;
 using BloodSaved.Parsing.Models;
@@ -79,10 +78,7 @@ namespace BloodSaved.Parsing.Sections
               ItemId = itemId,
               Quantity = saveReader.ReadInt32(),
               Index = saveReader.ReadInt32(),
-              Rank = saveReader.ReadInt32(),
-              GradeValue = saveReader.ReadSingle(),
-              RankValue = saveReader.ReadSingle(),
-              Unknown = saveReader.ReadInt32()
+              FlagBytes = InventoryFlagBytes.Copy(saveReader.ReadBytes(InventoryFlagBytes.Size))
             });
 
             inventorySetCount++;
@@ -93,7 +89,6 @@ namespace BloodSaved.Parsing.Sections
                 inventorySetIndex++;
                 if (inventorySetIndex < 15)
                 {
-                  Debug.WriteLine($"finding next set size, current={inventorySetIndex}");
                   inventorySetSize = saveReader.ReadInt32();
 
                   if (inventorySetSize != 0)
@@ -193,25 +188,10 @@ namespace BloodSaved.Parsing.Sections
             int currentItemIndex = 0;
             foreach (InventoryItem currentItem in categoryItems)
             {
-              ItemCategory currentItemCategory = currentItem.ItemId.GetCategory();
               saveWriter.WriteItemId(currentItem.ItemId);
               saveWriter.Write(currentItem.Quantity);
               saveWriter.Write(currentItemIndex);
-
-              //did we get the food consumption bonus?
-              if (currentItemCategory == ItemCategory.Food
-                && currentItem.Rank == 1)
-              {
-                saveWriter.Write(currentItem.Rank);//1
-                saveWriter.Write(currentItem.GradeValue);//0
-                saveWriter.Write(currentItem.RankValue);//0
-                saveWriter.Write(currentItem.Unknown);//0
-              }
-              else
-              {
-                //some other item categories have bits in this array set but they don't appear to matter?
-                saveWriter.Write(new byte[16]);
-              }
+              saveWriter.Write(currentItem.FlagBytes);
 
               currentItemIndex++;
             }

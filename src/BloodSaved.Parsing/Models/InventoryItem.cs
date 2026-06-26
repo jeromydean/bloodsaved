@@ -11,5 +11,8 @@ namespace BloodSaved.Parsing.Models
     public float GradeValue { get; set; }
     public float RankValue { get; set; }
     public int Unknown { get; set; }
+
+    /// <summary>16-byte inventory flag trailer (not used for skill shards).</summary>
+    public byte[] FlagBytes { get; set; } = InventoryFlagBytes.CreateEmpty();
   }
 }
