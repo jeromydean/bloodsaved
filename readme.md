@@ -2,16 +2,17 @@ BloodSaved (Bloodstained Save Editor) — a save game editor for [Bloodstained: 
 
 ## 📖 About
 
-BloodSaved is still early in development, but it already supports editing most of the useful story-save data:
+BloodSaved edits story-save data for Bloodstained: Ritual of the Night. Supported tabs:
 
-- 📊 **Stats** — total coins, total experience, difficulty (Normal / Hard / Nightmare), and familiar experience
+- 📊 **Stats** — coins, experience, difficulty (Normal / Hard / Nightmare), familiar experience, and archive counters from the in-game **Game Record** and **PC Record** (kills, room entries, quests, alchemy crafts, treasure boxes, unique familiars summoned, and more)
 - 🎒 **Inventory** — set quantities for items across all categories (weapons, gear, food, materials, books, keys, etc.)
 - 💎 **Shards** — set shard grade and rank, including skill shards
-- 🗺️ **Map** — view map progression, zoom and pan, and export the map as an SVG file
+- ⚔️ **Techniques** — mark techniques as mastered; the editor applies the native in-game use counts, experience values, and codex entries needed for Archives listing and mastery
+- 🗺️ **Map** — view map progression (discovered vs. missing rooms), set the map to 100% discovered, zoom and pan, and export the map as an SVG file
 
 You can inject Aurora's familiars and shards into Miriam's save if you want to experiment. Shard grade and rank can be pushed up to 9999, though that tends to make combat trivial.
 
-The UI is built with [Avalonia](https://avaloniaui.net/) 12. Save parsing lives in a separate `BloodSaved.Parsing` library, with round-trip tests in `BloodSaved.Parsing.Tests`.
+The UI is built with [Avalonia](https://avaloniaui.net/) 12. Save parsing lives in a separate `BloodSaved.Parsing` library, with round-trip and regression tests in `BloodSaved.Parsing.Tests`.
 
 Saves from the PC (Steam / GOG) and PS4 versions have been tested. PS4 saves were exported with Apollo or Save Wizard before editing.
 
@@ -24,7 +25,7 @@ https://github.com/jeromydean/bloodsaved/releases
 ## 🎮 Usage
 
 1. Open a **story** save file (`Story_Slot*.sav`). System saves and classic-mode variants are not supported.
-2. Edit values on the Stats, Inventory, Shards, or Map tabs.
+2. Edit values on the **Stats**, **Inventory**, **Shards**, **Techniques**, or **Map** tabs.
 3. Use **File → Save** to write changes back to the same file, or **File → Save As** to choose a new file name and save an encrypted or decrypted copy.
 
 ### 💾 Save file locations (PC)
@@ -38,8 +39,10 @@ Back up your save before editing.
 
 ### 💡 Tips
 
-- On the Inventory and Shards tabs, use Ctrl+A to select all rows, Shift+click for multi-select, and right-click to set quantity, grade, or rank on the selection.
-- On the Map tab, Ctrl+mouse wheel zooms, click-and-drag pans, and right-click exports the map as SVG.
+- On the **Inventory** and **Shards** tabs, use Ctrl+A to select all rows, Shift+click for multi-select, and right-click to set quantity, grade, or rank on the selection.
+- On the **Techniques** tab, check **Mastered** for a technique, then save. The editor writes the correct progress data so techniques appear in Archives and register as mastered in-game.
+- On the **Stats** tab, **Unique Familiars Summoned** is capped at 11 (the number of familiar shard types in the game).
+- On the **Map** tab, use **Set Map 100% Discovered** to mark every room as visited, then save. Ctrl+mouse wheel zooms, click-and-drag pans, and right-click exports the map as SVG.
 - Food first-time consumption bonuses are preserved when you edit other values and save.
 
 ## 🛠️ Build from source
