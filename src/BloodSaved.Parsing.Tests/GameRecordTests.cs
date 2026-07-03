@@ -19,6 +19,7 @@ namespace BloodSaved.Parsing.Tests
       Assert.Equal(11, saveSlot.GameRecord.GetArtsUseCount(ArtsId.SurpriseGift));
       Assert.Equal(800, saveSlot.GameRecord.GetArtsExperience(ArtsId.CriticalSwing));
       Assert.Equal(800, saveSlot.GameRecord.PcInfo.ArtsExperience[28]);
+      Assert.False(saveSlot.GameRecord.IsArtsMastered(ArtsId.CriticalSwing));
       Assert.Equal(5, saveSlot.GameRecord.PcInfo.ContinuousJumpKickCount);
       Assert.Equal("Critical Swing", ArtsId.CriticalSwing.GetTechniqueName());
       Assert.Equal("Arts005", ArtsId.Parry.GetArtsIdKey());
@@ -43,7 +44,7 @@ namespace BloodSaved.Parsing.Tests
 
         SaveSlot reloaded = SaveSlot.Load(tempPath);
         Assert.True(reloaded.GameRecord!.IsArtsMastered(ArtsId.Parry));
-        Assert.Equal(TechniqueConstants.MasteryExperience, reloaded.GameRecord.GetArtsExperience(ArtsId.Parry));
+        Assert.Equal(TechniqueConstants.GetMasteryExperience(ArtsId.Parry), reloaded.GameRecord.GetArtsExperience(ArtsId.Parry));
       }
       finally
       {
@@ -1959,6 +1960,86 @@ namespace BloodSaved.Parsing.Tests
         Assert.Equal(0, saveSlot.GameRecord.GetArtsExperience(artsId));
         Assert.False(saveSlot.GameRecord.IsArtsMastered(artsId));
       }
+    }
+
+    [Fact]
+    public void RootStorySlot0AllTechniquesMastered()
+    {
+      string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.RootStorySlot0AllTechniquesMastered);
+      SaveSlot saveSlot = SaveSlot.Load(savePath);
+      Assert.NotNull(saveSlot.GameRecord);
+      GameRecord gameRecord = saveSlot.GameRecord;
+
+      (ArtsId ArtsId, int UseCount, int Experience)[] expected =
+      [
+        (ArtsId.ForceBlast, 1, 12000),
+        (ArtsId.FlashingAirKick, 4, 5000),
+        (ArtsId.Assassinate, 1, 5000),
+        (ArtsId.SurpriseGift, 1, 8000),
+        (ArtsId.BackSteal, 2, 0),
+        (ArtsId.ThousandBlossoms, 2, 50000),
+        (ArtsId.LastingWound, 1, 8000),
+        (ArtsId.OrbitalWheel, 2, 5000),
+        (ArtsId.Penetrate, 1, 8000),
+        (ArtsId.LungingSerpent, 2, 0),
+        (ArtsId.HatchetHeel, 1, 8000),
+        (ArtsId.TrucidatingGyre, 4, 5000),
+        (ArtsId.CriticalSwing, 1, 5000),
+        (ArtsId.Helmsplitter, 5, 5000),
+        (ArtsId.Jinrai, 8, 9008),
+        (ArtsId.CrimsonStorm, 10, 15144),
+        (ArtsId.CrescentStroke, 2, 5000),
+        (ArtsId.Sansetsuzan, 27, 8000),
+        (ArtsId.RapidFire, 4, 8000),
+        (ArtsId.Parry, 5, 5000),
+        (ArtsId.EleventhHour, 3, 5000),
+        (ArtsId.SickleMoon, 10, 8000),
+        (ArtsId.PowerSlash, 1, 5000),
+      ];
+
+      foreach ((ArtsId artsId, int useCount, int experience) in expected)
+      {
+        Assert.Equal(useCount, gameRecord.GetArtsUseCount(artsId));
+        Assert.Equal(experience, gameRecord.GetArtsExperience(artsId));
+        Assert.Equal(useCount, gameRecord.PcInfo.ArtsUseNum[artsId.GetArrayIndex()]);
+        Assert.Equal(experience, gameRecord.PcInfo.ArtsExperience[artsId.GetArrayIndex()]);
+
+        if (artsId.HasMastery())
+        {
+          Assert.True(gameRecord.IsArtsMastered(artsId));
+          Assert.True(experience >= TechniqueConstants.GetMasteryExperience(artsId));
+        }
+        else
+        {
+          Assert.Equal(0, experience);
+          Assert.False(gameRecord.IsArtsMastered(artsId));
+        }
+      }
+
+      Assert.Equal(23, gameRecord.PcInfo.ArtsUseNum.Count(useCount => useCount != 0));
+      Assert.Equal(21, Enum.GetValues<ArtsId>().Count(artsId => artsId.HasMastery() && gameRecord.IsArtsMastered(artsId)));
+    }
+
+    [Fact]
+    public void RootStorySlot0BrynhildsBlessingPerformed()
+    {
+      string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.RootStorySlot0BrynhildsBlessingPerformed);
+      SaveSlot saveSlot = SaveSlot.Load(savePath);
+      Assert.NotNull(saveSlot.GameRecord);
+      GameRecord gameRecord = saveSlot.GameRecord;
+
+      Assert.Equal(46, ArtsId.BrynhildsBlessing.GetArrayIndex());
+      Assert.Equal(10, gameRecord.GetArtsUseCount(ArtsId.BrynhildsBlessing));
+      Assert.Equal(0, gameRecord.GetArtsExperience(ArtsId.BrynhildsBlessing));
+      Assert.False(gameRecord.IsArtsMastered(ArtsId.BrynhildsBlessing));
+      Assert.Equal(10, gameRecord.PcInfo.ArtsUseNum[46]);
+      Assert.Equal(0, gameRecord.PcInfo.ArtsExperience[46]);
+
+      Assert.Equal(2, gameRecord.GetArtsUseCount(ArtsId.ForceBlast));
+      Assert.Equal(6, gameRecord.GetArtsUseCount(ArtsId.Parry));
+      Assert.Equal(15144, gameRecord.GetArtsExperience(ArtsId.CrimsonStorm));
+      Assert.Equal(21, Enum.GetValues<ArtsId>().Count(artsId => artsId.HasMastery() && gameRecord.IsArtsMastered(artsId)));
+      Assert.Equal(24, gameRecord.PcInfo.ArtsUseNum.Count(useCount => useCount != 0));
     }
 
     [Fact]

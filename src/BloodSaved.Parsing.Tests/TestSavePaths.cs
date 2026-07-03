@@ -56,6 +56,10 @@ namespace BloodSaved.Parsing.Tests
       public const string RootStorySlot0NineteenTechniquesPartial = "4e2801f58dabe8b5e3fdcffc4e5812327e5a8b8a10bf40e4fb4590fd58a7e831";
       /// <summary>Repo-root Story_Slot0.sav — twenty techniques partial progress including Trucidating Gyre (not mastered).</summary>
       public const string RootStorySlot0TwentyTechniquesPartial = "354c47e1970d42e866edbe073792a3245d5e90abc481fdac860255f4be2a3cb2";
+      /// <summary>Repo-root Story_Slot0.sav — all masterable techniques mastered (native in-game Crimson Storm completion).</summary>
+      public const string RootStorySlot0AllTechniquesMastered = "e501acfa279b5122101bf1957855066ad826cada560bd482fd5bc9e326f2e788";
+      /// <summary>Repo-root Story_Slot0.sav — all techniques mastered plus Brynhild's Blessing performed (use at index 46).</summary>
+      public const string RootStorySlot0BrynhildsBlessingPerformed = "07d36f5b6d911dac96dc52c96f2d597379c562d2012fd388ff736c2b910f39a1";
       /// <summary>Repo-root Story_Slot0.sav — all masterable techniques with partial progress including Lasting Wound (not mastered).</summary>
       public const string RootStorySlot0CompleteTechniqueMap = "b48879db7b47f79cfee4f403413517668fbfa10fe623ed6bc87060f0c90f7165";
       public const string ForceBlastPartialProgress = "d77797bc0da816cd708f8d3f6922b13b1be957120c517b6a05e2b5d781f050f5";
