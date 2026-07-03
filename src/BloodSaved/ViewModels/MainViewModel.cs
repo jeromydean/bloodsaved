@@ -42,6 +42,12 @@ namespace BloodSaved.ViewModels
     private SKPicture? _map;
 
     [ObservableProperty]
+    private int _mapTraversedRoomCount;
+
+    [ObservableProperty]
+    private int _mapTotalRoomCount = 1553;
+
+    [ObservableProperty]
     private double _mapScale = DefaultMapScale;
 
     [ObservableProperty]
@@ -93,6 +99,9 @@ namespace BloodSaved.ViewModels
     private int _totalKillCount;
 
     [ObservableProperty]
+    private int _uniqueFamiliarsSummonedCount;
+
+    [ObservableProperty]
     private int _continuousJumpKickCount;
 
     [ObservableProperty]
@@ -128,6 +137,7 @@ namespace BloodSaved.ViewModels
     public ICommand ItemSelectionChangedCommand { get; private set; }
     public ICommand SetSelectedItemQuantityCommand { get; private set; }
     public ICommand SaveMapAsCommand { get; private set; }
+    public ICommand CompleteMapCommand { get; private set; }
 
     public ObservableCollection<InventoryItemModel> InventoryItems { get; private set; }
     public ObservableCollection<InventoryItemModel> Shards { get; private set; }
@@ -150,6 +160,7 @@ namespace BloodSaved.ViewModels
       AboutCommand = new RelayCommand(ShowAbout);
 
       SaveMapAsCommand = new AsyncRelayCommand<SKPicture?>(SaveMapAs);
+      CompleteMapCommand = new RelayCommand(CompleteMap);
 
       ShardSelectionChangedCommand = new RelayCommand<IList>(SelectedShardsChanged);
       SetSelectedShardGradeCommand = new RelayCommand<int>((g) =>
@@ -241,16 +252,7 @@ namespace BloodSaved.ViewModels
 
         LoadGameRecord();
 
-        Map?.Dispose();
-        _mapSvg?.Dispose();
-        using (MemoryStream mapStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(_saveSlot.GenerateSvgMap())))
-        {
-          _mapSvg = new SKSvg();
-          _mapSvg.Load(mapStream);
-        }
-
-        MapScale = DefaultMapScale;
-        Map = _mapSvg.Picture;
+        RefreshMapView();
 
         _loadedSaveSlotPath = path;
         IsSaveSlotLoaded = true;
@@ -339,6 +341,7 @@ namespace BloodSaved.ViewModels
       TotalBrokenWall = gameRecord.TotalBrokenWall;
       TotalRoomInCount = gameRecord.TotalRoomInCount;
       TotalKillCount = gameRecord.TotalKillCount;
+      UniqueFamiliarsSummonedCount = gameRecord.UniqueFamiliarsSummonedCount;
 
       foreach (ArtsId artsId in Enum.GetValues<ArtsId>().OrderBy(a => a.GetTechniqueName()))
       {
@@ -374,6 +377,7 @@ namespace BloodSaved.ViewModels
       gameRecord.TotalBrokenWall = TotalBrokenWall;
       gameRecord.TotalRoomInCount = TotalRoomInCount;
       gameRecord.TotalKillCount = TotalKillCount;
+      gameRecord.SetUniqueFamiliarsSummonedCount(UniqueFamiliarsSummonedCount);
 
       foreach (TechniqueModel technique in Techniques)
       {
@@ -408,6 +412,38 @@ namespace BloodSaved.ViewModels
         WriteChanges();
         _saveSlot.Save(saveAsStorageFile.Path.LocalPath, forceEncryption);
       }
+    }
+
+    private void CompleteMap()
+    {
+      if (_saveSlot == null)
+      {
+        return;
+      }
+
+      _saveSlot.SetMapFullyDiscovered();
+      RefreshMapView();
+    }
+
+    private void RefreshMapView()
+    {
+      if (_saveSlot == null)
+      {
+        return;
+      }
+
+      MapTraversedRoomCount = _saveSlot.GetTraversedRoomCount();
+
+      Map?.Dispose();
+      _mapSvg?.Dispose();
+      using (MemoryStream mapStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(_saveSlot.GenerateSvgMap())))
+      {
+        _mapSvg = new SKSvg();
+        _mapSvg.Load(mapStream);
+      }
+
+      MapScale = DefaultMapScale;
+      Map = _mapSvg.Picture;
     }
 
     private async Task SaveMapAs(SKPicture? _)

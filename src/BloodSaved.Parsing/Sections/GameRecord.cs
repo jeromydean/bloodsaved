@@ -12,6 +12,12 @@ namespace BloodSaved.Parsing.Sections
 
     public Dictionary<string, int> TotalBookshelfDiary { get; set; } = new(StringComparer.Ordinal);
 
+    public Dictionary<string, int> TotalSpawnFamiliar { get; set; } = new(StringComparer.Ordinal);
+
+    private bool _totalBookshelfDiaryDirty;
+
+    private bool _totalSpawnFamiliarDirty;
+
     public int TotalSalesGold { get; set; }
 
     public int BorrowBooksCount { get; set; }
@@ -103,13 +109,12 @@ namespace BloodSaved.Parsing.Sections
         else if (string.Equals(name, SaveConstants.m_TotalBookshelfDiary, StringComparison.Ordinal)
           && type == SaveConstants.MapProperty)
         {
-          saveReader.ReadMapProperty(name, out _, out _, out _, out int bookshelfCount);
-          for (int i = 0; i < bookshelfCount; i++)
-          {
-            string key = saveReader.ReadLengthPrefixedString();
-            int value = saveReader.ReadInt32();
-            gameRecord.TotalBookshelfDiary[key] = value;
-          }
+          ReadNameIntMap(saveReader, name, gameRecord.TotalBookshelfDiary);
+        }
+        else if (string.Equals(name, SaveConstants.m_TotalSpawnFamiliar, StringComparison.Ordinal)
+          && type == SaveConstants.MapProperty)
+        {
+          ReadNameIntMap(saveReader, name, gameRecord.TotalSpawnFamiliar);
         }
         else
         {
@@ -232,7 +237,21 @@ namespace BloodSaved.Parsing.Sections
             continue;
           }
 
-          WriteBookshelfDiaryProperty(saveWriter);
+          _totalBookshelfDiaryDirty = true;
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalBookshelfDiary, TotalBookshelfDiary);
+          continue;
+        }
+
+        if (string.Equals(propertyName, SaveConstants.m_TotalSpawnFamiliar, StringComparison.Ordinal))
+        {
+          if (TotalSpawnFamiliar.Count == 0)
+          {
+            synthesizedWritten.Remove(propertyName);
+            continue;
+          }
+
+          _totalSpawnFamiliarDirty = true;
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalSpawnFamiliar, TotalSpawnFamiliar);
           continue;
         }
 
@@ -304,8 +323,22 @@ namespace BloodSaved.Parsing.Sections
 
       if (string.Equals(section.Name, SaveConstants.m_TotalBookshelfDiary, StringComparison.Ordinal))
       {
-        WriteBookshelfDiaryProperty(saveWriter);
-        return true;
+        if (_totalBookshelfDiaryDirty)
+        {
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalBookshelfDiary, TotalBookshelfDiary);
+        }
+
+        return _totalBookshelfDiaryDirty;
+      }
+
+      if (string.Equals(section.Name, SaveConstants.m_TotalSpawnFamiliar, StringComparison.Ordinal))
+      {
+        if (_totalSpawnFamiliarDirty)
+        {
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalSpawnFamiliar, TotalSpawnFamiliar);
+        }
+
+        return _totalSpawnFamiliarDirty;
       }
 
       if (string.Equals(section.Name, SaveConstants.m_TotalSalesGold, StringComparison.Ordinal))
@@ -377,22 +410,73 @@ namespace BloodSaved.Parsing.Sections
       return false;
     }
 
-    private void WriteBookshelfDiaryProperty(SaveWriter saveWriter)
+    private static void ReadNameIntMap(SaveReader saveReader, string propertyName, Dictionary<string, int> target)
     {
-      saveWriter.WriteMapProperty(SaveConstants.m_TotalBookshelfDiary, SaveConstants.NameProperty,
-        SaveConstants.IntProperty, out long bookshelfLengthOffset, out long bookshelfCountOffset, count: TotalBookshelfDiary.Count);
+      saveReader.ReadMapProperty(propertyName, out _, out _, out _, out int count);
+      for (int i = 0; i < count; i++)
+      {
+        string key = saveReader.ReadLengthPrefixedString();
+        int value = saveReader.ReadInt32();
+        target[key] = value;
+      }
+    }
 
-      foreach (KeyValuePair<string, int> entry in TotalBookshelfDiary)
+    private static void WriteNameIntMapProperty(
+      SaveWriter saveWriter,
+      string propertyName,
+      Dictionary<string, int> entries)
+    {
+      saveWriter.WriteMapProperty(propertyName, SaveConstants.NameProperty,
+        SaveConstants.IntProperty, out long mapLengthOffset, out long mapCountOffset, count: entries.Count);
+
+      foreach (KeyValuePair<string, int> entry in entries)
       {
         saveWriter.WriteLengthPrefixedString(entry.Key);
         saveWriter.Write(entry.Value);
       }
 
-      int bookshelfLength = (int)(saveWriter.CurrentPosition - (bookshelfCountOffset - 4));
+      int mapLength = (int)(saveWriter.CurrentPosition - (mapCountOffset - 4));
       long resumePosition = saveWriter.CurrentPosition;
-      saveWriter.SetPosition(bookshelfLengthOffset);
-      saveWriter.Write(bookshelfLength);
+      saveWriter.SetPosition(mapLengthOffset);
+      saveWriter.Write(mapLength);
       saveWriter.SetPosition(resumePosition);
+    }
+
+    public int UniqueFamiliarsSummonedCount => TotalSpawnFamiliar.Count;
+
+    public void SetUniqueFamiliarsSummonedCount(int count)
+    {
+      count = Math.Clamp(count, 0, GameRecordArchiveStatKeys.MaxUniqueFamiliarsSummoned);
+      _totalSpawnFamiliarDirty = true;
+      SetArchiveEntryCount(
+        TotalSpawnFamiliar,
+        GameRecordArchiveStatKeys.FamiliarSpawnKeys,
+        count,
+        defaultValue: 1);
+    }
+
+    private static void SetArchiveEntryCount(
+      Dictionary<string, int> target,
+      IReadOnlyList<string> canonicalKeys,
+      int count,
+      int defaultValue)
+    {
+      if (count < 0)
+      {
+        throw new ArgumentOutOfRangeException(nameof(count));
+      }
+
+      HashSet<string> retainedKeys = canonicalKeys.Take(count).ToHashSet(StringComparer.Ordinal);
+      foreach (string key in canonicalKeys.Skip(count).Where(target.ContainsKey).ToArray())
+      {
+        target.Remove(key);
+      }
+
+      for (int i = 0; i < count && i < canonicalKeys.Count; i++)
+      {
+        string key = canonicalKeys[i];
+        target[key] = target.TryGetValue(key, out int existing) && existing > 0 ? existing : defaultValue;
+      }
     }
 
     private void AssignIntProperty(string name, int value)
@@ -510,10 +594,15 @@ namespace BloodSaved.Parsing.Sections
       string key = artsId.GetArtsIdKey();
       if (count <= 0)
       {
-        TotalBookshelfDiary.Remove(key);
+        if (TotalBookshelfDiary.Remove(key))
+        {
+          _totalBookshelfDiaryDirty = true;
+        }
+
         return;
       }
 
+      _totalBookshelfDiaryDirty = true;
       TotalBookshelfDiary[key] = count;
     }
 

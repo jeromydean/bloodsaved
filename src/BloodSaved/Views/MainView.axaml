@@ -164,7 +164,7 @@
                 <TextBlock
                   FontWeight="Bold"
                   Text="Game Record" />
-                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
                   <Label Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" Content="Total Kill Count:" />
                   <NumericUpDown Grid.Row="0" Grid.Column="1" Margin="5,0,0,0" Value="{Binding TotalKillCount}" FormatString="N0" Minimum="0" Maximum="999999999" />
                   <Label Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Center" Content="Total Room Entries:" />
@@ -187,6 +187,8 @@
                   <NumericUpDown Grid.Row="9" Grid.Column="1" Margin="5,0,0,0" Value="{Binding BorrowBooksCount}" FormatString="N0" Minimum="0" Maximum="999999999" />
                   <Label Grid.Row="10" Grid.Column="0" VerticalContentAlignment="Center" Content="Dish Types Cooked:" />
                   <NumericUpDown Grid.Row="10" Grid.Column="1" Margin="5,0,0,0" Value="{Binding CookedDishesType}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="11" Grid.Column="0" VerticalContentAlignment="Center" Content="Unique Familiars Summoned:" />
+                  <NumericUpDown Grid.Row="11" Grid.Column="1" Margin="5,0,0,0" Value="{Binding UniqueFamiliarsSummonedCount}" FormatString="N0" Minimum="0" Maximum="11" />
                 </Grid>
                 <TextBlock
                   Margin="0,8,0,0"
@@ -604,10 +606,25 @@
             Classes="TabPage">
             <Grid.RowDefinitions>
               <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
               <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock
+            <StackPanel
               Grid.Row="0"
+              Margin="5"
+              Orientation="Horizontal"
+              HorizontalAlignment="Center"
+              Spacing="10">
+              <Button
+                Content="Set Map 100% Discovered"
+                Command="{Binding CompleteMapCommand}" />
+              <TextBlock VerticalAlignment="Center" Text="Map progress:" />
+              <TextBlock VerticalAlignment="Center" Text="{Binding MapTraversedRoomCount}" />
+              <TextBlock VerticalAlignment="Center" Text="/" />
+              <TextBlock VerticalAlignment="Center" Text="{Binding MapTotalRoomCount}" />
+            </StackPanel>
+            <TextBlock
+              Grid.Row="1"
               Margin="5"
               HorizontalAlignment="Center">
               <Run
@@ -633,7 +650,7 @@
             </TextBlock>
             <ScrollViewer
               x:Name="mapScrollViewer"
-              Grid.Row="1"
+              Grid.Row="2"
               HorizontalScrollBarVisibility="Auto"
               VerticalScrollBarVisibility="Auto"
               AllowAutoHide="True">

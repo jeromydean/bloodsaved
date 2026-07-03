@@ -8,6 +8,55 @@ namespace BloodSaved.Parsing.Tests
   public class GameRecordTests
   {
     [Fact]
+    public void DenOfBehemothsUniqueFamiliarsSummonedReadsCorrectly()
+    {
+      string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.DenOfBehemoths);
+      SaveSlot saveSlot = SaveSlot.Load(savePath);
+      GameRecord gameRecord = saveSlot.GameRecord!;
+
+      Assert.Equal(6, gameRecord.UniqueFamiliarsSummonedCount);
+    }
+
+    [Fact]
+    public void EarlyGameSaveCanPersistUniqueFamiliarsSummoned()
+    {
+      string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.ArvantvilleNoCheatNoBonus);
+      string tempPath = Path.Combine(Path.GetTempPath(), "bloodsaved-familiar-spawn-test.sav");
+      try
+      {
+        SaveSlot saveSlot = SaveSlot.Load(savePath);
+        GameRecord gameRecord = saveSlot.GameRecord!;
+
+        gameRecord.SetUniqueFamiliarsSummonedCount(2);
+        saveSlot.Save(tempPath);
+
+        SaveSlot reloaded = SaveSlot.Load(tempPath);
+        GameRecord reloadedRecord = reloaded.GameRecord!;
+        Assert.Equal(2, reloadedRecord.UniqueFamiliarsSummonedCount);
+        Assert.Equal(2, reloadedRecord.TotalSpawnFamiliar.Count);
+      }
+      finally
+      {
+        if (File.Exists(tempPath))
+        {
+          File.Delete(tempPath);
+        }
+      }
+    }
+
+    [Fact]
+    public void SetUniqueFamiliarsSummonedCountIsCappedAtEleven()
+    {
+      string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.ArvantvilleNoCheatNoBonus);
+      SaveSlot saveSlot = SaveSlot.Load(savePath);
+      GameRecord gameRecord = saveSlot.GameRecord!;
+
+      gameRecord.SetUniqueFamiliarsSummonedCount(99);
+
+      Assert.Equal(11, gameRecord.UniqueFamiliarsSummonedCount);
+    }
+
+    [Fact]
     public void DenOfBehemothsGameRecordReadsCorrectly()
     {
       string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.DenOfBehemoths);

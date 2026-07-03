@@ -19,6 +19,7 @@ namespace BloodSaved.Parsing
     private bool _isEncrypted = false;
     private byte[] _checksum;
     private bool _validChecksum = false;
+    private bool _traverseSectionDirty;
 
 
     public CompletedTutorials CompletedTutorials
@@ -123,6 +124,31 @@ namespace BloodSaved.Parsing
       svgBuilder.AppendLine(@"</svg>");
       string mapSvgData = svgBuilder.ToString();
       return mapSvgData;
+    }
+
+    public int GetTraversedRoomCount()
+    {
+      int traversedRoomCount = 0;
+      for (int i = 0; i < SaveConstants.CompleteMap.Length; i++)
+      {
+        if (SaveConstants.CompleteMap[i] != 0 && m_Traverse.TraverseData[i] != 0)
+        {
+          traversedRoomCount++;
+        }
+      }
+
+      return traversedRoomCount;
+    }
+
+    public void SetMapFullyDiscovered()
+    {
+      m_Traverse.SetFullyDiscovered();
+      _traverseSectionDirty = true;
+    }
+
+    public byte[] GetTraverseSectionData()
+    {
+      return _saveSections.Single(s => s.Name == "m_Traverse").Data;
     }
 
     public static byte[] Crypt(byte[] data)
@@ -324,6 +350,9 @@ namespace BloodSaved.Parsing
               break;
             case SaveConstants.GameRecord:
               writer.Write(GameRecord.Serialize());
+              break;
+            case "m_Traverse":
+              writer.Write(_traverseSectionDirty ? m_Traverse.Serialize() : section.Data);
               break;
             default:
               writer.Write(section.Data);
