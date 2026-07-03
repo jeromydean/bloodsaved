@@ -13,8 +13,8 @@
 
   <PropertyGroup>
     <PackageId>BloodSaved</PackageId> 
-    <FileVersion>0.0.20</FileVersion>
-    <Version>0.0.20</Version>
+    <FileVersion>0.9.0</FileVersion>
+    <Version>0.9.0</Version>
     <Authors>$(AssemblyName)</Authors>
     <Company>$(AssemblyName)</Company>
     <Title>$(AssemblyName)</Title>
