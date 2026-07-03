@@ -26,6 +26,35 @@ namespace BloodSaved.Parsing.Tests
     }
 
     [Fact]
+    public void SetArtsUseCountEnsuresCodexEntry()
+    {
+      string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.ArvantvilleNoCheatNoBonus);
+      string tempPath = Path.Combine(Path.GetTempPath(), "bloodsaved-early-arts-use-test.sav");
+      try
+      {
+        SaveSlot saveSlot = SaveSlot.Load(savePath);
+
+        saveSlot.GameRecord!.SetArtsUseCount(ArtsId.BackSteal, 3);
+        saveSlot.Save(tempPath);
+
+        SaveSlot reloaded = SaveSlot.Load(tempPath);
+        Assert.Equal(3, reloaded.GameRecord!.GetArtsUseCount(ArtsId.BackSteal));
+        Assert.Equal(1, reloaded.GameRecord.GetArtsCodexOpenCount(ArtsId.BackSteal));
+        Assert.Equal("Arts006", reloaded.GameRecord.TotalBookshelfDiary.Keys.Single());
+        Assert.DoesNotContain(
+          reloaded.GameRecord.TotalBookshelfDiary,
+          entry => entry.Key == ArtsId.BrynhildsBlessing.ToString());
+      }
+      finally
+      {
+        if (File.Exists(tempPath))
+        {
+          File.Delete(tempPath);
+        }
+      }
+    }
+
+    [Fact]
     public void EarlyGameSaveCanAddArtsExperience()
     {
       string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.ArvantvilleNoCheatNoBonus);
@@ -40,11 +69,81 @@ namespace BloodSaved.Parsing.Tests
           experience => experience != 0);
 
         saveSlot.GameRecord.SetArtsMastered(ArtsId.Parry, mastered: true);
+        Assert.Equal(5, saveSlot.GameRecord.GetArtsUseCount(ArtsId.Parry));
+        Assert.Equal(1, saveSlot.GameRecord.GetArtsCodexOpenCount(ArtsId.Parry));
         saveSlot.Save(tempPath);
 
         SaveSlot reloaded = SaveSlot.Load(tempPath);
         Assert.True(reloaded.GameRecord!.IsArtsMastered(ArtsId.Parry));
         Assert.Equal(TechniqueConstants.GetMasteryExperience(ArtsId.Parry), reloaded.GameRecord.GetArtsExperience(ArtsId.Parry));
+        Assert.Equal(5, reloaded.GameRecord.GetArtsUseCount(ArtsId.Parry));
+        Assert.Equal(1, reloaded.GameRecord.GetArtsCodexOpenCount(ArtsId.Parry));
+        Assert.Equal("Arts005", reloaded.GameRecord.TotalBookshelfDiary.Keys.Single());
+      }
+      finally
+      {
+        if (File.Exists(tempPath))
+        {
+          File.Delete(tempPath);
+        }
+      }
+    }
+
+    [Fact]
+    public void SetArtsMasteredAppliesNativeUseAndExperiencePairs()
+    {
+      string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.ArvantvilleNoCheatNoBonus);
+      string tempPath = Path.Combine(Path.GetTempPath(), "bloodsaved-native-mastered-test.sav");
+      try
+      {
+        SaveSlot saveSlot = SaveSlot.Load(savePath);
+        GameRecord gameRecord = saveSlot.GameRecord!;
+        Assert.All(gameRecord.PcInfo.ArtsExperience, experience => Assert.Equal(0, experience));
+
+        foreach (ArtsId artsId in Enum.GetValues<ArtsId>())
+        {
+          if (!artsId.HasMastery())
+          {
+            continue;
+          }
+
+          gameRecord.SetArtsMastered(artsId, mastered: true);
+
+          Assert.True(
+            TechniqueConstants.TryGetNativeMasteredValues(artsId, out int expectedUse, out int expectedExp),
+            artsId.GetTechniqueName());
+          Assert.Equal(expectedUse, gameRecord.GetArtsUseCount(artsId));
+          Assert.Equal(expectedExp, gameRecord.GetArtsExperience(artsId));
+          Assert.Equal(expectedUse, gameRecord.PcInfo.ArtsUseNum[artsId.GetArrayIndex()]);
+          Assert.Equal(expectedExp, gameRecord.PcInfo.ArtsExperience[artsId.GetArrayIndex()]);
+          Assert.True(gameRecord.IsArtsMastered(artsId));
+          if (artsId.HasCodexKey())
+          {
+            Assert.Equal(1, gameRecord.GetArtsCodexOpenCount(artsId));
+          }
+        }
+
+        // Crimson Storm requires use=10 with exp=15144; use=1 with threshold exp fails in-game.
+        Assert.Equal(10, gameRecord.GetArtsUseCount(ArtsId.CrimsonStorm));
+        Assert.Equal(15144, gameRecord.GetArtsExperience(ArtsId.CrimsonStorm));
+        Assert.Equal(27, gameRecord.GetArtsUseCount(ArtsId.Sansetsuzan));
+        Assert.Equal(8000, gameRecord.GetArtsExperience(ArtsId.Sansetsuzan));
+        Assert.Equal(8, gameRecord.GetArtsUseCount(ArtsId.Jinrai));
+        Assert.Equal(9008, gameRecord.GetArtsExperience(ArtsId.Jinrai));
+        Assert.Equal(
+          21,
+          Enum.GetValues<ArtsId>().Count(artsId => artsId.HasMastery() && gameRecord.IsArtsMastered(artsId)));
+
+        saveSlot.Save(tempPath);
+
+        SaveSlot reloaded = SaveSlot.Load(tempPath);
+        GameRecord reloadedRecord = reloaded.GameRecord!;
+        Assert.Equal(10, reloadedRecord.GetArtsUseCount(ArtsId.CrimsonStorm));
+        Assert.Equal(15144, reloadedRecord.GetArtsExperience(ArtsId.CrimsonStorm));
+        Assert.True(reloadedRecord.IsArtsMastered(ArtsId.CrimsonStorm));
+        Assert.Equal(21, reloadedRecord.TotalBookshelfDiary.Count);
+        Assert.Equal("Arts019", ArtsId.CrimsonStorm.GetArtsIdKey());
+        Assert.Equal(1, reloadedRecord.TotalBookshelfDiary[ArtsId.CrimsonStorm.GetArtsIdKey()]);
       }
       finally
       {

@@ -63,6 +63,12 @@ namespace BloodSaved.Parsing
       private set;
     }
 
+    public GameRecord GameRecord
+    {
+      get;
+      private set;
+    }
+
     private SaveSlot()
     {
       _saveSections = new List<SaveSection>();
@@ -273,6 +279,12 @@ namespace BloodSaved.Parsing
       saveSlot.ShardPossession = ShardPossession.Deserialize(saveSlot._saveSections
         .Single(s => s.Name == SaveConstants.ShardPossession));
 
+      if (saveSlot._saveSections.Any(s => s.Name == SaveConstants.GameRecord))
+      {
+        saveSlot.GameRecord = GameRecord.Deserialize(saveSlot._saveSections
+          .Single(s => s.Name == SaveConstants.GameRecord));
+      }
+
       return saveSlot;
     }
 
@@ -309,6 +321,9 @@ namespace BloodSaved.Parsing
               break;
             case SaveConstants.ShardPossession:
               writer.Write(ShardPossession.Serialize());
+              break;
+            case SaveConstants.GameRecord:
+              writer.Write(GameRecord.Serialize());
               break;
             default:
               writer.Write(section.Data);

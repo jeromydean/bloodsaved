@@ -103,6 +103,7 @@
               <RowDefinition Height="Auto" />
               <RowDefinition Height="Auto" />
               <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
               <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -151,12 +152,65 @@
               ItemsSource="{Binding EPBGameLevels}"
               SelectedItem="{Binding EPBGameLevel}" />
 
-            <DataGrid
-              x:Name="FamiliarExperienceGrid"
+            <ScrollViewer
               Grid.Row="3"
               Grid.Column="0"
               Grid.ColumnSpan="2"
-              Margin="5,25,5,5"
+              Margin="5,15,5,5"
+              IsVisible="{Binding HasGameRecord}"
+              VerticalScrollBarVisibility="Auto"
+              MaxHeight="320">
+              <StackPanel Spacing="5">
+                <TextBlock
+                  FontWeight="Bold"
+                  Text="Game Record" />
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                  <Label Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" Content="Total Kill Count:" />
+                  <NumericUpDown Grid.Row="0" Grid.Column="1" Margin="5,0,0,0" Value="{Binding TotalKillCount}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Center" Content="Total Room Entries:" />
+                  <NumericUpDown Grid.Row="1" Grid.Column="1" Margin="5,0,0,0" Value="{Binding TotalRoomInCount}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="2" Grid.Column="0" VerticalContentAlignment="Center" Content="Total Sales Gold:" />
+                  <NumericUpDown Grid.Row="2" Grid.Column="1" Margin="5,0,0,0" Value="{Binding TotalSalesGold}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="3" Grid.Column="0" VerticalContentAlignment="Center" Content="Quests Cleared:" />
+                  <NumericUpDown Grid.Row="3" Grid.Column="1" Margin="5,0,0,0" Value="{Binding QuestClearCount}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="4" Grid.Column="0" VerticalContentAlignment="Center" Content="Alchemy Crafts:" />
+                  <NumericUpDown Grid.Row="4" Grid.Column="1" Margin="5,0,0,0" Value="{Binding AlchemyCraftCount}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="5" Grid.Column="0" VerticalContentAlignment="Center" Content="Treasure Boxes Opened:" />
+                  <NumericUpDown Grid.Row="5" Grid.Column="1" Margin="5,0,0,0" Value="{Binding OpenTreasureBoxCount}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="6" Grid.Column="0" VerticalContentAlignment="Center" Content="Candles Destroyed:" />
+                  <NumericUpDown Grid.Row="6" Grid.Column="1" Margin="5,0,0,0" Value="{Binding DestroyedCandleCount}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="7" Grid.Column="0" VerticalContentAlignment="Center" Content="Walls Broken:" />
+                  <NumericUpDown Grid.Row="7" Grid.Column="1" Margin="5,0,0,0" Value="{Binding TotalBrokenWall}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="8" Grid.Column="0" VerticalContentAlignment="Center" Content="OD Chair Actions:" />
+                  <NumericUpDown Grid.Row="8" Grid.Column="1" Margin="5,0,0,0" Value="{Binding TotalOdChairAction}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="9" Grid.Column="0" VerticalContentAlignment="Center" Content="Books Borrowed:" />
+                  <NumericUpDown Grid.Row="9" Grid.Column="1" Margin="5,0,0,0" Value="{Binding BorrowBooksCount}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="10" Grid.Column="0" VerticalContentAlignment="Center" Content="Dish Types Cooked:" />
+                  <NumericUpDown Grid.Row="10" Grid.Column="1" Margin="5,0,0,0" Value="{Binding CookedDishesType}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                </Grid>
+                <TextBlock
+                  Margin="0,8,0,0"
+                  FontWeight="Bold"
+                  Text="PC Record" />
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                  <Label Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" Content="Longest Jump Kick Streak:" />
+                  <NumericUpDown Grid.Row="0" Grid.Column="1" Margin="5,0,0,0" Value="{Binding ContinuousJumpKickCount}" FormatString="N0" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Center" Content="Total Move Distance:" />
+                  <NumericUpDown Grid.Row="1" Grid.Column="1" Margin="5,0,0,0" Value="{Binding TotalMoveDistance}" FormatString="N2" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="2" Grid.Column="0" VerticalContentAlignment="Center" Content="Total Back Step Distance:" />
+                  <NumericUpDown Grid.Row="2" Grid.Column="1" Margin="5,0,0,0" Value="{Binding TotalBackStepMoveDistance}" FormatString="N2" Minimum="0" Maximum="999999999" />
+                  <Label Grid.Row="3" Grid.Column="0" VerticalContentAlignment="Center" Content="Blood Stele Amount:" />
+                  <NumericUpDown Grid.Row="3" Grid.Column="1" Margin="5,0,0,0" Value="{Binding BloodSteeleAmount}" FormatString="N2" Minimum="0" Maximum="999999999" />
+                </Grid>
+              </StackPanel>
+            </ScrollViewer>
+
+            <DataGrid
+              x:Name="FamiliarExperienceGrid"
+              Grid.Row="4"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              Margin="5,15,5,5"
               ItemsSource="{Binding FamiliarExperience}">
               <DataGrid.Columns>
                 <DataGridTextColumn
@@ -495,6 +549,50 @@
                         HorizontalAlignment="Stretch" />
                     </DataTemplate>
                   </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+              </DataGrid.Columns>
+            </DataGrid>
+          </Grid>
+        </TabItem>
+        <TabItem
+          Header="Techniques"
+          IsVisible="{Binding HasGameRecord}">
+          <Grid
+            Classes="TabPage">
+            <DataGrid
+              ItemsSource="{Binding Techniques}"
+              CanUserReorderColumns="True"
+              CanUserResizeColumns="True"
+              CanUserSortColumns="True"
+              GridLinesVisibility="All"
+              BorderThickness="1"
+              BorderBrush="Gray"
+              Margin="5">
+              <DataGrid.Columns>
+                <DataGridTextColumn
+                  Header="Technique"
+                  Binding="{Binding Name}"
+                  IsReadOnly="true"
+                  Width="Auto" />
+                <DataGridTextColumn
+                  Header="ID"
+                  Binding="{Binding ArtsIdKey}"
+                  IsReadOnly="true"
+                  Width="80" />
+                <DataGridTemplateColumn
+                  SortMemberPath="IsMastered"
+                  Header="Mastered"
+                  Width="100"
+                  IsReadOnly="False">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate DataType="models:TechniqueModel">
+                      <CheckBox
+                        IsChecked="{Binding IsMastered, Mode=TwoWay}"
+                        IsEnabled="{Binding HasMastery}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
               </DataGrid.Columns>
             </DataGrid>

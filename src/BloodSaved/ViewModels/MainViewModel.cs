@@ -13,6 +13,7 @@ using BloodSaved.Models;
 using BloodSaved.Parsing;
 using BloodSaved.Parsing.Enums;
 using BloodSaved.Parsing.Extensions;
+using BloodSaved.Parsing.Sections;
 using BloodSaved.Parsing.Models;
 using BloodSaved.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -54,8 +55,56 @@ namespace BloodSaved.ViewModels
 
     [ObservableProperty]
     private EPBGameLevel _ePBGameLevel;
-    
 
+    [ObservableProperty]
+    private bool _hasGameRecord;
+
+    [ObservableProperty]
+    private int _totalSalesGold;
+
+    [ObservableProperty]
+    private int _borrowBooksCount;
+
+    [ObservableProperty]
+    private int _cookedDishesType;
+
+    [ObservableProperty]
+    private int _alchemyCraftCount;
+
+    [ObservableProperty]
+    private int _questClearCount;
+
+    [ObservableProperty]
+    private int _openTreasureBoxCount;
+
+    [ObservableProperty]
+    private int _destroyedCandleCount;
+
+    [ObservableProperty]
+    private int _totalOdChairAction;
+
+    [ObservableProperty]
+    private int _totalBrokenWall;
+
+    [ObservableProperty]
+    private int _totalRoomInCount;
+
+    [ObservableProperty]
+    private int _totalKillCount;
+
+    [ObservableProperty]
+    private int _continuousJumpKickCount;
+
+    [ObservableProperty]
+    private double _totalMoveDistance;
+
+    [ObservableProperty]
+    private double _totalBackStepMoveDistance;
+
+    [ObservableProperty]
+    private double _bloodSteeleAmount;
+
+    
     private List<InventoryItemModel>? _selectedShards = null;
 
     [ObservableProperty]
@@ -84,6 +133,7 @@ namespace BloodSaved.ViewModels
     public ObservableCollection<InventoryItemModel> Shards { get; private set; }
     public ObservableCollection<EPBGameLevel> EPBGameLevels { get; private set; }
     public ObservableCollection<FamiliarExperienceModel> FamiliarExperience { get; private set; }
+    public ObservableCollection<TechniqueModel> Techniques { get; private set; }
 
     public MainViewModel(IFilePickerService filePickerService,
       IWindowService windowService)
@@ -121,6 +171,7 @@ namespace BloodSaved.ViewModels
       Shards = new ObservableCollection<InventoryItemModel>();
       EPBGameLevels = new ObservableCollection<EPBGameLevel>(Enum.GetValues<EPBGameLevel>());
       FamiliarExperience = new ObservableCollection<FamiliarExperienceModel>();
+      Techniques = new ObservableCollection<TechniqueModel>();
     }
 
     private void SelectedItemsChanged(IList selectedItems)
@@ -187,6 +238,8 @@ namespace BloodSaved.ViewModels
           KeyValuePair<ItemId, int> kvp = _saveSlot.StatusData.FamiliarTotalExperience.SingleOrDefault(de => de.Key == familiarItem);
           FamiliarExperience.Add(new FamiliarExperienceModel(familiarItem, kvp.Value));
         }
+
+        LoadGameRecord();
 
         Map?.Dispose();
         _mapSvg?.Dispose();
@@ -256,6 +309,89 @@ namespace BloodSaved.ViewModels
       {
         _saveSlot.StatusData.FamiliarTotalExperience[fem.ItemId] = fem.Experience ?? 0;
       }
+
+      WriteGameRecordChanges();
+    }
+
+    private void LoadGameRecord()
+    {
+      Techniques.Clear();
+      HasGameRecord = _saveSlot?.GameRecord != null;
+      if (_saveSlot?.GameRecord == null)
+      {
+        return;
+      }
+
+      GameRecord gameRecord = _saveSlot.GameRecord;
+      PcInfoRecord pcInfo = gameRecord.PcInfo;
+      ContinuousJumpKickCount = pcInfo.ContinuousJumpKickCount;
+      TotalMoveDistance = pcInfo.TotalMoveDistance;
+      TotalBackStepMoveDistance = pcInfo.TotalBackStepMoveDistance;
+      BloodSteeleAmount = pcInfo.BloodSteeleAmount;
+      TotalSalesGold = gameRecord.TotalSalesGold;
+      BorrowBooksCount = gameRecord.BorrowBooksCount;
+      CookedDishesType = gameRecord.CookedDishesType;
+      AlchemyCraftCount = gameRecord.AlchemyCraftCount;
+      QuestClearCount = gameRecord.QuestClearCount;
+      OpenTreasureBoxCount = gameRecord.OpenTreasureBoxCount;
+      DestroyedCandleCount = gameRecord.DestroyedCandleCount;
+      TotalOdChairAction = gameRecord.TotalODChairAction;
+      TotalBrokenWall = gameRecord.TotalBrokenWall;
+      TotalRoomInCount = gameRecord.TotalRoomInCount;
+      TotalKillCount = gameRecord.TotalKillCount;
+
+      foreach (ArtsId artsId in Enum.GetValues<ArtsId>().OrderBy(a => a.GetTechniqueName()))
+      {
+        Techniques.Add(new TechniqueModel(
+          artsId,
+          gameRecord.GetArtsUseCount(artsId),
+          gameRecord.GetArtsExperience(artsId),
+          gameRecord.GetArtsCodexOpenCount(artsId)));
+      }
+    }
+
+    private void WriteGameRecordChanges()
+    {
+      if (_saveSlot?.GameRecord == null)
+      {
+        return;
+      }
+
+      GameRecord gameRecord = _saveSlot.GameRecord;
+      PcInfoRecord pcInfo = gameRecord.PcInfo;
+      pcInfo.ContinuousJumpKickCount = ContinuousJumpKickCount;
+      pcInfo.TotalMoveDistance = (float)TotalMoveDistance;
+      pcInfo.TotalBackStepMoveDistance = (float)TotalBackStepMoveDistance;
+      pcInfo.BloodSteeleAmount = (float)BloodSteeleAmount;
+      gameRecord.TotalSalesGold = TotalSalesGold;
+      gameRecord.BorrowBooksCount = BorrowBooksCount;
+      gameRecord.CookedDishesType = CookedDishesType;
+      gameRecord.AlchemyCraftCount = AlchemyCraftCount;
+      gameRecord.QuestClearCount = QuestClearCount;
+      gameRecord.OpenTreasureBoxCount = OpenTreasureBoxCount;
+      gameRecord.DestroyedCandleCount = DestroyedCandleCount;
+      gameRecord.TotalODChairAction = TotalOdChairAction;
+      gameRecord.TotalBrokenWall = TotalBrokenWall;
+      gameRecord.TotalRoomInCount = TotalRoomInCount;
+      gameRecord.TotalKillCount = TotalKillCount;
+
+      foreach (TechniqueModel technique in Techniques)
+      {
+        if (technique.HasMastery && technique.IsMastered)
+        {
+          gameRecord.SetArtsMastered(technique.ArtsId, mastered: true);
+        }
+        else
+        {
+          gameRecord.SetArtsUseCount(technique.ArtsId, technique.UseCount);
+          gameRecord.SetArtsExperience(technique.ArtsId, technique.Experience);
+        }
+
+        if (technique.HasCodexKey && technique.CodexOpenCount > 0)
+        {
+          gameRecord.SetArtsCodexOpenCount(technique.ArtsId, technique.CodexOpenCount);
+        }
+      }
     }
 
     private void SaveSaveSlot()
@@ -295,6 +431,8 @@ namespace BloodSaved.ViewModels
       _saveSlot = null;
       InventoryItems.Clear();
       Shards.Clear();
+      Techniques.Clear();
+      HasGameRecord = false;
       Map?.Dispose();
       Map = null;
       _mapSvg?.Dispose();
