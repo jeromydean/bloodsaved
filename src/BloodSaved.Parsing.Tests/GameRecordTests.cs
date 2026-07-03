@@ -45,6 +45,106 @@ namespace BloodSaved.Parsing.Tests
     }
 
     [Fact]
+    public void StartOfNormalMiriamSaveCanAddMissingDemonDiscovery()
+    {
+      string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.StartOfNormalMiriamGame);
+      string tempPath = Path.Combine(Path.GetTempPath(), $"bloodsaved-demon-discovery-test-{Guid.NewGuid():N}.sav");
+      try
+      {
+        SaveSlot saveSlot = SaveSlot.Load(savePath);
+        GameRecord gameRecord = saveSlot.GameRecord!;
+        Assert.Empty(gameRecord.TotalKill);
+
+        gameRecord.SetAllDemonsDiscovered();
+        saveSlot.Save(tempPath);
+
+        SaveSlot reloaded = SaveSlot.Load(tempPath);
+        GameRecord reloadedRecord = reloaded.GameRecord!;
+        Assert.Equal(134, reloadedRecord.DiscoveredDemonsCount);
+        Assert.All(reloadedRecord.TotalKill.Values, killCount => Assert.True(killCount >= 1));
+        Assert.True(reloadedRecord.TotalKillCount >= 134);
+        Assert.Contains("N3003", reloadedRecord.TotalKill.Keys);
+        Assert.Contains("N1001", reloadedRecord.TotalKill.Keys);
+        Assert.Contains("N1009", reloadedRecord.TotalKill.Keys);
+        Assert.Contains("N1009_Enemy", reloadedRecord.TotalKill.Keys);
+        Assert.Contains("N1013_Bael", reloadedRecord.TotalKill.Keys);
+        Assert.Contains("N3001_Armor", reloadedRecord.TotalKill.Keys);
+        Assert.Contains("N3127", reloadedRecord.TotalKill.Keys);
+        Assert.Contains("SwingTentacle", reloadedRecord.TotalItem.Keys);
+        Assert.Contains("Demoniccapture", reloadedRecord.TotalItem.Keys);
+        Assert.Contains("Reflectionray", reloadedRecord.TotalItem.Keys);
+        Assert.Contains("DimensionShift", reloadedRecord.TotalItem.Keys);
+      }
+      finally
+      {
+        if (File.Exists(tempPath))
+        {
+          File.Delete(tempPath);
+        }
+      }
+    }
+
+    [Fact]
+    public void StartOfNormalMiriamSaveCanPersistSelectedDemonDiscovery()
+    {
+      string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.StartOfNormalMiriamGame);
+      string tempPath = Path.Combine(Path.GetTempPath(), $"bloodsaved-selected-demons-test-{Guid.NewGuid():N}.sav");
+      try
+      {
+        SaveSlot saveSlot = SaveSlot.Load(savePath);
+        GameRecord gameRecord = saveSlot.GameRecord!;
+
+        gameRecord.SetDiscoveredDemons(new[]
+        {
+          "N3003",
+          "N3006",
+          "N1001",
+          "N1013_Bael",
+        });
+        saveSlot.Save(tempPath);
+
+        SaveSlot reloaded = SaveSlot.Load(tempPath);
+        GameRecord reloadedRecord = reloaded.GameRecord!;
+        Assert.Equal(4, reloadedRecord.DiscoveredDemonsCount);
+        Assert.Equal(1, reloadedRecord.TotalKill["N3003"]);
+        Assert.Equal(1, reloadedRecord.TotalKill["N3006"]);
+        Assert.Equal(1, reloadedRecord.TotalKill["N1001"]);
+        Assert.Equal(1, reloadedRecord.TotalKill["N1013_Bael"]);
+        Assert.Contains("Ceruleansplash", reloadedRecord.TotalItem.Keys);
+        Assert.Contains("SwingTentacle", reloadedRecord.TotalItem.Keys);
+        Assert.DoesNotContain("FireCannon", reloadedRecord.TotalItem.Keys);
+        Assert.DoesNotContain("N3005", reloadedRecord.TotalKill.Keys);
+        Assert.True(reloadedRecord.TotalKillCount >= 4);
+      }
+      finally
+      {
+        if (File.Exists(tempPath))
+        {
+          File.Delete(tempPath);
+        }
+      }
+    }
+
+    [Fact]
+    public void KnownDemonArchiveKeysCoverStorySaveFixtures()
+    {
+      string storySaveDirectory = Path.GetDirectoryName(TestSavePaths.Story(TestSavePaths.StorySaves.StartOfNormalMiriamGame))!;
+      HashSet<string> knownKeys = GameRecord.AllDemonKeys.ToHashSet(StringComparer.Ordinal);
+      knownKeys.Add("N1009_Enemy");
+      knownKeys.Add("N3001_Armor");
+
+      string[] unknownKeys = Directory
+        .EnumerateFiles(storySaveDirectory, "*.sav")
+        .SelectMany(path => SaveSlot.Load(path).GameRecord?.TotalKill.Keys ?? Enumerable.Empty<string>())
+        .Where(key => !knownKeys.Contains(key))
+        .Distinct(StringComparer.Ordinal)
+        .OrderBy(key => key, StringComparer.Ordinal)
+        .ToArray();
+
+      Assert.Empty(unknownKeys);
+    }
+
+    [Fact]
     public void SetUniqueFamiliarsSummonedCountIsCappedAtEleven()
     {
       string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.ArvantvilleNoCheatNoBonus);

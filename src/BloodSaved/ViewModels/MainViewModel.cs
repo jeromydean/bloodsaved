@@ -99,6 +99,9 @@ namespace BloodSaved.ViewModels
     private int _totalKillCount;
 
     [ObservableProperty]
+    private int _demonsDiscoveredCount;
+
+    [ObservableProperty]
     private int _uniqueFamiliarsSummonedCount;
 
     [ObservableProperty]
@@ -134,6 +137,11 @@ namespace BloodSaved.ViewModels
     [ObservableProperty]
     private bool _questsSelected;
 
+    private List<DemonModel>? _selectedDemons = null;
+
+    [ObservableProperty]
+    private bool _demonsSelected;
+
     public ICommand OpenedCommand { get; private set; }
     public ICommand OpenCommand { get; private set; }
     public ICommand CloseCommand { get; private set; }
@@ -150,8 +158,11 @@ namespace BloodSaved.ViewModels
     public ICommand MasterSelectedTechniquesCommand { get; private set; }
     public ICommand QuestSelectionChangedCommand { get; private set; }
     public ICommand CompleteSelectedQuestsCommand { get; private set; }
+    public ICommand DemonSelectionChangedCommand { get; private set; }
+    public ICommand DiscoverSelectedDemonsCommand { get; private set; }
     public ICommand SaveMapAsCommand { get; private set; }
     public ICommand CompleteMapCommand { get; private set; }
+    public ICommand DiscoverAllDemonsCommand { get; private set; }
 
     public ObservableCollection<InventoryItemModel> InventoryItems { get; private set; }
     public ObservableCollection<InventoryItemModel> Shards { get; private set; }
@@ -159,6 +170,7 @@ namespace BloodSaved.ViewModels
     public ObservableCollection<FamiliarExperienceModel> FamiliarExperience { get; private set; }
     public ObservableCollection<TechniqueModel> Techniques { get; private set; }
     public ObservableCollection<QuestModel> Quests { get; private set; }
+    public ObservableCollection<DemonModel> Demons { get; private set; }
 
     public MainViewModel(IFilePickerService filePickerService,
       IWindowService windowService)
@@ -199,12 +211,17 @@ namespace BloodSaved.ViewModels
       QuestSelectionChangedCommand = new RelayCommand<IList?>(SelectedQuestsChanged);
       CompleteSelectedQuestsCommand = new RelayCommand(CompleteSelectedQuests);
 
+      DemonSelectionChangedCommand = new RelayCommand<IList?>(SelectedDemonsChanged);
+      DiscoverSelectedDemonsCommand = new RelayCommand(DiscoverSelectedDemons);
+      DiscoverAllDemonsCommand = new RelayCommand(DiscoverAllDemons);
+
       InventoryItems = new ObservableCollection<InventoryItemModel>();
       Shards = new ObservableCollection<InventoryItemModel>();
       EPBGameLevels = new ObservableCollection<EPBGameLevel>(Enum.GetValues<EPBGameLevel>());
       FamiliarExperience = new ObservableCollection<FamiliarExperienceModel>();
       Techniques = new ObservableCollection<TechniqueModel>();
       Quests = new ObservableCollection<QuestModel>();
+      Demons = new ObservableCollection<DemonModel>();
     }
 
     private void SelectedItemsChanged(IList selectedItems)
@@ -245,6 +262,22 @@ namespace BloodSaved.ViewModels
       {
         quest.IsCompleted = true;
       }
+    }
+
+    private void SelectedDemonsChanged(IList? selectedDemons)
+    {
+      _selectedDemons = selectedDemons?.Cast<DemonModel>().ToList() ?? [];
+      DemonsSelected = _selectedDemons.Any();
+    }
+
+    private void DiscoverSelectedDemons()
+    {
+      foreach (DemonModel demon in _selectedDemons ?? [])
+      {
+        demon.IsDiscovered = true;
+      }
+
+      RefreshDiscoveredDemonCount();
     }
 
     private async Task Initialize()
@@ -302,6 +335,7 @@ namespace BloodSaved.ViewModels
 
         LoadGameRecord();
         LoadQuests();
+        LoadDemons();
 
         RefreshMapView();
 
@@ -364,6 +398,7 @@ namespace BloodSaved.ViewModels
       }
 
       WriteGameRecordChanges();
+      WriteDemonChanges();
       WriteQuestChanges();
     }
 
@@ -393,6 +428,7 @@ namespace BloodSaved.ViewModels
       TotalBrokenWall = gameRecord.TotalBrokenWall;
       TotalRoomInCount = gameRecord.TotalRoomInCount;
       TotalKillCount = gameRecord.TotalKillCount;
+      DemonsDiscoveredCount = gameRecord.DiscoveredDemonsCount;
       UniqueFamiliarsSummonedCount = gameRecord.UniqueFamiliarsSummonedCount;
 
       foreach (ArtsId artsId in Enum.GetValues<ArtsId>().OrderBy(a => a.GetTechniqueName()))
@@ -462,6 +498,20 @@ namespace BloodSaved.ViewModels
       }
     }
 
+    private void LoadDemons()
+    {
+      Demons.Clear();
+      HashSet<string> discoveredDemonIds = _saveSlot?.GameRecord?.TotalKill.Keys.ToHashSet(StringComparer.Ordinal)
+        ?? new HashSet<string>(StringComparer.Ordinal);
+
+      foreach (string demonId in GameRecord.AllDemonKeys)
+      {
+        Demons.Add(new DemonModel(demonId, discoveredDemonIds.Contains(demonId)));
+      }
+
+      RefreshDiscoveredDemonCount();
+    }
+
     private void WriteQuestChanges()
     {
       if (_saveSlot == null || !Quests.Any(quest => quest.IsDirty))
@@ -474,6 +524,21 @@ namespace BloodSaved.ViewModels
         .Select(quest => quest.QuestId));
 
       QuestClearCount = _saveSlot.GameRecord?.QuestClearCount ?? QuestClearCount;
+    }
+
+    private void WriteDemonChanges()
+    {
+      if (_saveSlot?.GameRecord == null || !Demons.Any(demon => demon.IsDirty))
+      {
+        return;
+      }
+
+      _saveSlot.GameRecord.SetDiscoveredDemons(Demons
+        .Where(demon => demon.IsDiscovered)
+        .Select(demon => demon.DemonId));
+
+      RefreshDiscoveredDemonCount();
+      TotalKillCount = _saveSlot.GameRecord.TotalKillCount;
     }
 
     private void SaveSaveSlot()
@@ -501,6 +566,21 @@ namespace BloodSaved.ViewModels
 
       _saveSlot.SetMapFullyDiscovered();
       RefreshMapView();
+    }
+
+    private void DiscoverAllDemons()
+    {
+      foreach (DemonModel demon in Demons)
+      {
+        demon.IsDiscovered = true;
+      }
+
+      RefreshDiscoveredDemonCount();
+    }
+
+    private void RefreshDiscoveredDemonCount()
+    {
+      DemonsDiscoveredCount = Demons.Count(demon => demon.IsDiscovered);
     }
 
     private void RefreshMapView()
@@ -547,10 +627,14 @@ namespace BloodSaved.ViewModels
       Shards.Clear();
       Techniques.Clear();
       Quests.Clear();
+      Demons.Clear();
       _selectedTechniques = null;
       TechniquesSelected = false;
       _selectedQuests = null;
       QuestsSelected = false;
+      _selectedDemons = null;
+      DemonsSelected = false;
+      DemonsDiscoveredCount = 0;
       HasGameRecord = false;
       Map?.Dispose();
       Map = null;

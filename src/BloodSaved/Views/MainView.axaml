@@ -733,6 +733,100 @@
           </Grid>
         </TabItem>
         <TabItem
+          Header="Demons"
+          IsVisible="{Binding HasGameRecord}">
+          <Grid
+            Classes="TabPage">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock
+              Grid.Row="0"
+              Margin="5"
+              HorizontalAlignment="Center">
+              <Run
+                Text="Tips:"
+                FontWeight="Bold" />
+              <LineBreak />
+              <Run
+                Text="    •"
+                FontWeight="Bold" />
+              <Run
+                Text="Ctrl+A to select all" />
+              <Run
+                Text="    •"
+                FontWeight="Bold" />
+              <Run
+                Text="Right click to mark selected or all demons as discovered" />
+              <Run
+                Text="    •"
+                FontWeight="Bold" />
+              <Run
+                Text="{Binding DemonsDiscoveredCount}" />
+              <Run
+                Text=" discovered" />
+            </TextBlock>
+            <DataGrid
+              x:Name="DemonsDataGrid"
+              Grid.Row="1"
+              ItemsSource="{Binding Demons}"
+              CanUserReorderColumns="True"
+              CanUserResizeColumns="True"
+              CanUserSortColumns="True"
+              GridLinesVisibility="All"
+              BorderThickness="1"
+              BorderBrush="Gray"
+              Margin="5">
+              <i:Interaction.Behaviors>
+                <ia:EventTriggerBehavior
+                  EventName="SelectionChanged">
+                  <ia:InvokeCommandAction
+                    Command="{Binding DemonSelectionChangedCommand}"
+                    CommandParameter="{Binding ElementName=DemonsDataGrid, Path=SelectedItems}" />
+                </ia:EventTriggerBehavior>
+              </i:Interaction.Behaviors>
+              <DataGrid.ContextMenu>
+                <ContextMenu>
+                  <MenuItem
+                    Header="Set Selected Discovered"
+                    IsEnabled="{Binding DemonsSelected}"
+                    Command="{Binding DiscoverSelectedDemonsCommand}" />
+                  <MenuItem
+                    Header="Set All Discovered"
+                    Command="{Binding DiscoverAllDemonsCommand}" />
+                </ContextMenu>
+              </DataGrid.ContextMenu>
+              <DataGrid.Columns>
+                <DataGridTextColumn
+                  Header="Demon"
+                  Binding="{Binding Name}"
+                  IsReadOnly="true"
+                  Width="*" />
+                <DataGridTextColumn
+                  Header="ID"
+                  Binding="{Binding DemonId}"
+                  IsReadOnly="true"
+                  Width="140" />
+                <DataGridTemplateColumn
+                  SortMemberPath="IsDiscovered"
+                  Header="Discovered"
+                  Width="120"
+                  IsReadOnly="False">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate DataType="models:DemonModel">
+                      <CheckBox
+                        IsChecked="{Binding IsDiscovered, Mode=TwoWay}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+              </DataGrid.Columns>
+            </DataGrid>
+          </Grid>
+        </TabItem>
+        <TabItem
           Header="Map">
           <Grid
             Classes="TabPage">

@@ -14,9 +14,21 @@ namespace BloodSaved.Parsing.Sections
 
     public Dictionary<string, int> TotalSpawnFamiliar { get; set; } = new(StringComparer.Ordinal);
 
+    public Dictionary<string, int> TotalKill { get; set; } = new(StringComparer.Ordinal);
+
+    public Dictionary<string, int> TotalItem { get; set; } = new(StringComparer.Ordinal);
+
+    public Dictionary<string, int> TotalDropCount { get; set; } = new(StringComparer.Ordinal);
+
     private bool _totalBookshelfDiaryDirty;
 
     private bool _totalSpawnFamiliarDirty;
+
+    private bool _totalKillDirty;
+
+    private bool _totalItemDirty;
+
+    private bool _totalDropCountDirty;
 
     public int TotalSalesGold { get; set; }
 
@@ -115,6 +127,21 @@ namespace BloodSaved.Parsing.Sections
           && type == SaveConstants.MapProperty)
         {
           ReadNameIntMap(saveReader, name, gameRecord.TotalSpawnFamiliar);
+        }
+        else if (string.Equals(name, SaveConstants.m_TotalKill, StringComparison.Ordinal)
+          && type == SaveConstants.MapProperty)
+        {
+          ReadNameIntMap(saveReader, name, gameRecord.TotalKill);
+        }
+        else if (string.Equals(name, SaveConstants.m_TotalItem, StringComparison.Ordinal)
+          && type == SaveConstants.MapProperty)
+        {
+          ReadNameIntMapOrSkip(saveReader, name, gameRecord.TotalItem);
+        }
+        else if (string.Equals(name, SaveConstants.m_TotalDropCount, StringComparison.Ordinal)
+          && type == SaveConstants.MapProperty)
+        {
+          ReadNameIntMapOrSkip(saveReader, name, gameRecord.TotalDropCount);
         }
         else
         {
@@ -267,6 +294,45 @@ namespace BloodSaved.Parsing.Sections
           continue;
         }
 
+        if (string.Equals(propertyName, SaveConstants.m_TotalKill, StringComparison.Ordinal))
+        {
+          if (TotalKill.Count == 0)
+          {
+            synthesizedWritten.Remove(propertyName);
+            continue;
+          }
+
+          _totalKillDirty = true;
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalKill, TotalKill);
+          continue;
+        }
+
+        if (string.Equals(propertyName, SaveConstants.m_TotalItem, StringComparison.Ordinal))
+        {
+          if (TotalItem.Count == 0)
+          {
+            synthesizedWritten.Remove(propertyName);
+            continue;
+          }
+
+          _totalItemDirty = true;
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalItem, TotalItem);
+          continue;
+        }
+
+        if (string.Equals(propertyName, SaveConstants.m_TotalDropCount, StringComparison.Ordinal))
+        {
+          if (TotalDropCount.Count == 0)
+          {
+            synthesizedWritten.Remove(propertyName);
+            continue;
+          }
+
+          _totalDropCountDirty = true;
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalDropCount, TotalDropCount);
+          continue;
+        }
+
         if (!SynthesizableIntProperties.Contains(propertyName, StringComparer.Ordinal))
         {
           synthesizedWritten.Remove(propertyName);
@@ -353,6 +419,36 @@ namespace BloodSaved.Parsing.Sections
         return _totalSpawnFamiliarDirty;
       }
 
+      if (string.Equals(section.Name, SaveConstants.m_TotalKill, StringComparison.Ordinal))
+      {
+        if (_totalKillDirty)
+        {
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalKill, TotalKill);
+        }
+
+        return _totalKillDirty;
+      }
+
+      if (string.Equals(section.Name, SaveConstants.m_TotalItem, StringComparison.Ordinal))
+      {
+        if (_totalItemDirty)
+        {
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalItem, TotalItem);
+        }
+
+        return _totalItemDirty;
+      }
+
+      if (string.Equals(section.Name, SaveConstants.m_TotalDropCount, StringComparison.Ordinal))
+      {
+        if (_totalDropCountDirty)
+        {
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalDropCount, TotalDropCount);
+        }
+
+        return _totalDropCountDirty;
+      }
+
       if (string.Equals(section.Name, SaveConstants.m_TotalSalesGold, StringComparison.Ordinal))
       {
         WriteIntProperty(saveWriter, SaveConstants.m_TotalSalesGold);
@@ -433,6 +529,24 @@ namespace BloodSaved.Parsing.Sections
       }
     }
 
+    private static void ReadNameIntMapOrSkip(SaveReader saveReader, string propertyName, Dictionary<string, int> target)
+    {
+      saveReader.ReadMapProperty(propertyName, out string keyType, out string valueType, out int length, out int count);
+      if (!string.Equals(keyType, SaveConstants.NameProperty, StringComparison.Ordinal)
+        || !string.Equals(valueType, SaveConstants.IntProperty, StringComparison.Ordinal))
+      {
+        saveReader.Skip(length - 8);
+        return;
+      }
+
+      for (int i = 0; i < count; i++)
+      {
+        string key = saveReader.ReadLengthPrefixedString();
+        int value = saveReader.ReadInt32();
+        target[key] = value;
+      }
+    }
+
     private static void WriteNameIntMapProperty(
       SaveWriter saveWriter,
       string propertyName,
@@ -456,6 +570,10 @@ namespace BloodSaved.Parsing.Sections
 
     public int UniqueFamiliarsSummonedCount => TotalSpawnFamiliar.Count;
 
+    public int DiscoveredDemonsCount => TotalKill.Keys.Count(GameRecordArchiveStatKeys.DemonKillKeys.Contains);
+
+    public static IReadOnlyList<string> AllDemonKeys => GameRecordArchiveStatKeys.DemonKillKeys;
+
     public void SetUniqueFamiliarsSummonedCount(int count)
     {
       count = Math.Clamp(count, 0, GameRecordArchiveStatKeys.MaxUniqueFamiliarsSummoned);
@@ -465,6 +583,42 @@ namespace BloodSaved.Parsing.Sections
         GameRecordArchiveStatKeys.FamiliarSpawnKeys,
         count,
         defaultValue: 1);
+    }
+
+    public void SetAllDemonsDiscovered()
+    {
+      SetDiscoveredDemons(GameRecordArchiveStatKeys.DemonKillKeys);
+    }
+
+    public void SetDiscoveredDemons(IEnumerable<string> demonKeys)
+    {
+      _totalKillDirty = true;
+      HashSet<string> discovered = demonKeys
+        .Where(GameRecordArchiveStatKeys.DemonKillKeys.Contains)
+        .ToHashSet(StringComparer.Ordinal);
+      HashSet<string> archiveKeys = GameRecordArchiveStatKeys.GetDemonArchiveKeysForDemons(discovered)
+        .ToHashSet(StringComparer.Ordinal);
+
+      foreach (string key in GameRecordArchiveStatKeys.DemonArchiveKeys.Where(key => !archiveKeys.Contains(key)))
+      {
+        TotalKill.Remove(key);
+      }
+
+      foreach (string key in archiveKeys)
+      {
+        TotalKill[key] = TotalKill.TryGetValue(key, out int existing) && existing > 0 ? existing : 1;
+      }
+
+      foreach (string shardItemKey in GameRecordArchiveStatKeys.GetShardItemKeysForDemons(discovered))
+      {
+        if (!TotalItem.ContainsKey(shardItemKey))
+        {
+          TotalItem[shardItemKey] = 1;
+          _totalItemDirty = true;
+        }
+      }
+
+      TotalKillCount = Math.Max(TotalKillCount, discovered.Count);
     }
 
     private static void SetArchiveEntryCount(
