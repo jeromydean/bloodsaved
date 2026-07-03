@@ -70,6 +70,30 @@ namespace BloodSaved.Parsing
       private set;
     }
 
+    public GraveManager GraveManager
+    {
+      get;
+      private set;
+    }
+
+    public EventListenerManager EventListenerManager
+    {
+      get;
+      private set;
+    }
+
+    public QuestData QuestData
+    {
+      get;
+      private set;
+    }
+
+    public ScenarioFlags ScenarioFlags
+    {
+      get;
+      private set;
+    }
+
     private SaveSlot()
     {
       _saveSections = new List<SaveSection>();
@@ -311,6 +335,30 @@ namespace BloodSaved.Parsing
           .Single(s => s.Name == SaveConstants.GameRecord));
       }
 
+      if (saveSlot._saveSections.Any(s => s.Name == SaveConstants.EventListenerManager))
+      {
+        saveSlot.EventListenerManager = EventListenerManager.Deserialize(saveSlot._saveSections
+          .Single(s => s.Name == SaveConstants.EventListenerManager));
+      }
+
+      if (saveSlot._saveSections.Any(s => s.Name == SaveConstants.GraveManager))
+      {
+        saveSlot.GraveManager = GraveManager.Deserialize(saveSlot._saveSections
+          .Single(s => s.Name == SaveConstants.GraveManager));
+      }
+
+      if (saveSlot._saveSections.Any(s => s.Name == SaveConstants.QuestData))
+      {
+        saveSlot.QuestData = QuestData.Deserialize(saveSlot._saveSections
+          .Single(s => s.Name == SaveConstants.QuestData));
+      }
+
+      if (saveSlot._saveSections.Any(s => s.Name == SaveConstants.ScenarioFlags))
+      {
+        saveSlot.ScenarioFlags = ScenarioFlags.Deserialize(saveSlot._saveSections
+          .Single(s => s.Name == SaveConstants.ScenarioFlags));
+      }
+
       return saveSlot;
     }
 
@@ -329,8 +377,15 @@ namespace BloodSaved.Parsing
       byte[] savedata = null;
       using (SaveWriter writer = new SaveWriter())
       {
+        HashSet<string> presentSections = _saveSections
+          .Select(section => section.Name)
+          .ToHashSet(StringComparer.Ordinal);
+        HashSet<string> synthesizedSections = new(StringComparer.Ordinal);
+
         foreach (SaveSection section in _saveSections)
         {
+          WriteSynthesizedTopLevelSectionsBefore(writer, section.Name, presentSections, synthesizedSections);
+
           switch (section.Name)
           {
             case SaveConstants.Info:
@@ -354,11 +409,25 @@ namespace BloodSaved.Parsing
             case "m_Traverse":
               writer.Write(_traverseSectionDirty ? m_Traverse.Serialize() : section.Data);
               break;
+            case SaveConstants.EventListenerManager:
+              writer.Write(EventListenerManager?.IsDirty == true ? EventListenerManager.Serialize() : section.Data);
+              break;
+            case SaveConstants.GraveManager:
+              writer.Write(GraveManager?.IsDirty == true ? GraveManager.Serialize() : section.Data);
+              break;
+            case SaveConstants.QuestData:
+              writer.Write(QuestData?.IsDirty == true ? QuestData.Serialize() : section.Data);
+              break;
+            case SaveConstants.ScenarioFlags:
+              writer.Write(ScenarioFlags?.IsDirty == true ? ScenarioFlags.Serialize() : section.Data);
+              break;
             default:
               writer.Write(section.Data);
               break;
           }
         }
+
+        WriteSynthesizedTopLevelSectionsBefore(writer, nextSectionName: null, presentSections, synthesizedSections);
 
         writer.WriteLengthPrefixedString(SaveConstants.None);
         writer.Write(0);
@@ -421,6 +490,129 @@ namespace BloodSaved.Parsing
           RankValue = 50f,
           GradeValue = 50f
         }));
+    }
+
+    public void CompleteAllQuests()
+    {
+      SetCompletedQuests(QuestData.AllQuestIds);
+    }
+
+    public void SetCompletedQuests(IEnumerable<string> questIds)
+    {
+      QuestData ??= new QuestData();
+      GraveManager ??= new GraveManager();
+      EventListenerManager ??= new EventListenerManager();
+      ScenarioFlags ??= new ScenarioFlags();
+
+      string[] completedQuestIds = questIds
+        .Where(QuestData.AllQuestIds.Contains)
+        .Distinct(StringComparer.Ordinal)
+        .ToArray();
+
+      QuestData.SetCompletedQuests(completedQuestIds);
+      GraveManager.SetCompletedMementos(completedQuestIds);
+      EventListenerManager.EnsureQuestCompletionState();
+      ScenarioFlags.UnlockQuestArchiveEntries(completedQuestIds);
+
+      if (GameRecord != null)
+      {
+        GameRecord.QuestClearCount = completedQuestIds.Length;
+      }
+    }
+
+    private void WriteSynthesizedTopLevelSectionsBefore(
+      SaveWriter writer,
+      string? nextSectionName,
+      HashSet<string> presentSections,
+      HashSet<string> synthesizedSections)
+    {
+      int nextOrder = GetTopLevelSectionOrder(nextSectionName);
+      WriteSynthesizedTopLevelSection(
+        writer,
+        SaveConstants.EventListenerManager,
+        GetTopLevelSectionOrder(SaveConstants.EventListenerManager),
+        nextOrder,
+        presentSections,
+        synthesizedSections);
+      WriteSynthesizedTopLevelSection(
+        writer,
+        SaveConstants.GraveManager,
+        GetTopLevelSectionOrder(SaveConstants.GraveManager),
+        nextOrder,
+        presentSections,
+        synthesizedSections);
+      WriteSynthesizedTopLevelSection(
+        writer,
+        SaveConstants.QuestData,
+        GetTopLevelSectionOrder(SaveConstants.QuestData),
+        nextOrder,
+        presentSections,
+        synthesizedSections);
+      WriteSynthesizedTopLevelSection(
+        writer,
+        SaveConstants.ScenarioFlags,
+        GetTopLevelSectionOrder(SaveConstants.ScenarioFlags),
+        nextOrder,
+        presentSections,
+        synthesizedSections);
+    }
+
+    private void WriteSynthesizedTopLevelSection(
+      SaveWriter writer,
+      string sectionName,
+      int sectionOrder,
+      int nextOrder,
+      HashSet<string> presentSections,
+      HashSet<string> synthesizedSections)
+    {
+      if (sectionOrder >= nextOrder
+        || presentSections.Contains(sectionName)
+        || !synthesizedSections.Add(sectionName))
+      {
+        return;
+      }
+
+      if (string.Equals(sectionName, SaveConstants.GraveManager, StringComparison.Ordinal)
+        && GraveManager?.IsDirty == true)
+      {
+        writer.Write(GraveManager.Serialize());
+        return;
+      }
+
+      if (string.Equals(sectionName, SaveConstants.EventListenerManager, StringComparison.Ordinal)
+        && EventListenerManager?.IsDirty == true)
+      {
+        writer.Write(EventListenerManager.Serialize());
+        return;
+      }
+
+      if (string.Equals(sectionName, SaveConstants.QuestData, StringComparison.Ordinal)
+        && QuestData?.IsDirty == true)
+      {
+        writer.Write(QuestData.Serialize());
+        return;
+      }
+
+      if (string.Equals(sectionName, SaveConstants.ScenarioFlags, StringComparison.Ordinal)
+        && ScenarioFlags?.IsDirty == true)
+      {
+        writer.Write(ScenarioFlags.Serialize());
+        return;
+      }
+
+      synthesizedSections.Remove(sectionName);
+    }
+
+    private static int GetTopLevelSectionOrder(string? sectionName)
+    {
+      if (string.Equals(sectionName, "Header", StringComparison.Ordinal))
+      {
+        return -1;
+      }
+
+      return Enum.TryParse(sectionName, out BloodSaved.Parsing.Enums.Sections section)
+        ? (int)section
+        : int.MaxValue;
     }
 
     public void AddOrUpdateInventory(params IItem[] items)

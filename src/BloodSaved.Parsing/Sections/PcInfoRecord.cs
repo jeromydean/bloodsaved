@@ -30,6 +30,14 @@ namespace BloodSaved.Parsing.Sections
 
     public Guid StructId { get; private set; }
 
+    public bool HasSerializableData =>
+      ContinuousJumpKickCount > 0
+      || TotalMoveDistance != 0f
+      || TotalBackStepMoveDistance != 0f
+      || ArtsUseNum.Any(value => value != 0)
+      || ArtsExperience.Any(value => value != 0)
+      || BloodSteeleAmount != 0f;
+
     internal static PcInfoRecord Deserialize(SaveReader saveReader)
     {
       PcInfoRecord pcInfo = new PcInfoRecord();

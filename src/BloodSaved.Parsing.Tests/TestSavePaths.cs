@@ -63,6 +63,8 @@ namespace BloodSaved.Parsing.Tests
       /// <summary>Repo-root Story_Slot0.sav — all masterable techniques with partial progress including Lasting Wound (not mastered).</summary>
       public const string RootStorySlot0CompleteTechniqueMap = "b48879db7b47f79cfee4f403413517668fbfa10fe623ed6bc87060f0c90f7165";
       public const string ForceBlastPartialProgress = "d77797bc0da816cd708f8d3f6922b13b1be957120c517b6a05e2b5d781f050f5";
+      public const string NativeAllQuestsComplete = "d77797bc0da816cd708f8d3f6922b13b1be957120c517b6a05e2b5d781f050f5";
+      public const string StartOfNormalMiriamGame = "d777a2e330b4467dcc9e4c9eb974a19410fb0a80239dfcc3959f1696958f73b9";
     }
 
     public static class RoundTripOk

@@ -229,6 +229,18 @@ namespace BloodSaved.Parsing.Sections
           continue;
         }
 
+        if (string.Equals(propertyName, SaveConstants.PCInfo, StringComparison.Ordinal))
+        {
+          if (!PcInfo.HasSerializableData)
+          {
+            synthesizedWritten.Remove(propertyName);
+            continue;
+          }
+
+          saveWriter.Write(PcInfo.Serialize());
+          continue;
+        }
+
         if (string.Equals(propertyName, SaveConstants.m_TotalBookshelfDiary, StringComparison.Ordinal))
         {
           if (TotalBookshelfDiary.Count == 0)

@@ -163,5 +163,15 @@ namespace BloodSaved.Parsing
       Write(Enumerable.Repeat((byte)0x00, 5).ToArray());
       WriteLengthPrefixedString(itemIdString, encoding);
     }
+
+    public void WriteNameProperty(string propertyName,
+      string value)
+    {
+      WriteLengthPrefixedString(propertyName);
+      WriteLengthPrefixedString(SaveConstants.NameProperty);
+      Write(Encoding.UTF8.GetByteCount(value) + 5);
+      Write(Enumerable.Repeat((byte)0x00, 5).ToArray());
+      WriteLengthPrefixedString(value);
+    }
   }
 }

@@ -139,6 +139,38 @@ namespace BloodSaved.Parsing.Tests
     }
 
     [Fact]
+    public void StartOfNormalMiriamSaveCanAddMissingPcInfoTechniqueProgress()
+    {
+      string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.StartOfNormalMiriamGame);
+      string tempPath = Path.Combine(Path.GetTempPath(), $"bloodsaved-start-arts-test-{Guid.NewGuid():N}.sav");
+      try
+      {
+        SaveSlot saveSlot = SaveSlot.Load(savePath);
+
+        Assert.NotNull(saveSlot.GameRecord);
+        Assert.DoesNotContain(saveSlot.GameRecord.PcInfo.ArtsUseNum, useCount => useCount != 0);
+        Assert.DoesNotContain(saveSlot.GameRecord.PcInfo.ArtsExperience, experience => experience != 0);
+
+        saveSlot.GameRecord.SetArtsMastered(ArtsId.Parry, mastered: true);
+        saveSlot.Save(tempPath);
+
+        SaveSlot reloaded = SaveSlot.Load(tempPath);
+        Assert.True(reloaded.GameRecord!.IsArtsMastered(ArtsId.Parry));
+        Assert.Equal(5, reloaded.GameRecord.GetArtsUseCount(ArtsId.Parry));
+        Assert.Equal(TechniqueConstants.GetMasteryExperience(ArtsId.Parry), reloaded.GameRecord.GetArtsExperience(ArtsId.Parry));
+        Assert.Equal(1, reloaded.GameRecord.GetArtsCodexOpenCount(ArtsId.Parry));
+        Assert.Equal("Arts005", reloaded.GameRecord.TotalBookshelfDiary.Keys.Single());
+      }
+      finally
+      {
+        if (File.Exists(tempPath))
+        {
+          File.Delete(tempPath);
+        }
+      }
+    }
+
+    [Fact]
     public void SetArtsMasteredAppliesNativeUseAndExperiencePairs()
     {
       string savePath = TestSavePaths.Story(TestSavePaths.StorySaves.ArvantvilleNoCheatNoBonus);

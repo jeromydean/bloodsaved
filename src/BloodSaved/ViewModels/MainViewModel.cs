@@ -124,6 +124,16 @@ namespace BloodSaved.ViewModels
     [ObservableProperty]
     private bool _itemsSelected;
 
+    private List<TechniqueModel>? _selectedTechniques = null;
+
+    [ObservableProperty]
+    private bool _techniquesSelected;
+
+    private List<QuestModel>? _selectedQuests = null;
+
+    [ObservableProperty]
+    private bool _questsSelected;
+
     public ICommand OpenedCommand { get; private set; }
     public ICommand OpenCommand { get; private set; }
     public ICommand CloseCommand { get; private set; }
@@ -136,6 +146,10 @@ namespace BloodSaved.ViewModels
     public ICommand SetSelectedShardRankCommand { get; private set; }
     public ICommand ItemSelectionChangedCommand { get; private set; }
     public ICommand SetSelectedItemQuantityCommand { get; private set; }
+    public ICommand TechniqueSelectionChangedCommand { get; private set; }
+    public ICommand MasterSelectedTechniquesCommand { get; private set; }
+    public ICommand QuestSelectionChangedCommand { get; private set; }
+    public ICommand CompleteSelectedQuestsCommand { get; private set; }
     public ICommand SaveMapAsCommand { get; private set; }
     public ICommand CompleteMapCommand { get; private set; }
 
@@ -144,6 +158,7 @@ namespace BloodSaved.ViewModels
     public ObservableCollection<EPBGameLevel> EPBGameLevels { get; private set; }
     public ObservableCollection<FamiliarExperienceModel> FamiliarExperience { get; private set; }
     public ObservableCollection<TechniqueModel> Techniques { get; private set; }
+    public ObservableCollection<QuestModel> Quests { get; private set; }
 
     public MainViewModel(IFilePickerService filePickerService,
       IWindowService windowService)
@@ -178,11 +193,18 @@ namespace BloodSaved.ViewModels
         _selectedItems.ForEach(s => s.Quantity = q);
       });
 
+      TechniqueSelectionChangedCommand = new RelayCommand<IList?>(SelectedTechniquesChanged);
+      MasterSelectedTechniquesCommand = new RelayCommand(MasterSelectedTechniques);
+
+      QuestSelectionChangedCommand = new RelayCommand<IList?>(SelectedQuestsChanged);
+      CompleteSelectedQuestsCommand = new RelayCommand(CompleteSelectedQuests);
+
       InventoryItems = new ObservableCollection<InventoryItemModel>();
       Shards = new ObservableCollection<InventoryItemModel>();
       EPBGameLevels = new ObservableCollection<EPBGameLevel>(Enum.GetValues<EPBGameLevel>());
       FamiliarExperience = new ObservableCollection<FamiliarExperienceModel>();
       Techniques = new ObservableCollection<TechniqueModel>();
+      Quests = new ObservableCollection<QuestModel>();
     }
 
     private void SelectedItemsChanged(IList selectedItems)
@@ -195,6 +217,34 @@ namespace BloodSaved.ViewModels
     {
       _selectedShards = selectedShards.Cast<InventoryItemModel>().ToList();
       ShardsSelected = _selectedShards.Any();
+    }
+
+    private void SelectedTechniquesChanged(IList? selectedTechniques)
+    {
+      _selectedTechniques = selectedTechniques?.Cast<TechniqueModel>().ToList() ?? [];
+      TechniquesSelected = _selectedTechniques.Any(technique => technique.HasMastery);
+    }
+
+    private void MasterSelectedTechniques()
+    {
+      foreach (TechniqueModel technique in _selectedTechniques?.Where(technique => technique.HasMastery) ?? [])
+      {
+        technique.IsMastered = true;
+      }
+    }
+
+    private void SelectedQuestsChanged(IList? selectedQuests)
+    {
+      _selectedQuests = selectedQuests?.Cast<QuestModel>().ToList() ?? [];
+      QuestsSelected = _selectedQuests.Any();
+    }
+
+    private void CompleteSelectedQuests()
+    {
+      foreach (QuestModel quest in _selectedQuests ?? [])
+      {
+        quest.IsCompleted = true;
+      }
     }
 
     private async Task Initialize()
@@ -251,6 +301,7 @@ namespace BloodSaved.ViewModels
         }
 
         LoadGameRecord();
+        LoadQuests();
 
         RefreshMapView();
 
@@ -313,6 +364,7 @@ namespace BloodSaved.ViewModels
       }
 
       WriteGameRecordChanges();
+      WriteQuestChanges();
     }
 
     private void LoadGameRecord()
@@ -398,6 +450,32 @@ namespace BloodSaved.ViewModels
       }
     }
 
+    private void LoadQuests()
+    {
+      Quests.Clear();
+      HashSet<string> completedQuestIds = _saveSlot?.QuestData?.Done.ToHashSet(StringComparer.Ordinal)
+        ?? new HashSet<string>(StringComparer.Ordinal);
+
+      foreach (string questId in QuestData.AllQuestIds)
+      {
+        Quests.Add(new QuestModel(questId, completedQuestIds.Contains(questId)));
+      }
+    }
+
+    private void WriteQuestChanges()
+    {
+      if (_saveSlot == null || !Quests.Any(quest => quest.IsDirty))
+      {
+        return;
+      }
+
+      _saveSlot.SetCompletedQuests(Quests
+        .Where(quest => quest.IsCompleted)
+        .Select(quest => quest.QuestId));
+
+      QuestClearCount = _saveSlot.GameRecord?.QuestClearCount ?? QuestClearCount;
+    }
+
     private void SaveSaveSlot()
     {
       WriteChanges();
@@ -468,6 +546,11 @@ namespace BloodSaved.ViewModels
       InventoryItems.Clear();
       Shards.Clear();
       Techniques.Clear();
+      Quests.Clear();
+      _selectedTechniques = null;
+      TechniquesSelected = false;
+      _selectedQuests = null;
+      QuestsSelected = false;
       HasGameRecord = false;
       Map?.Dispose();
       Map = null;

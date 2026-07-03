@@ -561,7 +561,33 @@
           IsVisible="{Binding HasGameRecord}">
           <Grid
             Classes="TabPage">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock
+              Grid.Row="0"
+              Margin="5"
+              HorizontalAlignment="Center">
+              <Run
+                Text="Tips:"
+                FontWeight="Bold" />
+              <LineBreak />
+              <Run
+                Text="    •"
+                FontWeight="Bold" />
+              <Run
+                Text="Ctrl+A to select all" />
+              <LineBreak />
+              <Run
+                Text="    •"
+                FontWeight="Bold" />
+              <Run
+                Text="Right click to master selected techniques" />
+            </TextBlock>
             <DataGrid
+              x:Name="TechniquesDataGrid"
+              Grid.Row="1"
               ItemsSource="{Binding Techniques}"
               CanUserReorderColumns="True"
               CanUserResizeColumns="True"
@@ -570,6 +596,22 @@
               BorderThickness="1"
               BorderBrush="Gray"
               Margin="5">
+              <i:Interaction.Behaviors>
+                <ia:EventTriggerBehavior
+                  EventName="SelectionChanged">
+                  <ia:InvokeCommandAction
+                    Command="{Binding TechniqueSelectionChangedCommand}"
+                    CommandParameter="{Binding ElementName=TechniquesDataGrid, Path=SelectedItems}" />
+                </ia:EventTriggerBehavior>
+              </i:Interaction.Behaviors>
+              <DataGrid.ContextMenu>
+                <ContextMenu>
+                  <MenuItem
+                    Header="Master Selected"
+                    IsEnabled="{Binding TechniquesSelected}"
+                    Command="{Binding MasterSelectedTechniquesCommand}" />
+                </ContextMenu>
+              </DataGrid.ContextMenu>
               <DataGrid.Columns>
                 <DataGridTextColumn
                   Header="Technique"
@@ -591,6 +633,96 @@
                       <CheckBox
                         IsChecked="{Binding IsMastered, Mode=TwoWay}"
                         IsEnabled="{Binding HasMastery}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+              </DataGrid.Columns>
+            </DataGrid>
+          </Grid>
+        </TabItem>
+        <TabItem
+          Header="Quests"
+          IsVisible="{Binding HasGameRecord}">
+          <Grid
+            Classes="TabPage">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock
+              Grid.Row="0"
+              Margin="5"
+              HorizontalAlignment="Center">
+              <Run
+                Text="Tips:"
+                FontWeight="Bold" />
+              <LineBreak />
+              <Run
+                Text="    •"
+                FontWeight="Bold" />
+              <Run
+                Text="Ctrl+A to select all" />
+              <LineBreak />
+              <Run
+                Text="    •"
+                FontWeight="Bold" />
+              <Run
+                Text="Right click to complete selected quests" />
+            </TextBlock>
+            <DataGrid
+              x:Name="QuestsDataGrid"
+              Grid.Row="1"
+              ItemsSource="{Binding Quests}"
+              CanUserReorderColumns="True"
+              CanUserResizeColumns="True"
+              CanUserSortColumns="True"
+              GridLinesVisibility="All"
+              BorderThickness="1"
+              BorderBrush="Gray"
+              Margin="5">
+              <i:Interaction.Behaviors>
+                <ia:EventTriggerBehavior
+                  EventName="SelectionChanged">
+                  <ia:InvokeCommandAction
+                    Command="{Binding QuestSelectionChangedCommand}"
+                    CommandParameter="{Binding ElementName=QuestsDataGrid, Path=SelectedItems}" />
+                </ia:EventTriggerBehavior>
+              </i:Interaction.Behaviors>
+              <DataGrid.ContextMenu>
+                <ContextMenu>
+                  <MenuItem
+                    Header="Complete Selected"
+                    IsEnabled="{Binding QuestsSelected}"
+                    Command="{Binding CompleteSelectedQuestsCommand}" />
+                </ContextMenu>
+              </DataGrid.ContextMenu>
+              <DataGrid.Columns>
+                <DataGridTextColumn
+                  Header="Category"
+                  Binding="{Binding Category}"
+                  IsReadOnly="true"
+                  Width="120" />
+                <DataGridTextColumn
+                  Header="Quest"
+                  Binding="{Binding Name}"
+                  IsReadOnly="true"
+                  Width="*" />
+                <DataGridTextColumn
+                  Header="ID"
+                  Binding="{Binding QuestId}"
+                  IsReadOnly="true"
+                  Width="160" />
+                <DataGridTemplateColumn
+                  SortMemberPath="IsCompleted"
+                  Header="Completed"
+                  Width="120"
+                  IsReadOnly="False">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate DataType="models:QuestModel">
+                      <CheckBox
+                        IsChecked="{Binding IsCompleted, Mode=TwoWay}"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center" />
                     </DataTemplate>

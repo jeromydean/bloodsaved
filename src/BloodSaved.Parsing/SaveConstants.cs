@@ -19,6 +19,10 @@
     public const string Info = "Info";
     public const string ShardPossession = "ShardPossession";
     public const string GameRecord = "GameRecord";
+    public const string EventListenerManager = "EventListenerManager";
+    public const string GraveManager = "GraveManager";
+    public const string QuestData = "QuestData";
+    public const string ScenarioFlags = "ScenarioFlags";
     public const string PCInfo = "PCInfo";
     public const string PBPCRecord = "PBPCRecord";
     public const string m_ArtsUseNum = "m_ArtsUseNum";
