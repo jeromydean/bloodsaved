@@ -64,6 +64,12 @@ namespace BloodSaved.Parsing
       private set;
     }
 
+    public VisitedArea VisitedArea
+    {
+      get;
+      private set;
+    }
+
     public GameRecord GameRecord
     {
       get;
@@ -166,7 +172,12 @@ namespace BloodSaved.Parsing
 
     public void SetMapFullyDiscovered()
     {
+      m_RoomInfo ??= new m_RoomInfo();
+      VisitedArea ??= new VisitedArea();
       m_Traverse.SetFullyDiscovered();
+      m_RoomInfo.SetCompletedRooms(RoomMasterRoomNames.CompleteRoomInfoRooms);
+      VisitedArea.SetAllAreasVisited();
+      GameRecord?.SetAllRoomsVisited();
       _traverseSectionDirty = true;
     }
 
@@ -315,6 +326,12 @@ namespace BloodSaved.Parsing
         .Single(s => s.Name == "m_RoomInfo"));
       }
 
+      if (saveSlot._saveSections.Any(s => s.Name == VisitedArea.SectionName))
+      {
+        saveSlot.VisitedArea = VisitedArea.Deserialize(saveSlot._saveSections
+          .Single(s => s.Name == VisitedArea.SectionName));
+      }
+
       //map data
       saveSlot.m_Traverse = m_Traverse.Deserialize(saveSlot._saveSections
         .Single(s => s.Name == "m_Traverse"));
@@ -408,6 +425,12 @@ namespace BloodSaved.Parsing
               break;
             case "m_Traverse":
               writer.Write(_traverseSectionDirty ? m_Traverse.Serialize() : section.Data);
+              break;
+            case "m_RoomInfo":
+              writer.Write(m_RoomInfo?.IsDirty == true ? m_RoomInfo.Serialize() : section.Data);
+              break;
+            case "VisitedArea":
+              writer.Write(VisitedArea?.IsDirty == true ? VisitedArea.Serialize() : section.Data);
               break;
             case SaveConstants.EventListenerManager:
               writer.Write(EventListenerManager?.IsDirty == true ? EventListenerManager.Serialize() : section.Data);
@@ -529,6 +552,20 @@ namespace BloodSaved.Parsing
       int nextOrder = GetTopLevelSectionOrder(nextSectionName);
       WriteSynthesizedTopLevelSection(
         writer,
+        "m_RoomInfo",
+        GetTopLevelSectionOrder("m_RoomInfo"),
+        nextOrder,
+        presentSections,
+        synthesizedSections);
+      WriteSynthesizedTopLevelSection(
+        writer,
+        VisitedArea.SectionName,
+        GetTopLevelSectionOrder(VisitedArea.SectionName),
+        nextOrder,
+        presentSections,
+        synthesizedSections);
+      WriteSynthesizedTopLevelSection(
+        writer,
         SaveConstants.EventListenerManager,
         GetTopLevelSectionOrder(SaveConstants.EventListenerManager),
         nextOrder,
@@ -576,6 +613,20 @@ namespace BloodSaved.Parsing
         && GraveManager?.IsDirty == true)
       {
         writer.Write(GraveManager.Serialize());
+        return;
+      }
+
+      if (string.Equals(sectionName, "m_RoomInfo", StringComparison.Ordinal)
+        && m_RoomInfo?.IsDirty == true)
+      {
+        writer.Write(m_RoomInfo.Serialize());
+        return;
+      }
+
+      if (string.Equals(sectionName, VisitedArea.SectionName, StringComparison.Ordinal)
+        && VisitedArea?.IsDirty == true)
+      {
+        writer.Write(VisitedArea.Serialize());
         return;
       }
 

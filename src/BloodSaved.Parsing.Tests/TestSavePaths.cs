@@ -65,6 +65,10 @@ namespace BloodSaved.Parsing.Tests
       public const string ForceBlastPartialProgress = "d77797bc0da816cd708f8d3f6922b13b1be957120c517b6a05e2b5d781f050f5";
       public const string NativeAllQuestsComplete = "d77797bc0da816cd708f8d3f6922b13b1be957120c517b6a05e2b5d781f050f5";
       public const string StartOfNormalMiriamGame = "d777a2e330b4467dcc9e4c9eb974a19410fb0a80239dfcc3959f1696958f73b9";
+      /// <summary>Repo-root Story_Slot0.sav — before first Arvantville warp-room entry.</summary>
+      public const string BeforeArvantvilleWarpRoomEntry = "357dea583de46e8e07a583cf511959a9d32ab43fc1c30d65e443b141f6df0764";
+      /// <summary>Repo-root Story_Slot0.sav — after first Arvantville warp-room entry.</summary>
+      public const string AfterArvantvilleWarpRoomEntry = "4666bdb1dc78191287a7a2fe04f9396c71df5c716e695a057d8223dfadc862f4";
     }
 
     public static class RoundTripOk

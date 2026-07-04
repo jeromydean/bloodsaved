@@ -16,6 +16,8 @@ namespace BloodSaved.Parsing.Sections
 
     public Dictionary<string, int> TotalKill { get; set; } = new(StringComparer.Ordinal);
 
+    public Dictionary<string, int> TotalRoomIn { get; set; } = new(StringComparer.Ordinal);
+
     public Dictionary<string, int> TotalItem { get; set; } = new(StringComparer.Ordinal);
 
     public Dictionary<string, int> TotalDropCount { get; set; } = new(StringComparer.Ordinal);
@@ -25,6 +27,8 @@ namespace BloodSaved.Parsing.Sections
     private bool _totalSpawnFamiliarDirty;
 
     private bool _totalKillDirty;
+
+    private bool _totalRoomInDirty;
 
     private bool _totalItemDirty;
 
@@ -132,6 +136,11 @@ namespace BloodSaved.Parsing.Sections
           && type == SaveConstants.MapProperty)
         {
           ReadNameIntMap(saveReader, name, gameRecord.TotalKill);
+        }
+        else if (string.Equals(name, SaveConstants.m_TotalRoomIn, StringComparison.Ordinal)
+          && type == SaveConstants.MapProperty)
+        {
+          ReadNameIntMapOrSkip(saveReader, name, gameRecord.TotalRoomIn);
         }
         else if (string.Equals(name, SaveConstants.m_TotalItem, StringComparison.Ordinal)
           && type == SaveConstants.MapProperty)
@@ -307,6 +316,19 @@ namespace BloodSaved.Parsing.Sections
           continue;
         }
 
+        if (string.Equals(propertyName, SaveConstants.m_TotalRoomIn, StringComparison.Ordinal))
+        {
+          if (TotalRoomIn.Count == 0)
+          {
+            synthesizedWritten.Remove(propertyName);
+            continue;
+          }
+
+          _totalRoomInDirty = true;
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalRoomIn, TotalRoomIn);
+          continue;
+        }
+
         if (string.Equals(propertyName, SaveConstants.m_TotalItem, StringComparison.Ordinal))
         {
           if (TotalItem.Count == 0)
@@ -427,6 +449,16 @@ namespace BloodSaved.Parsing.Sections
         }
 
         return _totalKillDirty;
+      }
+
+      if (string.Equals(section.Name, SaveConstants.m_TotalRoomIn, StringComparison.Ordinal))
+      {
+        if (_totalRoomInDirty)
+        {
+          WriteNameIntMapProperty(saveWriter, SaveConstants.m_TotalRoomIn, TotalRoomIn);
+        }
+
+        return _totalRoomInDirty;
       }
 
       if (string.Equals(section.Name, SaveConstants.m_TotalItem, StringComparison.Ordinal))
@@ -619,6 +651,17 @@ namespace BloodSaved.Parsing.Sections
       }
 
       TotalKillCount = Math.Max(TotalKillCount, discovered.Count);
+    }
+
+    public void SetAllRoomsVisited()
+    {
+      _totalRoomInDirty = true;
+      foreach (string roomName in RoomMasterRoomNames.CompleteRoomInfoRooms.Distinct(StringComparer.Ordinal))
+      {
+        TotalRoomIn[roomName] = TotalRoomIn.TryGetValue(roomName, out int existing) && existing > 0 ? existing : 1;
+      }
+
+      TotalRoomInCount = Math.Max(TotalRoomInCount, TotalRoomIn.Count);
     }
 
     private static void SetArchiveEntryCount(
