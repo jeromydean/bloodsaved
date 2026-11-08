@@ -41,6 +41,18 @@ namespace BloodSaved.Parsing.Sections
       }
     }
 
+    public bool SetRoomDiscovered(int roomIndex, bool isDiscovered)
+    {
+      if (roomIndex < 0 || roomIndex >= TraverseData.Length || SaveConstants.CompleteMap[roomIndex] == 0)
+      {
+        throw new ArgumentOutOfRangeException(nameof(roomIndex), "The selected map cell is not a room.");
+      }
+
+      bool previous = TraverseData[roomIndex] != 0;
+      TraverseData[roomIndex] = isDiscovered ? (byte)1 : (byte)0;
+      return previous;
+    }
+
     public byte[] Serialize()
     {
       using SaveWriter saveWriter = new SaveWriter();
