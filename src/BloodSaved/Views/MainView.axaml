@@ -844,6 +844,8 @@
               <Button
                 Content="Set Map 100% Discovered"
                 Command="{Binding CompleteMapCommand}" />
+              <Button Content="Undo Room Change" Command="{Binding UndoMapRoomChangeCommand}" />
+              <Button Content="Save Edited Save As…" Command="{Binding SaveMapChangesAsCommand}" />
               <TextBlock VerticalAlignment="Center" Text="Map progress:" />
               <TextBlock VerticalAlignment="Center" Text="{Binding MapTraversedRoomCount}" />
               <TextBlock VerticalAlignment="Center" Text="/" />
@@ -906,6 +908,7 @@
                         Header="Save As"
                         Command="{Binding SaveMapAsCommand}"
                         CommandParameter="{Binding ElementName=mapControl, Path=Picture}" />
+                      <MenuItem Header="Undiscover Room Here" Command="{Binding UndiscoverMapRoomCommand}" />
                     </ContextMenu>
                   </skControls:SKPictureControl.ContextMenu>
                 </skControls:SKPictureControl>

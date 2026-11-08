@@ -32,6 +32,8 @@ namespace BloodSaved.ViewModels
 
     private string? _loadedSaveSlotPath;
     private SaveSlot? _saveSlot;
+    private readonly Stack<(int Index, bool PreviousState)> _mapRoomUndo = new();
+    private int? _mapRoomAtPointer;
 
     [ObservableProperty]
     private string _loadErrorText;
@@ -162,6 +164,9 @@ namespace BloodSaved.ViewModels
     public ICommand DiscoverSelectedDemonsCommand { get; private set; }
     public ICommand SaveMapAsCommand { get; private set; }
     public ICommand CompleteMapCommand { get; private set; }
+    public ICommand UndiscoverMapRoomCommand { get; private set; }
+    public ICommand UndoMapRoomChangeCommand { get; private set; }
+    public ICommand SaveMapChangesAsCommand { get; private set; }
     public ICommand DiscoverAllDemonsCommand { get; private set; }
 
     public ObservableCollection<InventoryItemModel> InventoryItems { get; private set; }
@@ -188,6 +193,9 @@ namespace BloodSaved.ViewModels
 
       SaveMapAsCommand = new AsyncRelayCommand<SKPicture?>(SaveMapAs);
       CompleteMapCommand = new RelayCommand(CompleteMap);
+      UndiscoverMapRoomCommand = new RelayCommand(UndiscoverMapRoom);
+      UndoMapRoomChangeCommand = new RelayCommand(UndoMapRoomChange);
+      SaveMapChangesAsCommand = new AsyncRelayCommand(SaveMapChangesAs);
 
       ShardSelectionChangedCommand = new RelayCommand<IList>(SelectedShardsChanged);
       SetSelectedShardGradeCommand = new RelayCommand<int>((g) =>
@@ -565,7 +573,66 @@ namespace BloodSaved.ViewModels
       }
 
       _saveSlot.SetMapFullyDiscovered();
+      _mapRoomUndo.Clear();
       RefreshMapView();
+    }
+
+    public void SetMapRoomPointerPosition(double xFraction, double yFraction)
+    {
+      // SVG dimensions are 2440x1000; each map cell is 20x10 pixels.
+      int x = (int)(Math.Clamp(xFraction, 0, 0.999999) * 122);
+      int svgY = (int)(Math.Clamp(yFraction, 0, 0.999999) * 100);
+      int index = (99 - svgY) * 200 + x;
+      _mapRoomAtPointer = index;
+    }
+
+    private void UndiscoverMapRoom()
+    {
+      if (_saveSlot == null || !_mapRoomAtPointer.HasValue) return;
+      try
+      {
+        bool previousState = _saveSlot.SetMapRoomDiscovered(_mapRoomAtPointer.Value, false);
+        if (previousState)
+        {
+          _mapRoomUndo.Push((_mapRoomAtPointer.Value, previousState));
+          RefreshMapView();
+        }
+      }
+      catch (ArgumentOutOfRangeException)
+      {
+        // Pointer was over a non-room cell.
+      }
+    }
+
+    private void UndoMapRoomChange()
+    {
+      if (_saveSlot == null || _mapRoomUndo.Count == 0) return;
+      (int index, bool previousState) = _mapRoomUndo.Pop();
+      _saveSlot.SetMapRoomDiscovered(index, previousState);
+      RefreshMapView();
+    }
+
+    private async Task SaveMapChangesAs()
+    {
+      if (_saveSlot == null) return;
+      IStorageFile? file = await _filePickerService.SaveFilePickerAsync("Save Edited Save As", "sav");
+      if (file == null) return;
+      string outputPath = Path.GetFullPath(file.Path.LocalPath);
+      if (_loadedSaveSlotPath != null && string.Equals(outputPath, Path.GetFullPath(_loadedSaveSlotPath), StringComparison.OrdinalIgnoreCase))
+      {
+        LoadErrorText = "Choose a new output file so the loaded save remains unchanged.";
+        return;
+      }
+      try
+      {
+        _saveSlot.SaveMapEdits(outputPath);
+      }
+      catch (Exception ex) when (ex is IOException or InvalidDataException or FormatException)
+      {
+        LoadErrorText = $"Could not create a new output save file: {ex.Message}";
+        return;
+      }
+      LoadErrorText = null;
     }
 
     private void DiscoverAllDemons()

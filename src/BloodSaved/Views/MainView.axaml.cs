@@ -73,6 +73,12 @@ public partial class MainView : Window
 
   private void MapPointerPressed(object? sender, PointerPressedEventArgs e)
   {
+    if (e.GetCurrentPoint(mapControl).Properties.IsRightButtonPressed && DataContext is MainViewModel mapViewModel)
+    {
+      Point point = e.GetPosition(mapControl);
+      mapViewModel.SetMapRoomPointerPosition(point.X / mapControl.Bounds.Width, point.Y / mapControl.Bounds.Height);
+      return;
+    }
     if (!e.GetCurrentPoint(mapControl).Properties.IsLeftButtonPressed)
     {
       return;

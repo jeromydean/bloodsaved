@@ -10,7 +10,7 @@ BloodSaved edits story-save data for Bloodstained: Ritual of the Night. Supporte
 - ⚔️ **Techniques** — mark individual or selected techniques as mastered; the editor applies the native in-game use counts, experience values, and codex entries needed for Archives listing and mastery
 - 📜 **Quests** — mark individual or selected quests as completed, including the related quest, grave, event-listener, and scenario-flag data needed for quest names and Archives completion
 - 😈 **Demons** — mark individual, selected, or all demon archive entries as discovered, including known internal alias keys and shard-name archive entries
-- 🗺️ **Map** — view map progression (discovered vs. missing rooms), set the map to 100% discovered, zoom and pan, and export the map as an SVG file
+- 🗺️ **Map** — view map progression (discovered vs. missing rooms), set the map to 100% discovered, selectively undiscover rooms, zoom and pan, and export the map as an SVG file
 
 You can inject Aurora's familiars and shards into Miriam's save if you want to experiment. Shard grade and rank can be pushed up to 9999, though that tends to make combat trivial.
 
@@ -46,7 +46,7 @@ Back up your save before editing.
 - On the **Quests** tab, check **Completed** for individual quests or right-click selected rows to complete them in bulk. This also updates the supporting save sections that control quest visibility and completion state.
 - On the **Demons** tab, check **Discovered** for individual demons or right-click selected rows to discover them in bulk. Discovering demons also unlocks associated shard names in Archives when the shard mapping is known.
 - On the **Stats** tab, **Unique Familiars Summoned** is capped at 11 (the number of familiar shard types in the game).
-- On the **Map** tab, use **Set Map 100% Discovered** to mark every room as visited, then save. Ctrl+mouse wheel zooms, click-and-drag pans, and right-click exports the map as SVG.
+- On the **Map** tab, right-click a room and choose **Undiscover Room Here** to clear that room's map discovery. **Undo Room Change** restores edits in reverse order. **Save Edited Save As…** creates a new save file and verifies it can be reloaded; this map-only save preserves every other section as it was in the input file. Ctrl+mouse wheel zooms, click-and-drag pans, and the map context menu exports the map as SVG.
 - Food first-time consumption bonuses are preserved when you edit other values and save.
 
 ## 🛠️ Build from source

@@ -195,5 +195,77 @@ namespace BloodSaved.Parsing.Tests
 
       Assert.Equal(originalTraverseSection, serializedTraverse);
     }
+
+    [Fact]
+    public void UnmodifiedSaveRoundTripPreservesMapData()
+    {
+      SaveSlot saveSlot = SaveSlot.Load(TestSavePaths.Story(TestSavePaths.StorySaves.DenOfBehemoths));
+      byte[] original = (byte[])saveSlot.m_Traverse.TraverseData.Clone();
+      string tempPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.sav");
+      try
+      {
+        saveSlot.Save(tempPath);
+        Assert.Equal(original, SaveSlot.Load(tempPath).m_Traverse.TraverseData);
+      }
+      finally
+      {
+        if (File.Exists(tempPath)) File.Delete(tempPath);
+      }
+    }
+
+    [Fact]
+    public void UndiscoveringOneRoomChangesOnlyItsTraversalCell()
+    {
+      SaveSlot saveSlot = SaveSlot.Load(TestSavePaths.Story(TestSavePaths.StorySaves.ArvantvilleNoCheatNoBonus));
+      saveSlot.SetMapFullyDiscovered();
+      byte[] before = (byte[])saveSlot.m_Traverse.TraverseData.Clone();
+      int selected = Array.FindIndex(before, value => value != 0);
+
+      Assert.True(saveSlot.SetMapRoomDiscovered(selected, false));
+      Assert.Equal(1552, saveSlot.GetTraversedRoomCount());
+      Assert.Equal(1, before.Zip(saveSlot.m_Traverse.TraverseData).Count(pair => pair.First != pair.Second));
+      Assert.False(saveSlot.SetMapRoomDiscovered(selected, true));
+      Assert.Equal(before, saveSlot.m_Traverse.TraverseData);
+    }
+
+    [Fact]
+    public void SelectiveRoomChangesPersistAndCanBeReversedWithoutChangingOtherMapCells()
+    {
+      SaveSlot saveSlot = SaveSlot.Load(TestSavePaths.Story(TestSavePaths.StorySaves.ArvantvilleNoCheatNoBonus));
+      saveSlot.SetMapFullyDiscovered();
+      string inputPath = TestSavePaths.Story(TestSavePaths.StorySaves.ArvantvilleNoCheatNoBonus);
+      SaveSlot originalSave = SaveSlot.Load(inputPath);
+      byte[] before = (byte[])saveSlot.m_Traverse.TraverseData.Clone();
+      int[] selected = Enumerable.Range(0, before.Length).Where(index => before[index] != 0).Take(3).ToArray();
+      Assert.Equal(3, selected.Length);
+
+      foreach (int index in selected) saveSlot.SetMapRoomDiscovered(index, false);
+
+      Assert.Equal(1553 - selected.Length, saveSlot.GetTraversedRoomCount());
+      for (int i = 0; i < before.Length; i++)
+      {
+        Assert.Equal(selected.Contains(i) ? (byte)0 : before[i], saveSlot.m_Traverse.TraverseData[i]);
+      }
+
+      string tempPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.sav");
+      try
+      {
+        saveSlot.SaveMapEdits(tempPath);
+        SaveSlot reloaded = SaveSlot.Load(tempPath);
+        Assert.Equal(saveSlot.GetTraversedRoomCount(), reloaded.GetTraversedRoomCount());
+        Assert.Equal(saveSlot.m_Traverse.TraverseData, reloaded.m_Traverse.TraverseData);
+        Assert.Equal(originalSave.GetSectionNames().OrderBy(name => name), reloaded.GetSectionNames().OrderBy(name => name));
+        foreach (string sectionName in originalSave.GetSectionNames().Where(name => name != "m_Traverse"))
+        {
+          Assert.Equal(originalSave.GetSectionData(sectionName), reloaded.GetSectionData(sectionName));
+        }
+        foreach (int index in selected) reloaded.SetMapRoomDiscovered(index, true);
+        Assert.Equal(before, reloaded.m_Traverse.TraverseData);
+      }
+      finally
+      {
+        if (File.Exists(tempPath)) File.Delete(tempPath);
+      }
+    }
   }
 }

@@ -181,10 +181,21 @@ namespace BloodSaved.Parsing
       _traverseSectionDirty = true;
     }
 
+    public bool SetMapRoomDiscovered(int roomIndex, bool isDiscovered)
+    {
+      bool previousState = m_Traverse.SetRoomDiscovered(roomIndex, isDiscovered);
+      _traverseSectionDirty |= previousState != isDiscovered;
+      return previousState;
+    }
+
     public byte[] GetTraverseSectionData()
     {
       return _saveSections.Single(s => s.Name == "m_Traverse").Data;
     }
+
+    public IReadOnlyList<string> GetSectionNames() => _saveSections.Select(section => section.Name).ToArray();
+
+    public byte[] GetSectionData(string name) => (byte[])_saveSections.Single(section => section.Name == name).Data.Clone();
 
     public static byte[] Crypt(byte[] data)
     {
@@ -384,12 +395,43 @@ namespace BloodSaved.Parsing
     {
       using (FileStream stream = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite))
       {
-        Save(stream, forceEncryption);
+        Save(stream, forceEncryption, preserveOtherSections: false);
+      }
+    }
+
+    public void SaveMapEdits(string filename)
+    {
+      string outputPath = Path.GetFullPath(filename);
+      string tempPath = Path.Combine(Path.GetDirectoryName(outputPath)!, $".{Path.GetFileName(outputPath)}.{Guid.NewGuid():N}.tmp");
+      try
+      {
+        using (FileStream stream = new FileStream(tempPath, FileMode.CreateNew, FileAccess.ReadWrite))
+        {
+          Save(stream, null, preserveOtherSections: true);
+        }
+
+        SaveSlot validated = Load(tempPath);
+        if (!validated.m_Traverse.TraverseData.SequenceEqual(m_Traverse.TraverseData)
+          || validated.GetTraversedRoomCount() != GetTraversedRoomCount())
+        {
+          throw new InvalidDataException("The saved map did not match the edited map after reloading.");
+        }
+
+        File.Move(tempPath, outputPath);
+      }
+      finally
+      {
+        if (File.Exists(tempPath)) File.Delete(tempPath);
       }
     }
 
     public void Save(Stream stream,
       bool? forceEncryption = null)
+    {
+      Save(stream, forceEncryption, preserveOtherSections: false);
+    }
+
+    private void Save(Stream stream, bool? forceEncryption, bool preserveOtherSections)
     {
       byte[] savedata = null;
       using (SaveWriter writer = new SaveWriter())
@@ -401,7 +443,16 @@ namespace BloodSaved.Parsing
 
         foreach (SaveSection section in _saveSections)
         {
-          WriteSynthesizedTopLevelSectionsBefore(writer, section.Name, presentSections, synthesizedSections);
+          if (!preserveOtherSections)
+          {
+            WriteSynthesizedTopLevelSectionsBefore(writer, section.Name, presentSections, synthesizedSections);
+          }
+
+          if (preserveOtherSections && section.Name != "m_Traverse")
+          {
+            writer.Write(section.Data);
+            continue;
+          }
 
           switch (section.Name)
           {
@@ -450,7 +501,10 @@ namespace BloodSaved.Parsing
           }
         }
 
-        WriteSynthesizedTopLevelSectionsBefore(writer, nextSectionName: null, presentSections, synthesizedSections);
+        if (!preserveOtherSections)
+        {
+          WriteSynthesizedTopLevelSectionsBefore(writer, nextSectionName: null, presentSections, synthesizedSections);
+        }
 
         writer.WriteLengthPrefixedString(SaveConstants.None);
         writer.Write(0);
