@@ -486,7 +486,8 @@ namespace BloodSaved.Parsing
     ];
 
     // Warp rooms are not present in PB_DT_RoomMaster.json, but entering one adds the
-    // corresponding *_1100 room to m_RoomInfo and GameRecord.m_TotalRoomIn.
+    // corresponding room to m_RoomInfo and GameRecord.m_TotalRoomIn. Most areas use
+    // *_1100. Forbidden Underground Waterway has a second warp, m11UGD_1101.
     public static readonly IReadOnlyList<string> WarpRooms =
     [
       "m01SIP_1100",
@@ -498,6 +499,7 @@ namespace BloodSaved.Parsing
       "m07LIB_1100",
       "m08TWR_1100",
       "m11UGD_1100",
+      "m11UGD_1101",
       "m12SND_1100",
       "m13ARC_1100",
       "m14TAR_1100",

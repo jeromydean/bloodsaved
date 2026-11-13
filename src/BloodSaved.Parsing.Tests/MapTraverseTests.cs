@@ -26,7 +26,7 @@ namespace BloodSaved.Parsing.Tests
         .Select(SaveSlot.Load)
         .SelectMany(saveSlot => (saveSlot.m_RoomInfo?.Rooms.Select(room => room.RoomName) ?? Enumerable.Empty<string>())
           .Concat(saveSlot.GameRecord?.TotalRoomIn.Keys ?? Enumerable.Empty<string>()))
-        .Where(roomName => roomName.EndsWith("_1100", StringComparison.Ordinal))
+        .Where(IsWarpRoomName)
         .Distinct(StringComparer.Ordinal)
         .OrderBy(roomName => roomName, StringComparer.Ordinal)
         .ToArray();
@@ -38,7 +38,8 @@ namespace BloodSaved.Parsing.Tests
         .ToHashSet(StringComparer.Ordinal);
       HashSet<string> completedRoomIn = completed.GameRecord.TotalRoomIn.Keys.ToHashSet(StringComparer.Ordinal);
 
-      Assert.Equal(15, observedWarpRooms.Length);
+      Assert.Equal(16, observedWarpRooms.Length);
+      Assert.Contains("m11UGD_1101", observedWarpRooms);
       foreach (string warpRoom in observedWarpRooms)
       {
         Assert.Contains(warpRoom, completedRoomInfo);
@@ -76,7 +77,7 @@ namespace BloodSaved.Parsing.Tests
 
       saveSlot.SetMapFullyDiscovered();
 
-      Assert.True(saveSlot.m_RoomInfo.Rooms.Count >= 493);
+      Assert.True(saveSlot.m_RoomInfo.Rooms.Count >= 494);
       Assert.All(saveSlot.m_RoomInfo.Rooms, room => Assert.True(room.IsCompleted));
       Assert.Equal(4, saveSlot.m_RoomInfo.Rooms.Count(room => room.RoomName == "m01SIP"));
       Assert.Contains(saveSlot.m_RoomInfo.Rooms, room => room.RoomName == "m02VIL_1100");
@@ -93,10 +94,11 @@ namespace BloodSaved.Parsing.Tests
       saveSlot.SetMapFullyDiscovered();
 
       Assert.NotNull(saveSlot.m_RoomInfo);
-      Assert.Equal(493, saveSlot.m_RoomInfo.Rooms.Count);
+      Assert.Equal(494, saveSlot.m_RoomInfo.Rooms.Count);
       Assert.All(saveSlot.m_RoomInfo.Rooms, room => Assert.True(room.IsCompleted));
       Assert.Contains(saveSlot.m_RoomInfo.Rooms, room => room.RoomName == "m02VIL");
       Assert.Contains(saveSlot.m_RoomInfo.Rooms, room => room.RoomName == "m02VIL_1100");
+      Assert.Contains(saveSlot.m_RoomInfo.Rooms, room => room.RoomName == "m11UGD_1101");
     }
 
     [Fact]
@@ -112,9 +114,10 @@ namespace BloodSaved.Parsing.Tests
 
       Assert.NotNull(saveSlot.VisitedArea);
       Assert.Equal(BloodSaved.Parsing.Sections.VisitedArea.CompleteMapAreas, saveSlot.VisitedArea.Areas);
-      Assert.Equal(415, saveSlot.GameRecord.TotalRoomIn.Count);
+      Assert.Equal(416, saveSlot.GameRecord.TotalRoomIn.Count);
       Assert.Equal(1, saveSlot.GameRecord.TotalRoomIn["m02VIL"]);
       Assert.Equal(1, saveSlot.GameRecord.TotalRoomIn["m02VIL_1100"]);
+      Assert.Equal(1, saveSlot.GameRecord.TotalRoomIn["m11UGD_1101"]);
     }
 
     [Fact]
@@ -144,13 +147,14 @@ namespace BloodSaved.Parsing.Tests
 
         SaveSlot reloaded = SaveSlot.Load(tempPath);
         Assert.NotNull(reloaded.m_RoomInfo);
-        Assert.Equal(493, reloaded.m_RoomInfo.Rooms.Count);
+        Assert.Equal(494, reloaded.m_RoomInfo.Rooms.Count);
         Assert.All(reloaded.m_RoomInfo.Rooms, room => Assert.True(room.IsCompleted));
         Assert.NotNull(reloaded.VisitedArea);
         Assert.Equal(BloodSaved.Parsing.Sections.VisitedArea.CompleteMapAreas, reloaded.VisitedArea.Areas);
-        Assert.Equal(415, reloaded.GameRecord.TotalRoomIn.Count);
+        Assert.Equal(416, reloaded.GameRecord.TotalRoomIn.Count);
         Assert.Equal(1, reloaded.GameRecord.TotalRoomIn["m02VIL"]);
         Assert.Equal(1, reloaded.GameRecord.TotalRoomIn["m02VIL_1100"]);
+        Assert.Equal(1, reloaded.GameRecord.TotalRoomIn["m11UGD_1101"]);
       }
       finally
       {
@@ -194,6 +198,16 @@ namespace BloodSaved.Parsing.Tests
       byte[] serializedTraverse = saveSlot.m_Traverse.Serialize();
 
       Assert.Equal(originalTraverseSection, serializedTraverse);
+    }
+
+    private static bool IsWarpRoomName(string roomName)
+    {
+      return roomName.Length >= 5
+        && roomName[^5] == '_'
+        && roomName[^4] == '1'
+        && roomName[^3] == '1'
+        && char.IsDigit(roomName[^2])
+        && char.IsDigit(roomName[^1]);
     }
   }
 }
